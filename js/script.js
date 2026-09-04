@@ -53,7 +53,7 @@
   const BLOG_POSTS = [
     {
       icon: '🍣',
-      gradient: 'linear-gradient(135deg,#a8342a,#c9a24b)',
+      gradient: 'linear-gradient(135deg,#4f7a5c,#ddc98d)',
       date: 'Aug 12, 2026',
       tag: 'News',
       title: 'NAMI Opens Its Doors on Rustaveli Avenue',
@@ -61,7 +61,7 @@
     },
     {
       icon: '🐟',
-      gradient: 'linear-gradient(135deg,#5c6f4c,#c9a24b)',
+      gradient: 'linear-gradient(135deg,#2c4436,#93bb9e)',
       date: 'Aug 28, 2026',
       tag: 'Behind the Scenes',
       title: 'How We Source Our Fish, Daily',
@@ -69,7 +69,7 @@
     },
     {
       icon: '🍶',
-      gradient: 'linear-gradient(135deg,#7d241c,#171412)',
+      gradient: 'linear-gradient(135deg,#11241c,#4f7a5c)',
       date: 'Sep 2, 2026',
       tag: 'Guide',
       title: 'A Beginner\'s Guide to Sake Pairing',
@@ -77,7 +77,7 @@
     },
     {
       icon: '🌶️',
-      gradient: 'linear-gradient(135deg,#c9a24b,#a8342a)',
+      gradient: 'linear-gradient(135deg,#a8342a,#b7a369)',
       date: 'Sep 10, 2026',
       tag: 'Menu Update',
       title: 'Introducing the Tbilisi Roll',
@@ -85,7 +85,7 @@
     },
     {
       icon: '🎉',
-      gradient: 'linear-gradient(135deg,#171412,#5c6f4c)',
+      gradient: 'linear-gradient(135deg,#11241c,#93bb9e)',
       date: 'Sep 20, 2026',
       tag: 'Events',
       title: 'Join Us for a Sushi-Rolling Workshop',
@@ -93,7 +93,7 @@
     },
     {
       icon: '🍵',
-      gradient: 'linear-gradient(135deg,#c9a24b,#171412)',
+      gradient: 'linear-gradient(135deg,#b7a369,#11241c)',
       date: 'Sep 27, 2026',
       tag: 'Culture',
       title: 'The Meaning Behind "Nami"',
