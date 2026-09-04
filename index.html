@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NAMI • ნამი | Modern Sushi Bar</title>
+<meta name="description" content="NAMI • ნამი — a modern sushi bar serving hand-crafted rolls, nigiri, tempura and more. View our menu, story, hours and location.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🍣%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ================= HEADER ================= -->
+<header class="site-header" id="siteHeader">
+  <div class="container header-inner">
+    <a href="#home" class="logo">
+      <span class="logo-en">NAMI</span>
+      <span class="logo-dot">•</span>
+      <span class="logo-ka">ნამი</span>
+    </a>
+
+    <nav class="main-nav" id="mainNav">
+      <ul>
+        <li><a href="#home" class="nav-link active-link">Home</a></li>
+        <li><a href="#menu" class="nav-link">Menu</a></li>
+        <li><a href="#blog" class="nav-link">Blog</a></li>
+        <li><a href="#about" class="nav-link">About Us</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+      </ul>
+    </nav>
+
+    <a href="#contact" class="btn btn-outline nav-reserve">Reserve a Table</a>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="home">
+  <div class="hero-waves" aria-hidden="true"></div>
+  <div class="container hero-content">
+    <p class="eyebrow reveal">Fresh &middot; Handmade &middot; Every Day</p>
+    <h1 class="reveal">
+      Welcome to <span class="accent">NAMI</span> <span class="ka-inline">ნამი</span>
+    </h1>
+    <p class="hero-sub reveal">
+      Where the art of Japanese sushi meets the warmth of Georgian hospitality.
+      Hand-rolled, always fresh, always with soul.
+    </p>
+    <div class="hero-actions reveal">
+      <a href="#menu" class="btn btn-primary">View Menu</a>
+      <a href="#about" class="btn btn-ghost">Our Story</a>
+    </div>
+  </div>
+  <a href="#menu" class="scroll-cue" aria-label="Scroll to menu"><span></span></a>
+</section>
+
+<!-- ================= MENU ================= -->
+<section class="menu-section" id="menu">
+  <div class="container">
+    <p class="section-eyebrow reveal">Our Menu</p>
+    <h2 class="section-title reveal">Crafted With Care</h2>
+    <p class="section-lead reveal">
+      Every plate is prepared to order with premium fish, seasonal produce and rice
+      seasoned in-house. Explore our categories below.
+    </p>
+
+    <div class="menu-tabs reveal" id="menuTabs" role="tablist" aria-label="Menu categories">
+      <button class="menu-tab active" data-category="all" role="tab" aria-selected="true">All</button>
+      <button class="menu-tab" data-category="rolls" role="tab" aria-selected="false">Sushi Rolls</button>
+      <button class="menu-tab" data-category="nigiri" role="tab" aria-selected="false">Nigiri &amp; Sashimi</button>
+      <button class="menu-tab" data-category="tempura" role="tab" aria-selected="false">Tempura &amp; Hot</button>
+      <button class="menu-tab" data-category="starters" role="tab" aria-selected="false">Starters &amp; Salads</button>
+      <button class="menu-tab" data-category="drinks" role="tab" aria-selected="false">Drinks</button>
+      <button class="menu-tab" data-category="desserts" role="tab" aria-selected="false">Desserts</button>
+    </div>
+
+    <div class="menu-grid" id="menuGrid"><!-- injected by JS --></div>
+  </div>
+</section>
+
+<!-- ================= BLOG ================= -->
+<section class="blog-section" id="blog">
+  <div class="container">
+    <p class="section-eyebrow reveal">Blog &amp; News</p>
+    <h2 class="section-title reveal">From Our Kitchen</h2>
+    <p class="section-lead reveal">
+      Stories, seasonal specials and behind-the-scenes notes from the NAMI team.
+    </p>
+
+    <div class="blog-grid" id="blogGrid"><!-- injected by JS --></div>
+  </div>
+</section>
+
+<!-- ================= ABOUT + HOURS ================= -->
+<section class="about-section" id="about">
+  <div class="container about-inner">
+    <div class="about-text reveal">
+      <p class="section-eyebrow">About Us</p>
+      <h2 class="section-title">Our Story</h2>
+      <p>
+        NAMI &mdash; meaning <em>"wave"</em> in Georgian (ნამი) &mdash; was born from a simple idea:
+        bring the precision and purity of Japanese sushi to the heart of our city, served with
+        the generosity and warmth Georgians are known for.
+      </p>
+      <p>
+        Our chefs train in traditional knife technique and rice preparation, while our produce
+        is sourced daily from local markets and trusted seafood suppliers. The result is a menu
+        that honors tradition while feeling completely at home here.
+      </p>
+      <p>
+        Whether you're joining us for a quiet lunch, a celebration, or a late-night roll with
+        friends, our goal is the same every time: fresh food, honest hospitality, no rush.
+      </p>
+      <div class="about-stats">
+        <div class="stat">
+          <span class="stat-num">8+</span>
+          <span class="stat-label">Years serving fresh sushi</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">40+</span>
+          <span class="stat-label">Dishes on the menu</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">100%</span>
+          <span class="stat-label">Fresh, never frozen fish*</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hours-card reveal">
+      <h3>Working Hours</h3>
+      <ul class="hours-list" id="hoursList">
+        <li data-day="Monday"><span>Monday</span><span>12:00 – 22:00</span></li>
+        <li data-day="Tuesday"><span>Tuesday</span><span>12:00 – 22:00</span></li>
+        <li data-day="Wednesday"><span>Wednesday</span><span>12:00 – 22:00</span></li>
+        <li data-day="Thursday"><span>Thursday</span><span>12:00 – 22:00</span></li>
+        <li data-day="Friday"><span>Friday</span><span>12:00 – 23:30</span></li>
+        <li data-day="Saturday"><span>Saturday</span><span>13:00 – 23:30</span></li>
+        <li data-day="Sunday"><span>Sunday</span><span>13:00 – 21:00</span></li>
+      </ul>
+      <p class="hours-note" id="hoursNote">Loading today's status…</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section class="contact-section" id="contact">
+  <div class="container contact-inner">
+    <div class="contact-info reveal">
+      <p class="section-eyebrow">Contact &amp; Location</p>
+      <h2 class="section-title">Come Say Hi</h2>
+      <p class="section-lead">
+        Walk in, call ahead, or reserve a table online &mdash; we'd love to host you.
+      </p>
+
+      <ul class="info-list">
+        <li>
+          <span class="info-icon" aria-hidden="true">📍</span>
+          <div>
+            <strong>Address</strong>
+            <p>12 Rustaveli Avenue, Tbilisi, Georgia</p>
+          </div>
+        </li>
+        <li>
+          <span class="info-icon" aria-hidden="true">📞</span>
+          <div>
+            <strong>Phone</strong>
+            <p><a href="tel:+995322123456">+995 32 212 34 56</a></p>
+          </div>
+        </li>
+        <li>
+          <span class="info-icon" aria-hidden="true">✉️</span>
+          <div>
+            <strong>Email</strong>
+            <p><a href="mailto:hello@namisushi.ge">hello@namisushi.ge</a></p>
+          </div>
+        </li>
+        <li>
+          <span class="info-icon" aria-hidden="true">🕒</span>
+          <div>
+            <strong>Hours</strong>
+            <p>Mon–Thu 12:00–22:00 · Fri–Sat 12:00–23:30 · Sun 13:00–21:00</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="socials">
+        <a href="#" aria-label="Facebook">FB</a>
+        <a href="#" aria-label="Instagram">IG</a>
+        <a href="#" aria-label="TikTok">TT</a>
+      </div>
+
+      <div class="map-embed">
+        <iframe
+          title="NAMI location map"
+          src="https://www.google.com/maps?q=Rustaveli%20Avenue%2012%2C%20Tbilisi%2C%20Georgia&output=embed"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </div>
+
+    <form class="contact-form reveal" id="contactForm" novalidate>
+      <h3>Send a Message</h3>
+
+      <div class="form-row">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" placeholder="Your name" required>
+        <span class="form-error" data-for="name"></span>
+      </div>
+
+      <div class="form-row">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+        <span class="form-error" data-for="email"></span>
+      </div>
+
+      <div class="form-row">
+        <label for="phone">Phone (optional)</label>
+        <input type="tel" id="phone" name="phone" placeholder="+995 5xx xx xx xx">
+      </div>
+
+      <div class="form-row">
+        <label for="message">Message</label>
+        <textarea id="message" name="message" rows="4" placeholder="Tell us about your reservation or question…" required></textarea>
+        <span class="form-error" data-for="message"></span>
+      </div>
+
+      <button type="submit" class="btn btn-primary form-submit">Send Message</button>
+      <p class="form-success" id="formSuccess" role="status"></p>
+    </form>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <a href="#home" class="logo footer-logo">
+      <span class="logo-en">NAMI</span>
+      <span class="logo-dot">•</span>
+      <span class="logo-ka">ნამი</span>
+    </a>
+    <nav class="footer-nav">
+      <a href="#home">Home</a>
+      <a href="#menu">Menu</a>
+      <a href="#blog">Blog</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <p class="footer-copy">&copy; <span id="year"></span> NAMI • ნამი Sushi Bar. All rights reserved.</p>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+<script src="js/script.js"></script>
+</body>
+</html>
