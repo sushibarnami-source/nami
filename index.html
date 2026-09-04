@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="htmlRoot">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,15 +25,21 @@
 
     <nav class="main-nav" id="mainNav">
       <ul>
-        <li><a href="#home" class="nav-link active-link">Home</a></li>
-        <li><a href="#menu" class="nav-link">Menu</a></li>
-        <li><a href="#blog" class="nav-link">Blog</a></li>
-        <li><a href="#about" class="nav-link">About Us</a></li>
-        <li><a href="#contact" class="nav-link">Contact</a></li>
+        <li><a href="#home" class="nav-link active-link" data-i18n="nav_home">Home</a></li>
+        <li><a href="#menu" class="nav-link" data-i18n="nav_menu">Menu</a></li>
+        <li><a href="#blog" class="nav-link" data-i18n="nav_blog">Blog</a></li>
+        <li><a href="#about" class="nav-link" data-i18n="nav_about">About Us</a></li>
+        <li><a href="#contact" class="nav-link" data-i18n="nav_contact">Contact</a></li>
       </ul>
     </nav>
 
-    <a href="#contact" class="btn btn-outline nav-reserve">Reserve a Table</a>
+    <div class="lang-switch" id="langSwitch" role="group" aria-label="Language / ენა / Язык">
+      <button type="button" class="lang-btn active" data-lang="en">EN</button>
+      <button type="button" class="lang-btn" data-lang="ka">GE</button>
+      <button type="button" class="lang-btn" data-lang="ru">RU</button>
+    </div>
+
+    <a href="#contact" class="btn btn-outline nav-reserve" data-i18n="nav_reserve">Reserve a Table</a>
 
     <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
       <span></span><span></span><span></span>
@@ -45,17 +51,17 @@
 <section class="hero" id="home">
   <div class="hero-waves" aria-hidden="true"></div>
   <div class="container hero-content">
-    <p class="eyebrow reveal">Fresh &middot; Handmade &middot; Every Day</p>
-    <h1 class="reveal">
+    <p class="eyebrow reveal" data-i18n="hero_eyebrow">Fresh &middot; Handmade &middot; Every Day</p>
+    <h1 class="reveal" id="heroTitle" data-i18n-html="hero_title">
       Welcome to <span class="accent">NAMI</span> <span class="ka-inline">ნამი</span>
     </h1>
-    <p class="hero-sub reveal">
+    <p class="hero-sub reveal" data-i18n="hero_sub">
       Where the art of Japanese sushi meets the warmth of Georgian hospitality.
       Hand-rolled, always fresh, always with soul.
     </p>
     <div class="hero-actions reveal">
-      <a href="#menu" class="btn btn-primary">View Menu</a>
-      <a href="#about" class="btn btn-ghost">Our Story</a>
+      <a href="#menu" class="btn btn-primary" data-i18n="hero_btn_menu">View Menu</a>
+      <a href="#about" class="btn btn-ghost" data-i18n="hero_btn_story">Our Story</a>
     </div>
   </div>
   <a href="#menu" class="scroll-cue" aria-label="Scroll to menu"><span></span></a>
@@ -64,21 +70,21 @@
 <!-- ================= MENU ================= -->
 <section class="menu-section" id="menu">
   <div class="container">
-    <p class="section-eyebrow reveal">Our Menu</p>
-    <h2 class="section-title reveal">Crafted With Care</h2>
-    <p class="section-lead reveal">
+    <p class="section-eyebrow reveal" data-i18n="menu_eyebrow">Our Menu</p>
+    <h2 class="section-title reveal" data-i18n="menu_title">Crafted With Care</h2>
+    <p class="section-lead reveal" data-i18n="menu_lead">
       Every plate is prepared to order with premium fish, seasonal produce and rice
       seasoned in-house. Explore our categories below.
     </p>
 
     <div class="menu-tabs reveal" id="menuTabs" role="tablist" aria-label="Menu categories">
-      <button class="menu-tab active" data-category="all" role="tab" aria-selected="true">All</button>
-      <button class="menu-tab" data-category="rolls" role="tab" aria-selected="false">Sushi Rolls</button>
-      <button class="menu-tab" data-category="nigiri" role="tab" aria-selected="false">Nigiri &amp; Sashimi</button>
-      <button class="menu-tab" data-category="tempura" role="tab" aria-selected="false">Tempura &amp; Hot</button>
-      <button class="menu-tab" data-category="starters" role="tab" aria-selected="false">Starters &amp; Salads</button>
-      <button class="menu-tab" data-category="drinks" role="tab" aria-selected="false">Drinks</button>
-      <button class="menu-tab" data-category="desserts" role="tab" aria-selected="false">Desserts</button>
+      <button class="menu-tab active" data-category="all" role="tab" aria-selected="true" data-i18n="tab_all">All</button>
+      <button class="menu-tab" data-category="rolls" role="tab" aria-selected="false" data-i18n="tab_rolls">Sushi Rolls</button>
+      <button class="menu-tab" data-category="nigiri" role="tab" aria-selected="false" data-i18n="tab_nigiri">Nigiri &amp; Sashimi</button>
+      <button class="menu-tab" data-category="tempura" role="tab" aria-selected="false" data-i18n="tab_tempura">Tempura &amp; Hot</button>
+      <button class="menu-tab" data-category="starters" role="tab" aria-selected="false" data-i18n="tab_starters">Starters &amp; Salads</button>
+      <button class="menu-tab" data-category="drinks" role="tab" aria-selected="false" data-i18n="tab_drinks">Drinks</button>
+      <button class="menu-tab" data-category="desserts" role="tab" aria-selected="false" data-i18n="tab_desserts">Desserts</button>
     </div>
 
     <div class="menu-grid" id="menuGrid"><!-- injected by JS --></div>
@@ -88,9 +94,9 @@
 <!-- ================= BLOG ================= -->
 <section class="blog-section" id="blog">
   <div class="container">
-    <p class="section-eyebrow reveal">Blog &amp; News</p>
-    <h2 class="section-title reveal">From Our Kitchen</h2>
-    <p class="section-lead reveal">
+    <p class="section-eyebrow reveal" data-i18n="blog_eyebrow">Blog &amp; News</p>
+    <h2 class="section-title reveal" data-i18n="blog_title">From Our Kitchen</h2>
+    <p class="section-lead reveal" data-i18n="blog_lead">
       Stories, seasonal specials and behind-the-scenes notes from the NAMI team.
     </p>
 
@@ -102,48 +108,49 @@
 <section class="about-section" id="about">
   <div class="container about-inner">
     <div class="about-text reveal">
-      <p class="section-eyebrow">About Us</p>
-      <h2 class="section-title">Our Story</h2>
-      <p>
-        NAMI &mdash; meaning <em>"wave"</em> in Georgian (ნამი) &mdash; was born from a simple idea:
-        bring the precision and purity of Japanese sushi to the heart of our city, served with
-        the generosity and warmth Georgians are known for.
+      <p class="section-eyebrow" data-i18n="about_eyebrow">About Us</p>
+      <h2 class="section-title" data-i18n="about_title">Our Story</h2>
+      <p data-i18n-html="about_p1">
+        NAMI &mdash; meaning <em>"dew"</em> in Georgian (ნამი) and echoing the Japanese word for
+        <em>"wave"</em> (波) &mdash; was born from a simple idea: bring the precision and purity
+        of Japanese sushi to the heart of our city, served with the generosity and warmth
+        Georgians are known for.
       </p>
-      <p>
+      <p data-i18n="about_p2">
         Our chefs train in traditional knife technique and rice preparation, while our produce
         is sourced daily from local markets and trusted seafood suppliers. The result is a menu
         that honors tradition while feeling completely at home here.
       </p>
-      <p>
+      <p data-i18n="about_p3">
         Whether you're joining us for a quiet lunch, a celebration, or a late-night roll with
         friends, our goal is the same every time: fresh food, honest hospitality, no rush.
       </p>
       <div class="about-stats">
         <div class="stat">
           <span class="stat-num">8+</span>
-          <span class="stat-label">Years serving fresh sushi</span>
+          <span class="stat-label" data-i18n="stat_years">Years serving fresh sushi</span>
         </div>
         <div class="stat">
           <span class="stat-num">40+</span>
-          <span class="stat-label">Dishes on the menu</span>
+          <span class="stat-label" data-i18n="stat_dishes">Dishes on the menu</span>
         </div>
         <div class="stat">
           <span class="stat-num">100%</span>
-          <span class="stat-label">Fresh, never frozen fish*</span>
+          <span class="stat-label" data-i18n="stat_fresh">Fresh, never frozen fish*</span>
         </div>
       </div>
     </div>
 
     <div class="hours-card reveal">
-      <h3>Working Hours</h3>
+      <h3 data-i18n="hours_title">Working Hours</h3>
       <ul class="hours-list" id="hoursList">
-        <li data-day="Monday"><span>Monday</span><span>12:00 – 22:00</span></li>
-        <li data-day="Tuesday"><span>Tuesday</span><span>12:00 – 22:00</span></li>
-        <li data-day="Wednesday"><span>Wednesday</span><span>12:00 – 22:00</span></li>
-        <li data-day="Thursday"><span>Thursday</span><span>12:00 – 22:00</span></li>
-        <li data-day="Friday"><span>Friday</span><span>12:00 – 23:30</span></li>
-        <li data-day="Saturday"><span>Saturday</span><span>13:00 – 23:30</span></li>
-        <li data-day="Sunday"><span>Sunday</span><span>13:00 – 21:00</span></li>
+        <li data-day="Monday"><span data-i18n="day_monday">Monday</span><span>12:00 – 22:00</span></li>
+        <li data-day="Tuesday"><span data-i18n="day_tuesday">Tuesday</span><span>12:00 – 22:00</span></li>
+        <li data-day="Wednesday"><span data-i18n="day_wednesday">Wednesday</span><span>12:00 – 22:00</span></li>
+        <li data-day="Thursday"><span data-i18n="day_thursday">Thursday</span><span>12:00 – 22:00</span></li>
+        <li data-day="Friday"><span data-i18n="day_friday">Friday</span><span>12:00 – 23:30</span></li>
+        <li data-day="Saturday"><span data-i18n="day_saturday">Saturday</span><span>13:00 – 23:30</span></li>
+        <li data-day="Sunday"><span data-i18n="day_sunday">Sunday</span><span>13:00 – 21:00</span></li>
       </ul>
       <p class="hours-note" id="hoursNote">Loading today's status…</p>
     </div>
@@ -154,9 +161,9 @@
 <section class="contact-section" id="contact">
   <div class="container contact-inner">
     <div class="contact-info reveal">
-      <p class="section-eyebrow">Contact &amp; Location</p>
-      <h2 class="section-title">Come Say Hi</h2>
-      <p class="section-lead">
+      <p class="section-eyebrow" data-i18n="contact_eyebrow">Contact &amp; Location</p>
+      <h2 class="section-title" data-i18n="contact_title">Come Say Hi</h2>
+      <p class="section-lead" data-i18n="contact_lead">
         Walk in, call ahead, or reserve a table online &mdash; we'd love to host you.
       </p>
 
@@ -164,29 +171,29 @@
         <li>
           <span class="info-icon" aria-hidden="true">📍</span>
           <div>
-            <strong>Address</strong>
-            <p>12 Rustaveli Avenue, Tbilisi, Georgia</p>
+            <strong data-i18n="info_address_label">Address</strong>
+            <p data-i18n="info_address_value">12 Rustaveli Avenue, Tbilisi, Georgia</p>
           </div>
         </li>
         <li>
           <span class="info-icon" aria-hidden="true">📞</span>
           <div>
-            <strong>Phone</strong>
+            <strong data-i18n="info_phone_label">Phone</strong>
             <p><a href="tel:+995322123456">+995 32 212 34 56</a></p>
           </div>
         </li>
         <li>
           <span class="info-icon" aria-hidden="true">✉️</span>
           <div>
-            <strong>Email</strong>
+            <strong data-i18n="info_email_label">Email</strong>
             <p><a href="mailto:hello@namisushi.ge">hello@namisushi.ge</a></p>
           </div>
         </li>
         <li>
           <span class="info-icon" aria-hidden="true">🕒</span>
           <div>
-            <strong>Hours</strong>
-            <p>Mon–Thu 12:00–22:00 · Fri–Sat 12:00–23:30 · Sun 13:00–21:00</p>
+            <strong data-i18n="info_hours_label">Hours</strong>
+            <p data-i18n="info_hours_value">Mon–Thu 12:00–22:00 · Fri–Sat 12:00–23:30 · Sun 13:00–21:00</p>
           </div>
         </li>
       </ul>
@@ -208,32 +215,32 @@
     </div>
 
     <form class="contact-form reveal" id="contactForm" novalidate>
-      <h3>Send a Message</h3>
+      <h3 data-i18n="form_title">Send a Message</h3>
 
       <div class="form-row">
-        <label for="name">Name</label>
-        <input type="text" id="name" name="name" placeholder="Your name" required>
+        <label for="name" data-i18n="label_name">Name</label>
+        <input type="text" id="name" name="name" placeholder="Your name" data-i18n-placeholder="placeholder_name" required>
         <span class="form-error" data-for="name"></span>
       </div>
 
       <div class="form-row">
-        <label for="email">Email</label>
+        <label for="email" data-i18n="label_email">Email</label>
         <input type="email" id="email" name="email" placeholder="you@example.com" required>
         <span class="form-error" data-for="email"></span>
       </div>
 
       <div class="form-row">
-        <label for="phone">Phone (optional)</label>
-        <input type="tel" id="phone" name="phone" placeholder="+995 5xx xx xx xx">
+        <label for="phone" data-i18n="label_phone">Phone (optional)</label>
+        <input type="tel" id="phone" name="phone" placeholder="+995 5xx xx xx xx" data-i18n-placeholder="placeholder_phone">
       </div>
 
       <div class="form-row">
-        <label for="message">Message</label>
-        <textarea id="message" name="message" rows="4" placeholder="Tell us about your reservation or question…" required></textarea>
+        <label for="message" data-i18n="label_message">Message</label>
+        <textarea id="message" name="message" rows="4" placeholder="Tell us about your reservation or question…" data-i18n-placeholder="placeholder_message" required></textarea>
         <span class="form-error" data-for="message"></span>
       </div>
 
-      <button type="submit" class="btn btn-primary form-submit">Send Message</button>
+      <button type="submit" class="btn btn-primary form-submit" data-i18n="btn_send">Send Message</button>
       <p class="form-success" id="formSuccess" role="status"></p>
     </form>
   </div>
@@ -247,13 +254,13 @@
       <span class="logo-ka">ნამი</span>
     </a>
     <nav class="footer-nav">
-      <a href="#home">Home</a>
-      <a href="#menu">Menu</a>
-      <a href="#blog">Blog</a>
-      <a href="#about">About</a>
-      <a href="#contact">Contact</a>
+      <a href="#home" data-i18n="nav_home">Home</a>
+      <a href="#menu" data-i18n="nav_menu">Menu</a>
+      <a href="#blog" data-i18n="nav_blog">Blog</a>
+      <a href="#about" data-i18n="footer_about">About</a>
+      <a href="#contact" data-i18n="nav_contact">Contact</a>
     </nav>
-    <p class="footer-copy">&copy; <span id="year"></span> NAMI • ნამი Sushi Bar. All rights reserved.</p>
+    <p class="footer-copy"><span id="footerCopy">&copy; <span id="year"></span> NAMI • ნამი Sushi Bar. All rights reserved.</span></p>
   </div>
 </footer>
 
