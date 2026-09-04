@@ -507,6 +507,7 @@ section { padding: 110px 0; }
 }
 .hours-list li:last-child { border-bottom: none; }
 .hours-list li.today { color: var(--green-light); font-weight: 600; }
+.hours-list li[data-closed="true"] span:last-child { color: var(--gold-light); font-style: italic; }
 .hours-note {
   font-size: .82rem;
   color: rgba(250,246,239,.6);

@@ -32,14 +32,15 @@
       hours_title: 'Working Hours',
       day_monday: 'Monday', day_tuesday: 'Tuesday', day_wednesday: 'Wednesday', day_thursday: 'Thursday',
       day_friday: 'Friday', day_saturday: 'Saturday', day_sunday: 'Sunday',
+      hours_closed_label: 'Closed',
       hours_open_until: "We're open today until {time}.",
       hours_closed_opens: "We're closed right now — opening today at {time}.",
       hours_closed_tomorrow: "We're closed for today — see you tomorrow from {time}.",
       contact_eyebrow: 'Contact & Location', contact_title: 'Come Say Hi',
       contact_lead: "Walk in, call ahead, or reserve a table online — we'd love to host you.",
-      info_address_label: 'Address', info_address_value: '12 Rustaveli Avenue, Tbilisi, Georgia',
+      info_address_label: 'Address', info_address_value: '15 Chavchavadze Street, Ozurgeti, Georgia',
       info_phone_label: 'Phone', info_email_label: 'Email',
-      info_hours_label: 'Hours', info_hours_value: 'Mon–Thu 12:00–22:00 · Fri–Sat 12:00–23:30 · Sun 13:00–21:00',
+      info_hours_label: 'Hours', info_hours_value: 'Mon–Sat 13:30–23:30 · Sunday: Closed',
       form_title: 'Send a Message',
       label_name: 'Name', placeholder_name: 'Your name',
       label_email: 'Email',
@@ -76,14 +77,15 @@
       hours_title: 'სამუშაო საათები',
       day_monday: 'ორშაბათი', day_tuesday: 'სამშაბათი', day_wednesday: 'ოთხშაბათი', day_thursday: 'ხუთშაბათი',
       day_friday: 'პარასკევი', day_saturday: 'შაბათი', day_sunday: 'კვირა',
+      hours_closed_label: 'დასვენების დღე',
       hours_open_until: 'დღეს ღიაა {time}-მდე.',
       hours_closed_opens: 'ამჟამად დახურული ვართ — დღეს გავიხსნებით {time}-ზე.',
       hours_closed_tomorrow: 'დღეისთვის დახურული ვართ — შეგხვდებით ხვალ {time}-დან.',
       contact_eyebrow: 'კონტაქტი და მდებარეობა', contact_title: 'მოგვინახულეთ',
       contact_lead: 'შემოდით უშუალოდ, დაგვირეკეთ წინასწარ ან დაჯავშნეთ მაგიდა ონლაინ — სიამოვნებით მოგემსახურებით.',
-      info_address_label: 'მისამართი', info_address_value: 'რუსთაველის გამზირი 12, თბილისი, საქართველო',
+      info_address_label: 'მისამართი', info_address_value: 'ჭავჭავაძის ქუჩა 15, ოზურგეთი, საქართველო',
       info_phone_label: 'ტელეფონი', info_email_label: 'ელფოსტა',
-      info_hours_label: 'სამუშაო საათები', info_hours_value: 'ორშ–ხუთ 12:00–22:00 · პარ–შაბ 12:00–23:30 · კვირა 13:00–21:00',
+      info_hours_label: 'სამუშაო საათები', info_hours_value: 'ორშ–შაბ 13:30–23:30 · კვირა: დასვენების დღე',
       form_title: 'მოგვწერეთ შეტყობინება',
       label_name: 'სახელი', placeholder_name: 'თქვენი სახელი',
       label_email: 'ელფოსტა',
@@ -120,14 +122,15 @@
       hours_title: 'Часы работы',
       day_monday: 'Понедельник', day_tuesday: 'Вторник', day_wednesday: 'Среда', day_thursday: 'Четверг',
       day_friday: 'Пятница', day_saturday: 'Суббота', day_sunday: 'Воскресенье',
+      hours_closed_label: 'Выходной',
       hours_open_until: 'Сегодня открыто до {time}.',
       hours_closed_opens: 'Сейчас мы закрыты — сегодня открываемся в {time}.',
       hours_closed_tomorrow: 'На сегодня мы закрыты — ждём вас завтра с {time}.',
       contact_eyebrow: 'Контакты и адрес', contact_title: 'Заходите в гости',
       contact_lead: 'Заходите без предупреждения, звоните заранее или бронируйте столик онлайн — мы будем рады вас видеть.',
-      info_address_label: 'Адрес', info_address_value: 'просп. Руставели 12, Тбилиси, Грузия',
+      info_address_label: 'Адрес', info_address_value: 'ул. Чавчавадзе 15, Озургети, Грузия',
       info_phone_label: 'Телефон', info_email_label: 'Эл. почта',
-      info_hours_label: 'Часы работы', info_hours_value: 'Пн–Чт 12:00–22:00 · Пт–Сб 12:00–23:30 · Вс 13:00–21:00',
+      info_hours_label: 'Часы работы', info_hours_value: 'Пн–Сб 13:30–23:30 · Вс: выходной',
       form_title: 'Отправить сообщение',
       label_name: 'Имя', placeholder_name: 'Ваше имя',
       label_email: 'Эл. почта',
@@ -586,11 +589,27 @@
 
     const items = list.querySelectorAll('li');
     let todayRangeText = '';
+    let isClosedToday = false;
     items.forEach(li => {
       const isToday = li.dataset.day === todayName;
       li.classList.toggle('today', isToday);
-      if (isToday) todayRangeText = li.children[1].textContent.trim();
+      if (isToday) {
+        isClosedToday = li.dataset.closed === 'true';
+        if (!isClosedToday) todayRangeText = li.children[1].textContent.trim();
+      }
     });
+
+    if (isClosedToday) {
+      const tomorrowName = dayNames[(now.getDay() + 1) % 7];
+      let tomorrowOpen = '';
+      items.forEach(li => {
+        if (li.dataset.day === tomorrowName && li.dataset.closed !== 'true') {
+          tomorrowOpen = li.children[1].textContent.trim().split('–')[0].trim();
+        }
+      });
+      note.textContent = t('hours_closed_tomorrow').replace('{time}', tomorrowOpen);
+      return;
+    }
 
     if (todayRangeText) {
       const [openStr, closeStr] = todayRangeText.split('–').map(s => s.trim());
