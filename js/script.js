@@ -11,7 +11,7 @@
     en: {
       nav_home: 'Home', nav_menu: 'Menu', nav_blog: 'Blog', nav_about: 'About Us', nav_contact: 'Contact',
       nav_reserve: 'Reserve a Table', footer_about: 'About',
-      hero_eyebrow: 'Fresh · Handmade · Every Day',
+      hero_eyebrow: 'Tradition · Taste · Innovation',
       hero_title: 'A <span class="accent">Wave</span> of Japanese Flavor',
       hero_sub: 'A wave never stops—it only changes its form. This is how we understand gastronomy: a tradition that evolves into new flavors over time.',
       hero_btn_menu: 'View Menu', hero_btn_story: 'Our Story',
@@ -55,7 +55,7 @@
     ka: {
       nav_home: 'მთავარი', nav_menu: 'მენიუ', nav_blog: 'ბლოგი', nav_about: 'ჩვენს შესახებ', nav_contact: 'კონტაქტი',
       nav_reserve: 'მაგიდის დაჯავშნა', footer_about: 'ჩვენ შესახებ',
-      hero_eyebrow: 'ახალი · ხელნაკეთი · ყოველდღე',
+      hero_eyebrow: 'ტრადიცია · გემო · სიახლე',
       hero_title: 'იაპონური გემოს <span class="accent">ტალღა</span>',
       hero_sub: 'ტალღა არასდროს ჩერდება — ის მხოლოდ ფორმას იცვლის. ჩვენც ასე გვესმის გასტრონომია: ტრადიცია, რომელიც დროთა განმავლობაში ახალ გემოდ იქცევა.',
       hero_btn_menu: 'მენიუს ნახვა', hero_btn_story: 'ჩვენი ისტორია',
@@ -99,7 +99,7 @@
     ru: {
       nav_home: 'Главная', nav_menu: 'Меню', nav_blog: 'Блог', nav_about: 'О нас', nav_contact: 'Контакты',
       nav_reserve: 'Забронировать столик', footer_about: 'О нас',
-      hero_eyebrow: 'Свежее · Ручная работа · Каждый день',
+      hero_eyebrow: 'Традиция · Вкус · Новинка',
       hero_title: '<span class="accent">Волна</span> японского вкуса',
       hero_sub: 'Волна никогда не останавливается — она лишь меняет форму. Именно так мы понимаем гастрономию: традиция, которая со временем превращается в новый вкус.',
       hero_btn_menu: 'Смотреть меню', hero_btn_story: 'Наша история',
