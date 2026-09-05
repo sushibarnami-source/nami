@@ -16,9 +16,10 @@
       hero_sub: 'A wave never stops—it only changes its form. This is how we understand gastronomy: a tradition that evolves into new flavors over time.',
       hero_btn_menu: 'View Menu', hero_btn_story: 'Our Story',
       menu_eyebrow: 'Our Menu', menu_title: 'Crafted With Care',
-      menu_lead: 'Every plate is prepared to order with premium fish, seasonal produce and rice seasoned in-house. Explore our categories below.',
-      tab_all: 'All', tab_noodles: 'Noodles', tab_appetizers: 'Appetizers', tab_tempuraRoll: 'Tempura Rolls',
-      tab_nigiri: 'Nigiri', tab_sets: 'Combo Sets', tab_maki: 'Maki', tab_rolls: 'Rolls',
+      menu_lead: 'Every dish is prepared upon order with fresh and premium ingredients. Browse our categories below.',
+      tab_rolls: 'Rolls', tab_nigiri: 'Nigiri', tab_maki: 'Maki', tab_futomaki: 'Futomaki',
+      tab_tempuraRoll: 'Hot Rolls', tab_sets: 'Sets', tab_noodles: 'Noodles', tab_appetizers: 'Appetizers',
+      tab_desserts: 'Desserts', tab_drinks: 'Drinks',
       menu_empty: 'No dishes in this category yet.',
       blog_eyebrow: 'Blog & News', blog_title: 'From Our Kitchen',
       blog_lead: 'Stories, seasonal specials and behind-the-scenes notes from the NAMI team.',
@@ -61,9 +62,10 @@
       hero_sub: 'ტალღა არასდროს ჩერდება — ის მხოლოდ ფორმას იცვლის. ჩვენც ასე გვესმის გასტრონომია: ტრადიცია, რომელიც დროთა განმავლობაში ახალ გემოდ იქცევა.',
       hero_btn_menu: 'მენიუს ნახვა', hero_btn_story: 'ჩვენი ისტორია',
       menu_eyebrow: 'ჩვენი მენიუ', menu_title: 'სიყვარულით მომზადებული',
-      menu_lead: 'ყოველი კერძი მზადდება შეკვეთისთანავე, პრემიუმ ხარისხის თევზით, სეზონური პროდუქტებითა და ადგილზე შეკმაზული ბრინჯით. დაათვალიერეთ ჩვენი კატეგორიები ქვემოთ.',
-      tab_all: 'ყველა', tab_noodles: 'ატრია', tab_appetizers: 'ხემსი', tab_tempuraRoll: 'შემწვარი როლი',
-      tab_nigiri: 'ნიგირი', tab_sets: 'სეტი', tab_maki: 'მაკი', tab_rolls: 'როლი',
+      menu_lead: 'ყოველი კერძი მზადდება შეკვეთისთანავე, უახლესი და პრემიუმ ხარისხის ინგრედიენტებით. დაათვალიერეთ ჩვენი კატეგორიები ქვემოთ.',
+      tab_rolls: 'როლი', tab_nigiri: 'ნიგირი', tab_maki: 'მაკი', tab_futomaki: 'ფუტომაკი',
+      tab_tempuraRoll: 'შემწვარი როლი', tab_sets: 'სეტი', tab_noodles: 'ატრია', tab_appetizers: 'ხემსი',
+      tab_desserts: 'დესერტი', tab_drinks: 'სასმელი',
       menu_empty: 'ამ კატეგორიაში კერძები ჯერ არ არის.',
       blog_eyebrow: 'ბლოგი და სიახლეები', blog_title: 'ჩვენი სამზარეულოდან',
       blog_lead: 'ისტორიები, სეზონური სიახლეები და კულისებს მიღმა შენიშვნები NAMI-ს გუნდისგან.',
@@ -106,9 +108,10 @@
       hero_sub: 'Волна никогда не останавливается — она лишь меняет форму. Именно так мы понимаем гастрономию: традиция, которая со временем превращается в новый вкус.',
       hero_btn_menu: 'Смотреть меню', hero_btn_story: 'Наша история',
       menu_eyebrow: 'Наше меню', menu_title: 'С заботой о каждом блюде',
-      menu_lead: 'Каждое блюдо готовится на заказ из отборной рыбы, сезонных продуктов и риса, приправленного по нашему собственному рецепту. Изучите категории меню ниже.',
-      tab_all: 'Все', tab_noodles: 'Лапша', tab_appetizers: 'Закуски', tab_tempuraRoll: 'Темпура-роллы',
-      tab_nigiri: 'Нигири', tab_sets: 'Сеты', tab_maki: 'Маки', tab_rolls: 'Роллы',
+      menu_lead: 'Каждое блюдо готовится под заказ из свежайших и премиальных ингредиентов. Ознакомьтесь с нашими категориями ниже.',
+      tab_rolls: 'Роллы', tab_nigiri: 'Нигири', tab_maki: 'Маки', tab_futomaki: 'Футомаки',
+      tab_tempuraRoll: 'Горячие роллы', tab_sets: 'Сеты', tab_noodles: 'Лапша', tab_appetizers: 'Закуски',
+      tab_desserts: 'Десерты', tab_drinks: 'Напитки',
       menu_empty: 'В этой категории пока нет блюд.',
       blog_eyebrow: 'Блог и новости', blog_title: 'Из нашей кухни',
       blog_lead: 'Истории, сезонные новинки и закулисные заметки от команды NAMI.',
@@ -292,21 +295,23 @@
       desc: { en: 'Rice, nori, crab meat, cream cheese, cucumber, tobiko.',
         ka: 'ბრინჯი, ნორი, კიბორჩხალის ხორცი, კრემჩიზი, კიტრი, ტობიკო.',
         ru: 'Рис, нори, мясо краба, сливочный сыр, огурец, тобико.' } },
-    { category: 'rolls', price: '24.00 ₾', tags: [],
-      name: { en: 'Futomaki Eel', ka: 'ფუტომაკ უნაგი', ru: 'Футомаки с угрём' },
-      desc: { en: 'Nori, rice, cream cheese, cucumber, eel, teriyaki, sesame.',
-        ka: 'ნორი, ბრინჯი, კრემჩიზი, კიტრი, უნაგი, ტერიაკი, სეზამი.',
-        ru: 'Нори, рис, сливочный сыр, огурец, угорь, терияки, кунжут.' } },
-    { category: 'rolls', price: '21.00 ₾', tags: [],
-      name: { en: 'Futomaki Salmon', ka: 'ფუტომაკ სალმონი', ru: 'Футомаки с лососем' },
-      desc: { en: 'Nori, rice, cream cheese, cucumber, salmon.',
-        ka: 'ნორი, ბრინჯი, კრემჩიზი, კიტრი, ორაგული.',
-        ru: 'Нори, рис, сливочный сыр, огурец, лосось.' } },
     { category: 'rolls', price: '17.00 ₾', tags: [],
       name: { en: 'Veggie Roll', ka: 'ვეჯი როლი', ru: 'Овощной ролл' },
       desc: { en: 'Rice, nori, cream cheese, cucumber, avocado, sesame, teriyaki.',
         ka: 'ბრინჯი, ნორი, კრემჩიზი, კიტრი, ავოკადო, სეზამი, ტერიაკი.',
         ru: 'Рис, нори, сливочный сыр, огурец, авокадо, кунжут, терияки.' } },
+
+    // ფუტომაკი — Futomaki
+    { category: 'futomaki', price: '24.00 ₾', tags: [],
+      name: { en: 'Futomaki Eel', ka: 'ფუტომაკ უნაგი', ru: 'Футомаки с угрём' },
+      desc: { en: 'Nori, rice, cream cheese, cucumber, eel, teriyaki, sesame.',
+        ka: 'ნორი, ბრინჯი, კრემჩიზი, კიტრი, უნაგი, ტერიაკი, სეზამი.',
+        ru: 'Нори, рис, сливочный сыр, огурец, угорь, терияки, кунжут.' } },
+    { category: 'futomaki', price: '21.00 ₾', tags: [],
+      name: { en: 'Futomaki Salmon', ka: 'ფუტომაკ სალმონი', ru: 'Футомаки с лососем' },
+      desc: { en: 'Nori, rice, cream cheese, cucumber, salmon.',
+        ka: 'ნორი, ბრინჯი, კრემჩიზი, კიტრი, ორაგული.',
+        ru: 'Нори, рис, сливочный сыр, огурец, лосось.' } },
   ];
 
   const BLOG_POSTS = [
@@ -389,13 +394,11 @@
   --------------------------------------------------------- */
   const menuGrid = document.getElementById('menuGrid');
   const menuTabs = document.getElementById('menuTabs');
-  let currentCategory = 'all';
+  let currentCategory = 'rolls';
 
   function renderMenu(category) {
     currentCategory = category;
-    const items = category === 'all'
-      ? MENU_ITEMS
-      : MENU_ITEMS.filter(item => item.category === category);
+    const items = MENU_ITEMS.filter(item => item.category === category);
 
     menuGrid.innerHTML = '';
 
@@ -712,7 +715,7 @@
   });
   document.getElementById('htmlRoot').setAttribute('lang', currentLang === 'ka' ? 'ka' : currentLang === 'ru' ? 'ru' : 'en');
   applyStaticTranslations();
-  renderMenu('all');
+  renderMenu('rolls');
   renderBlog();
   updateHours();
   renderFooterCopy();
