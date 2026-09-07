@@ -521,6 +521,26 @@ section { padding: 110px 0; }
 .blog-modal-content { color: var(--ink-soft); font-size: .98rem; line-height: 1.7; display: flex; flex-direction: column; gap: 14px; }
 .blog-modal-content strong { color: var(--green-deep); }
 
+.post-figure {
+  margin: 2px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: var(--paper-dim);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px 14px;
+}
+.post-figure svg { width: 140px; height: 98px; }
+.post-figure figcaption {
+  font-size: .74rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+}
+
 /* ---------- About & Hours ---------- */
 .about-section { background: var(--paper); }
 .about-inner {

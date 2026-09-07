@@ -308,6 +308,36 @@
         ru: 'Нори, рис, сливочный сыр, огурец, лосось.' } },
   ];
 
+  /* ---------------------------------------------------------
+     Small inline illustrations used inside blog article content
+  --------------------------------------------------------- */
+  const SVG_GINGER = `<svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+    <ellipse cx="100" cy="78" rx="52" ry="30" fill="#ddc98d"/>
+    <circle cx="58" cy="65" r="20" fill="#ddc98d"/>
+    <circle cx="140" cy="60" r="22" fill="#ddc98d"/>
+    <circle cx="115" cy="50" r="16" fill="#ddc98d"/>
+    <path d="M70 70 Q80 85 75 100" stroke="#8a7440" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M100 65 Q108 82 100 98" stroke="#8a7440" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M128 68 Q135 84 126 96" stroke="#8a7440" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <ellipse cx="100" cy="78" rx="52" ry="30" fill="none" stroke="#b7a369" stroke-width="2"/>
+  </svg>`;
+  const SVG_WASABI = `<svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+    <ellipse cx="100" cy="100" rx="30" ry="18" fill="#4f7a5c"/>
+    <path d="M100 85 C95 60 70 45 55 30 C75 40 92 55 100 75 C108 55 125 40 145 30 C130 45 105 60 100 85 Z" fill="#93bb9e"/>
+    <path d="M100 82 C96 65 85 50 78 38" stroke="#2c4436" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M100 82 C104 65 115 50 122 38" stroke="#2c4436" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <ellipse cx="100" cy="100" rx="30" ry="18" fill="none" stroke="#2c4436" stroke-width="2"/>
+  </svg>`;
+  const SVG_SOY = `<svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+    <ellipse cx="100" cy="90" rx="70" ry="24" fill="#eceee0" stroke="#b7a369" stroke-width="2"/>
+    <ellipse cx="100" cy="88" rx="42" ry="14" fill="#11241c"/>
+    <ellipse cx="88" cy="84" rx="10" ry="4" fill="#2c4436" opacity="0.6"/>
+  </svg>`;
+
+  function figure(svg, caption) {
+    return `<figure class="post-figure">${svg}<figcaption>${caption}</figcaption></figure>`;
+  }
+
   const BLOG_POSTS = [
     {
       icon: '🥢',
@@ -324,105 +354,42 @@
         en: [
           `Did you know where the tradition of using soy sauce, wasabi, and ginger comes from, and what they were actually used for in ancient Japan?`,
           `<strong>生姜 - Ginger:</strong> In ancient times, before refrigerators existed, the Japanese used vinegar and spices to preserve fish. Ginger has natural antimicrobial properties and was originally added primarily for hygiene and safety.`,
+          figure(SVG_GINGER, 'Ginger (生姜)'),
           `<strong>How to eat it:</strong> It is never eaten together with a roll — it is a "palate cleanser" meant to be enjoyed between different bites to neutralize flavors.`,
           `<strong>わさび - Wasabi:</strong> Real wasabi was a rare and expensive product in ancient Japan, placed alongside raw fish due to its antiseptic properties to neutralize bacteria.`,
+          figure(SVG_WASABI, 'Wasabi (わさび)'),
           `<strong>How to eat it:</strong> The chef already places the exact dose on your plate — dissolving wasabi into soy sauce disrupts the balance and ruins the dish's original flavor.`,
           `<strong>醤油 - Soy Sauce:</strong> The tradition of using soy sauce developed a little later, enhancing the unique umami flavor of raw fish (sashimi and sushi).`,
+          figure(SVG_SOY, 'Soy Sauce (醤油)'),
           `<strong>How to eat it:</strong> Dip by the fish side, not the rice — rice quickly absorbs liquid, becomes overly soaked, and falls apart.`,
           `Small tradition, big flavor! Drop by to put this knowledge into practice!`,
         ],
         ka: [
           `იცით თუ არა, საიდან მოდის სოიოს, ვასაბისა და ჯანჯაფილის გამოყენების ტრადიცია და რეალურად რისთვის იყენებდნენ მათ ძველ იაპონიაში?`,
           `<strong>生姜 - ჯანჯაფილი:</strong> ძველად, როდესაც მაცივრები არ არსებობდა, იაპონელები თევზის შესანახად ძმარსა და სანელებლებს იყენებდნენ. ჯანჯაფილს კი ბუნებრივი ანტიმიკრობული თვისებები აქვს და მას პირველ რიგში ჰიგიენისა და უსაფრთხოებისთვის ამატებდნენ.`,
+          figure(SVG_GINGER, 'ჯანჯაფილი (生姜)'),
           `<strong>როგორ მივირთვათ:</strong> ის არასდროს იჭმევა როლთან ერთად - ის არის „პირის გამწმენდი“, რომელსაც სხვადასხვა გემოს შორის მიირთმევენ, გემოების გასანეიტრებლად.`,
           `<strong>わさび - ვასაბი:</strong> ნამდვილი ვასაბი ძველ იაპონიაში იშვიათი და ძვირად ღირებული პროდუქტი იყო, რომელსაც ანტისეპტიკური თვისებების გამო უმი თევზის გვერდით დებდნენ ბაქტერიების გასანეიტრებლად.`,
+          figure(SVG_WASABI, 'ვასაბი (わさび)'),
           `<strong>როგორ მივირთვათ:</strong> შეფი უკვე დებს ზუსტ დოზას თეფშზე - ვასაბის სოიაში გახსნა კერძის ბალანსსა და მის თავდაპირველ გემოს არღვევს.`,
           `<strong>醤油 - სოიოს სოუსი:</strong> სოიოს სოუსის გამოყენების ტრადიცია ოდნავ მოგვიანებით განვითარდა და ის უმი თევზის (საშიმის და სუშის) უნიკალურ უმამის გემოს აძლიერებს.`,
+          figure(SVG_SOY, 'სოიოს სოუსი (醤油)'),
           `<strong>როგორ მივირთვათ:</strong> ჩააწეთ თევზის მხრიდან და არა ბრინჯის - ბრინჯი სწრაფად შთანთქავს სითხეს, ზედმეტად იჟღინთება და იშლება.`,
           `პატარა ტრადიცია, დიდი გემო! მობრძანდით, რომ ცოდნა პრაქტიკაში გამოსცადოთ!`,
         ],
         ru: [
           `Знаете ли вы, откуда происходит традиция использования соевого соуса, васаби и имбиря, и для чего на самом деле они использовались в древней Японии?`,
           `<strong>生姜 - Имбирь:</strong> В древние времена, когда не было холодильников, японцы использовали уксус и специи для сохранения рыбы. Имбирь обладает природными антимикробными свойствами и изначально добавлялся в первую очередь для гигиены и безопасности.`,
+          figure(SVG_GINGER, 'Имбирь (生姜)'),
           `<strong>Как есть:</strong> Его никогда не едят вместе с роллами — это «очиститель вкуса», который едят между разными блюдами для нейтрализации вкусов.`,
           `<strong>わさび - Васаби:</strong> Настоящий васаби в древней Японии был редким и дорогим продуктом, который клали рядом с сырой рыбой из-за его антисептических свойств для нейтрализации бактерий.`,
+          figure(SVG_WASABI, 'Васаби (わさび)'),
           `<strong>Как есть:</strong> Шеф-повар уже кладет точную дозу на тарелку — растворение васаби в соевом соусе нарушает баланс и первоначальный вкус блюда.`,
           `<strong>醤油 - Соевый соус:</strong> Традиция использования соевого соуса развилась чуть позже, он усиливает уникальный умами-вкус сырой рыбы (сашими и суши).`,
+          figure(SVG_SOY, 'Соевый соус (醤油)'),
           `<strong>Как есть:</strong> Макайте стороной рыбы, а не риса — рис быстро впитывает жидкость, перенасыщается и разваливается.`,
           `Маленькая традиция, большой вкус! Загляните к нам, чтобы применить эти знания на практике!`,
         ],
-      },
-    },
-    {
-      icon: '🍣',
-      gradient: 'linear-gradient(135deg,#4f7a5c,#ddc98d)',
-      date: { en: 'Aug 12, 2026', ka: '12 აგვისტო, 2026', ru: '12 августа 2026' },
-      tag: { en: 'News', ka: 'სიახლე', ru: 'Новости' },
-      title: { en: 'NAMI Opens Its Doors on Rustaveli Avenue', ka: '„ნამი“ იხსნის კარებს რუსთაველის გამზირზე', ru: 'NAMI открывает двери на проспекте Руставели' },
-      excerpt: {
-        en: 'We are thrilled to welcome you to our new home in the heart of Tbilisi — come see the space and taste the opening menu.',
-        ka: 'სიხარულით გიწვევთ ჩვენს ახალ სახლში — მოდით, იხილეთ სივრცე და გაასინჯეთ გახსნის მენიუ.',
-        ru: 'Мы рады приветствовать вас в нашем новом доме в самом сердце Тбилиси — приходите увидеть пространство и попробовать открытие меню.',
-      },
-    },
-    {
-      icon: '🐟',
-      gradient: 'linear-gradient(135deg,#2c4436,#93bb9e)',
-      date: { en: 'Aug 28, 2026', ka: '28 აგვისტო, 2026', ru: '28 августа 2026' },
-      tag: { en: 'Behind the Scenes', ka: 'კულისებს მიღმა', ru: 'За кулисами' },
-      title: { en: 'How We Source Our Fish, Daily', ka: 'როგორ ვირჩევთ თევზს ყოველდღიურად', ru: 'Как мы ежедневно выбираем рыбу' },
-      excerpt: {
-        en: 'A look at our early-morning market runs and the relationships with suppliers that keep every plate honest and fresh.',
-        ka: 'მოკლე მიმოხილვა დილაადრიანი ბაზრობებისა და მომწოდებლებთან ურთიერთობისა, რაც ყოველ კერძს პატიოსანსა და ახალს ხდის.',
-        ru: 'Взгляд на наши ранние поездки на рынок и отношения с поставщиками, которые делают каждое блюдо честным и свежим.',
-      },
-    },
-    {
-      icon: '🍶',
-      gradient: 'linear-gradient(135deg,#11241c,#4f7a5c)',
-      date: { en: 'Sep 2, 2026', ka: '2 სექტემბერი, 2026', ru: '2 сентября 2026' },
-      tag: { en: 'Guide', ka: 'გზამკვლევი', ru: 'Гид' },
-      title: { en: "A Beginner's Guide to Sake Pairing", ka: 'დამწყებთათვის: საკეს შერჩევის გზამკვლევი', ru: 'Гид для начинающих по подбору саке' },
-      excerpt: {
-        en: 'Not sure what to order? Our head chef breaks down which sake styles go with which rolls — and why it matters.',
-        ka: 'არ იცით რა შეუკვეთოთ? ჩვენი შეფ-მზარეული განმარტავს, რომელი საკე რომელ როლს უხდება და რატომ აქვს ამას მნიშვნელობა.',
-        ru: 'Не знаете, что заказать? Наш шеф-повар объясняет, какое саке подходит к каким роллам — и почему это важно.',
-      },
-    },
-    {
-      icon: '🌶️',
-      gradient: 'linear-gradient(135deg,#a8342a,#b7a369)',
-      date: { en: 'Sep 10, 2026', ka: '10 სექტემბერი, 2026', ru: '10 сентября 2026' },
-      tag: { en: 'Menu Update', ka: 'მენიუს განახლება', ru: 'Обновление меню' },
-      title: { en: 'Introducing the Tbilisi Roll', ka: 'წარმოგიდგენთ თბილისის როლს', ru: 'Представляем ролл «Тбилиси»' },
-      excerpt: {
-        en: 'Our newest signature roll blends grilled eel and gold leaf — a tribute to the city we now call home.',
-        ka: 'ჩვენი უახლესი საფირმო როლი აერთიანებს შემწვარ გველთევზასა და ოქროს ფურცელს — მოგონება ქალაქზე, რომელიც ჩვენთვის სახლად იქცა.',
-        ru: 'Наш новый фирменный ролл сочетает жареного угря и золотую фольгу — дань городу, который стал нам домом.',
-      },
-    },
-    {
-      icon: '🎉',
-      gradient: 'linear-gradient(135deg,#11241c,#93bb9e)',
-      date: { en: 'Sep 20, 2026', ka: '20 სექტემბერი, 2026', ru: '20 сентября 2026' },
-      tag: { en: 'Events', ka: 'ღონისძიებები', ru: 'События' },
-      title: { en: 'Join Us for a Sushi-Rolling Workshop', ka: 'შემოგვიერთდით სუშის გახვევის შემოქმედებით საღამოზე', ru: 'Приходите на мастер-класс по скручиванию суши' },
-      excerpt: {
-        en: 'Learn knife skills and rolling technique from our chefs in a hands-on evening class. Limited seats available.',
-        ka: 'ისწავლეთ დანით მუშაობისა და გახვევის ტექნიკა ჩვენი შეფ-მზარეულებისგან პრაქტიკულ საღამოზე. ადგილების რაოდენობა შეზღუდულია.',
-        ru: 'Изучите технику владения ножом и скручивания роллов у наших шеф-поваров на практическом вечернем занятии. Количество мест ограничено.',
-      },
-    },
-    {
-      icon: '🍵',
-      gradient: 'linear-gradient(135deg,#b7a369,#11241c)',
-      date: { en: 'Sep 27, 2026', ka: '27 სექტემბერი, 2026', ru: '27 сентября 2026' },
-      tag: { en: 'Culture', ka: 'კულტურა', ru: 'Культура' },
-      title: { en: 'The Meaning Behind "Nami"', ka: 'რას ნიშნავს „ნამი“', ru: 'Что означает «Нами»' },
-      excerpt: {
-        en: 'In Georgian, ნამი means "dew" — in Japanese, 波 means "wave." Here\'s the story behind our name.',
-        ka: 'ქართულად ნამი ნიშნავს „ცვარს“, იაპონურად 波 კი — „ტალღას“. აი ასეთია ჩვენი სახელის ისტორია.',
-        ru: 'По-грузински «нами» значит «роса», а по-японски 波 — «волна». Вот история нашего названия.',
       },
     },
   ];
@@ -534,7 +501,9 @@
     blogModalThumb.textContent = post.icon;
     blogModalMeta.innerHTML = `<span>${tag}</span><span>${date}</span>`;
     blogModalTitle.textContent = title;
-    blogModalContent.innerHTML = paragraphs.map(p => `<p>${p}</p>`).join('');
+    blogModalContent.innerHTML = paragraphs
+      .map(p => p.trim().startsWith('<figure') ? p : `<p>${p}</p>`)
+      .join('');
   }
 
   function openBlogModal(index) {
