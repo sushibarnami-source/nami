@@ -548,7 +548,7 @@
       const name = item.name[currentLang] || item.name.en;
       const desc = item.desc[currentLang] || item.desc.en;
       const photoHtml = item.photo
-        ? `<img class="menu-item-photo" src="${item.photo}" alt="${name}" loading="lazy">`
+        ? `<div class="menu-item-photo-wrap"><img class="menu-item-photo" src="${item.photo}" alt="${name}" loading="lazy"></div>`
         : '';
 
       card.innerHTML = `
