@@ -106,11 +106,13 @@
   });
 
   /* ---------------------------------------------------------
-     Content <-> textarea conversion
+     Content <-> rich-text editor conversion
      Array shape matches BLOG_POSTS[].content[lang] on the public
      site: each entry is either a plain paragraph (may contain
      <strong>) or a raw <figure class="post-figure">...</figure>
      block, exactly what renderBlogModal() already expects.
+     The editor is a real contenteditable area, so this reads/writes
+     actual DOM nodes instead of a typed markdown-like syntax.
   --------------------------------------------------------- */
   function escapeHtml(str) {
     const div = document.createElement('div');
@@ -118,28 +120,52 @@
     return div.innerHTML;
   }
 
-  function serializeContent(text) {
-    const blocks = (text || '').split(/\n\s*\n+/).map(b => b.trim()).filter(Boolean);
-    return blocks.map(block => {
-      const photoMatch = block.match(/^\[\[photo:\s*(.+?)\s*\|\s*([\s\S]*?)\s*\]\]$/);
-      if (photoMatch) {
-        const src = photoMatch[1].trim();
-        const caption = photoMatch[2].trim();
-        return `<figure class="post-figure"><img src="${escapeHtml(src)}" alt="${escapeHtml(caption)}" loading="lazy"><figcaption>${escapeHtml(caption)}</figcaption></figure>`;
-      }
-      return block.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-    });
+  // Chrome/Firefox differ on which tag execCommand('bold') produces;
+  // normalize to <strong> so saved HTML is consistent either way.
+  function normalizeInlineHtml(html) {
+    return html
+      .replace(/<b(\s[^>]*)?>/gi, '<strong>')
+      .replace(/<\/b>/gi, '</strong>')
+      .trim();
   }
 
-  function deserializeContent(arr) {
-    return (arr || []).map(entry => {
-      const figMatch = entry.match(/<img[^>]*src="([^"]*)"[\s\S]*?<figcaption>([\s\S]*?)<\/figcaption>/);
-      if (figMatch) {
-        return `[[photo: ${figMatch[1]} | ${figMatch[2]}]]`;
+  function extractRteContent(rte) {
+    const out = [];
+    let buffer = [];
+    function flushBuffer() {
+      const html = normalizeInlineHtml(buffer.join(''));
+      if (html && html !== '<br>') out.push(html);
+      buffer = [];
+    }
+    rte.childNodes.forEach(node => {
+      if (node.nodeType === 1 && node.tagName === 'FIGURE' && node.classList.contains('post-figure')) {
+        flushBuffer();
+        out.push(node.outerHTML);
+      } else if (node.nodeType === 1 && (node.tagName === 'P' || node.tagName === 'DIV')) {
+        flushBuffer();
+        const inner = node.innerHTML.trim();
+        if (inner && inner !== '<br>') out.push(normalizeInlineHtml(inner));
+      } else if (node.nodeType === 1) {
+        buffer.push(node.outerHTML);
+      } else if (node.nodeType === 3 && node.textContent.trim()) {
+        buffer.push(escapeHtml(node.textContent));
       }
-      return entry.replace(/<strong>([\s\S]*?)<\/strong>/g, '**$1**');
-    }).join('\n\n');
+    });
+    flushBuffer();
+    return out;
   }
+
+  function populateRte(rte, arr) {
+    if (arr && arr.length) {
+      rte.innerHTML = arr.map(entry =>
+        entry.trim().startsWith('<figure') ? entry : `<p>${entry}</p>`
+      ).join('');
+    } else {
+      rte.innerHTML = '<p><br></p>';
+    }
+  }
+
+  try { document.execCommand('defaultParagraphSeparator', false, 'p'); } catch (e) { /* older browsers */ }
 
   /* ---------------------------------------------------------
      Editor: open / lang tabs / photo upload / save / delete
@@ -182,7 +208,7 @@
       document.getElementById(`fTag_${lang}`).value = post ? post[`tag_${lang}`] : '';
       document.getElementById(`fTitle_${lang}`).value = post ? post[`title_${lang}`] : '';
       document.getElementById(`fExcerpt_${lang}`).value = post ? post[`excerpt_${lang}`] : '';
-      document.getElementById(`fContent_${lang}`).value = post ? deserializeContent(post[`content_${lang}`]) : '';
+      populateRte(document.getElementById(`fContentRte_${lang}`), post ? post[`content_${lang}`] : null);
     });
 
     switchLangTab('en');
@@ -192,52 +218,71 @@
   document.getElementById('newPostBtn').addEventListener('click', () => openEditor(null));
   document.getElementById('cancelEditBtn').addEventListener('click', () => { overlay.hidden = true; });
 
-  // Photo upload: uploads to Storage, then inserts a [[photo: url | caption]]
-  // marker into that language's content textarea at the cursor position.
-  document.querySelectorAll('[data-upload-btn]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const lang = btn.dataset.uploadBtn;
-      const fileInput = document.querySelector(`[data-photo-lang="${lang}"]`);
-      const file = fileInput.files[0];
-      if (!file) {
-        showToast('Choose a photo first.', true);
-        return;
-      }
+  // Rich-text toolbar: Bold + click-to-insert-photo, per language.
+  LANGS.forEach(lang => {
+    const rte = document.getElementById(`fContentRte_${lang}`);
+    const boldBtn = document.querySelector(`[data-bold-for="${lang}"]`);
+    const insertPhotoBtn = document.querySelector(`[data-insert-photo-for="${lang}"]`);
+    const photoFileInput = document.querySelector(`[data-photo-file-for="${lang}"]`);
+    let savedRange = null;
+
+    // Prevent the toolbar buttons from stealing focus/selection away
+    // from the editor before their click handler runs.
+    boldBtn.addEventListener('mousedown', (e) => e.preventDefault());
+    boldBtn.addEventListener('click', () => {
+      rte.focus();
+      document.execCommand('bold');
+    });
+
+    insertPhotoBtn.addEventListener('mousedown', (e) => e.preventDefault());
+    insertPhotoBtn.addEventListener('click', () => {
+      const sel = window.getSelection();
+      savedRange = (sel.rangeCount > 0 && rte.contains(sel.anchorNode))
+        ? sel.getRangeAt(0).cloneRange()
+        : null;
+      photoFileInput.click();
+    });
+
+    photoFileInput.addEventListener('change', async () => {
+      const file = photoFileInput.files[0];
+      if (!file) return;
 
       const caption = window.prompt('Caption for this photo (shown under it, in this language):', '');
-      if (caption === null) return; // cancelled
+      if (caption === null) { photoFileInput.value = ''; return; }
 
-      btn.disabled = true;
-      btn.textContent = 'Uploading…';
+      const originalLabel = insertPhotoBtn.textContent;
+      insertPhotoBtn.disabled = true;
+      insertPhotoBtn.textContent = 'Uploading…';
 
       const ext = file.name.split('.').pop();
       const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error: uploadError } = await supabaseClient.storage.from('blog-photos').upload(path, file);
 
-      const { error: uploadError } = await supabaseClient.storage
-        .from('blog-photos')
-        .upload(path, file);
+      insertPhotoBtn.disabled = false;
+      insertPhotoBtn.textContent = originalLabel;
 
       if (uploadError) {
         showToast(`Upload failed: ${uploadError.message}`, true);
-        btn.disabled = false;
-        btn.textContent = lang === 'en' ? 'Upload & Insert Photo' : btn.textContent;
+        photoFileInput.value = '';
         return;
       }
 
       const { data: pub } = supabaseClient.storage.from('blog-photos').getPublicUrl(path);
-      const marker = `[[photo: ${pub.publicUrl} | ${caption}]]`;
+      const figureHtml = `<figure class="post-figure"><img src="${pub.publicUrl}" alt="${escapeHtml(caption)}" loading="lazy"><figcaption>${escapeHtml(caption)}</figcaption></figure><p><br></p>`;
 
-      const textarea = document.getElementById(`fContent_${lang}`);
-      const pos = textarea.selectionStart ?? textarea.value.length;
-      const before = textarea.value.slice(0, pos);
-      const after = textarea.value.slice(pos);
-      const sep = before && !before.endsWith('\n\n') ? '\n\n' : '';
-      textarea.value = before + sep + marker + '\n\n' + after;
-
-      fileInput.value = '';
-      btn.disabled = false;
-      btn.textContent = 'Uploaded ✓';
-      setTimeout(() => { btn.textContent = 'Upload & Insert Photo'; }, 1500);
+      rte.focus();
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      if (savedRange) {
+        sel.addRange(savedRange);
+      } else {
+        const range = document.createRange();
+        range.selectNodeContents(rte);
+        range.collapse(false);
+        sel.addRange(range);
+      }
+      document.execCommand('insertHTML', false, figureHtml);
+      photoFileInput.value = '';
     });
   });
 
@@ -264,7 +309,7 @@
       payload[`tag_${lang}`] = document.getElementById(`fTag_${lang}`).value.trim();
       payload[`title_${lang}`] = document.getElementById(`fTitle_${lang}`).value.trim();
       payload[`excerpt_${lang}`] = document.getElementById(`fExcerpt_${lang}`).value.trim();
-      payload[`content_${lang}`] = serializeContent(document.getElementById(`fContent_${lang}`).value);
+      payload[`content_${lang}`] = extractRteContent(document.getElementById(`fContentRte_${lang}`));
     });
 
     const saveBtn = document.getElementById('savePostBtn');
