@@ -372,7 +372,8 @@ section { padding: 110px 0; }
   width: calc(100% + 52px);
   margin: -26px -26px 4px;
   height: 220px;
-  object-fit: cover;
+  object-fit: contain;
+  background: var(--paper-dim);
   display: block;
   border-radius: var(--radius) var(--radius) 0 0;
 }
