@@ -371,9 +371,9 @@ section { padding: 110px 0; }
 .menu-item-photo {
   width: calc(100% + 52px);
   margin: -26px -26px 4px;
-  height: 220px;
-  object-fit: contain;
-  background: var(--paper-dim);
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: center;
   display: block;
   border-radius: var(--radius) var(--radius) 0 0;
 }
