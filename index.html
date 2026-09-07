@@ -267,6 +267,22 @@
   </div>
 </div>
 
+<div class="dish-modal" id="dishModal" hidden>
+  <div class="dish-modal-backdrop" id="dishModalBackdrop"></div>
+  <div class="dish-modal-panel" role="dialog" aria-modal="true" aria-labelledby="dishModalName">
+    <button class="dish-modal-close" id="dishModalClose" aria-label="Close">&times;</button>
+    <div class="dish-modal-photo-wrap" id="dishModalPhotoWrap"></div>
+    <div class="dish-modal-body">
+      <div class="dish-modal-top">
+        <h3 class="dish-modal-name" id="dishModalName"></h3>
+        <span class="dish-modal-price" id="dishModalPrice"></span>
+      </div>
+      <div class="menu-item-tags" id="dishModalTags"></div>
+      <p class="dish-modal-desc" id="dishModalDesc"></p>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase-client.js"></script>
 <script src="js/script.js"></script>
