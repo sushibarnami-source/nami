@@ -367,6 +367,14 @@ section { padding: 110px 0; }
   border-color: rgba(79,122,92,.5);
 }
 
+.menu-item-photo {
+  width: calc(100% + 52px);
+  margin: -26px -26px 4px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
 .menu-item-top {
   display: flex;
   justify-content: space-between;

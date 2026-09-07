@@ -36,6 +36,48 @@ body.admin-body {
 
 .admin-container { max-width: 1000px; margin: 0 auto; padding: 32px 24px 80px; }
 
+.admin-main-tabs { display: flex; gap: 8px; margin-bottom: 28px; border-bottom: 1px solid var(--border); }
+.admin-main-tab-btn {
+  padding: 10px 18px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: .92rem;
+  font-weight: 600;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+}
+.admin-main-tab-btn.active { color: var(--green-deep); border-bottom-color: var(--green-deep); }
+.admin-tab-pane[hidden] { display: none; }
+
+.settings-group-title {
+  font-size: 1.05rem;
+  margin: 28px 0 14px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+.settings-group-title:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+
+.post-row-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.post-row-category {
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: var(--paper-dim);
+  color: var(--green-deep);
+  flex-shrink: 0;
+}
+
 .admin-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .admin-toolbar h2 { margin: 0; font-size: 1.4rem; }
 
