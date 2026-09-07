@@ -18,8 +18,10 @@
   --------------------------------------------------------- */
   async function requireAuth() {
     if (typeof supabaseClient === 'undefined' || !supabaseClient) {
-      document.getElementById('postList').innerHTML =
-        '<p class="admin-empty">Couldn\'t reach the login service. Check your connection and reload.</p>';
+      const msg = '<p class="admin-empty">Couldn\'t reach the login service. Check your connection and reload.</p>';
+      document.getElementById('postList').innerHTML = msg;
+      document.getElementById('dishList').innerHTML = msg;
+      document.getElementById('settingsLoading').textContent = "Couldn't reach the login service. Check your connection and reload.";
       return false;
     }
     const { data: { session } } = await supabaseClient.auth.getSession();
@@ -153,14 +155,14 @@
   }
 
   function switchLangTab(lang) {
-    document.querySelectorAll('.lang-tab-btn').forEach(btn => {
+    overlay.querySelectorAll('.lang-tab-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.lang === lang);
     });
-    document.querySelectorAll('.lang-pane').forEach(pane => {
+    overlay.querySelectorAll('.lang-pane').forEach(pane => {
       pane.hidden = pane.dataset.langPane !== lang;
     });
   }
-  document.querySelectorAll('.lang-tab-btn').forEach(btn => {
+  overlay.querySelectorAll('.lang-tab-btn').forEach(btn => {
     btn.addEventListener('click', () => switchLangTab(btn.dataset.lang));
   });
 
@@ -308,10 +310,367 @@
   }
 
   /* ---------------------------------------------------------
+     Main tabs: Blog Posts / Menu / Site Settings
+  --------------------------------------------------------- */
+  const mainTabPanes = {
+    blog: document.getElementById('tabBlog'),
+    menu: document.getElementById('tabMenu'),
+    settings: document.getElementById('tabSettings'),
+  };
+  document.querySelectorAll('.admin-main-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.admin-main-tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+      Object.entries(mainTabPanes).forEach(([key, pane]) => { pane.hidden = key !== btn.dataset.tab; });
+    });
+  });
+
+  /* ---------------------------------------------------------
+     Menu: load + render dish list
+  --------------------------------------------------------- */
+  const CATEGORY_LABELS = {
+    rolls: 'Rolls', nigiri: 'Nigiri', maki: 'Maki', futomaki: 'Futomaki',
+    tempuraRoll: 'Hot Rolls', sets: 'Sets', noodles: 'Noodles',
+    appetizers: 'Appetizers', desserts: 'Desserts', drinks: 'Drinks',
+  };
+
+  const dishListEl = document.getElementById('dishList');
+  const dishOverlay = document.getElementById('dishEditorOverlay');
+  const categoryFilter = document.getElementById('menuCategoryFilter');
+  let dishes = [];
+  let editingDishId = null;
+  let currentDishPhotoUrl = null;
+
+  async function loadDishes() {
+    dishListEl.innerHTML = '<p class="admin-loading">Loading menu…</p>';
+    const { data, error } = await supabaseClient
+      .from('menu_items')
+      .select('*')
+      .order('category', { ascending: true })
+      .order('sort_order', { ascending: false });
+
+    if (error) {
+      dishListEl.innerHTML = `<p class="admin-empty">Couldn't load menu: ${escapeHtml(error.message)}</p>`;
+      return;
+    }
+
+    dishes = data || [];
+    renderDishList();
+  }
+
+  function renderDishList() {
+    const filter = categoryFilter.value;
+    const filtered = filter ? dishes.filter(d => d.category === filter) : dishes;
+
+    if (!filtered.length) {
+      dishListEl.innerHTML = '<p class="admin-empty">No dishes yet — click "New Dish" to add one.</p>';
+      return;
+    }
+
+    dishListEl.innerHTML = filtered.map(d => `
+      <div class="post-row">
+        ${d.photo_url
+          ? `<img class="post-row-thumb" src="${escapeHtml(d.photo_url)}" alt="">`
+          : `<div class="post-row-icon">🍽️</div>`}
+        <div class="post-row-main">
+          <p class="post-row-title">${escapeHtml(d.name_en)}</p>
+          <p class="post-row-meta">${escapeHtml(d.price)}</p>
+        </div>
+        <span class="post-row-category">${escapeHtml(CATEGORY_LABELS[d.category] || d.category)}</span>
+        <span class="post-row-badge ${d.published ? 'is-published' : ''}">${d.published ? 'Published' : 'Draft'}</span>
+        <div class="post-row-actions">
+          <button class="admin-btn-secondary" data-edit-dish="${d.id}">Edit</button>
+          <button class="admin-btn-danger" data-delete-dish="${d.id}">Delete</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  categoryFilter.addEventListener('change', renderDishList);
+
+  dishListEl.addEventListener('click', (e) => {
+    const editBtn = e.target.closest('[data-edit-dish]');
+    if (editBtn) {
+      openDishEditor(dishes.find(d => d.id === editBtn.dataset.editDish));
+      return;
+    }
+    const delBtn = e.target.closest('[data-delete-dish]');
+    if (delBtn) deleteDish(delBtn.dataset.deleteDish);
+  });
+
+  function switchDishLangTab(lang) {
+    dishOverlay.querySelectorAll('.lang-tab-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+    dishOverlay.querySelectorAll('.lang-pane').forEach(pane => {
+      pane.hidden = pane.dataset.langPane !== lang;
+    });
+  }
+  dishOverlay.querySelectorAll('.lang-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchDishLangTab(btn.dataset.lang));
+  });
+
+  function openDishEditor(dish) {
+    editingDishId = dish ? dish.id : null;
+    currentDishPhotoUrl = dish ? (dish.photo_url || null) : null;
+    document.getElementById('dishEditorHeading').textContent = dish ? 'Edit Dish' : 'New Dish';
+    document.getElementById('deleteDishBtn').hidden = !dish;
+    document.getElementById('dishEditorError').textContent = '';
+
+    document.getElementById('dCategory').value = dish ? dish.category : (categoryFilter.value || 'rolls');
+    document.getElementById('dPrice').value = dish ? dish.price : '';
+    document.getElementById('dSortOrder').value = dish ? dish.sort_order : 0;
+    document.getElementById('dPublished').checked = dish ? dish.published : true;
+
+    const tags = dish ? (dish.tags || []) : [];
+    document.getElementById('dTagSpicy').checked = tags.includes('spicy');
+    document.getElementById('dTagVeg').checked = tags.includes('veg');
+    document.getElementById('dTagNew').checked = tags.includes('new');
+
+    LANGS.forEach(lang => {
+      document.getElementById(`dName_${lang}`).value = dish ? dish[`name_${lang}`] : '';
+      document.getElementById(`dDesc_${lang}`).value = dish ? dish[`desc_${lang}`] : '';
+    });
+
+    updateDishPhotoPreview();
+    switchDishLangTab('en');
+    dishOverlay.hidden = false;
+  }
+
+  function updateDishPhotoPreview() {
+    const img = document.getElementById('dPhotoPreview');
+    const removeBtn = document.getElementById('dPhotoRemoveBtn');
+    if (currentDishPhotoUrl) {
+      img.src = currentDishPhotoUrl;
+      img.style.display = 'block';
+      removeBtn.hidden = false;
+    } else {
+      img.style.display = 'none';
+      img.src = '';
+      removeBtn.hidden = true;
+    }
+  }
+
+  document.getElementById('newDishBtn').addEventListener('click', () => openDishEditor(null));
+  document.getElementById('cancelDishEditBtn').addEventListener('click', () => { dishOverlay.hidden = true; });
+
+  document.getElementById('dPhotoUploadBtn').addEventListener('click', async () => {
+    const fileInput = document.getElementById('dPhotoFile');
+    const file = fileInput.files[0];
+    if (!file) {
+      showToast('Choose a photo first.', true);
+      return;
+    }
+
+    const btn = document.getElementById('dPhotoUploadBtn');
+    btn.disabled = true;
+    btn.textContent = 'Uploading…';
+
+    const ext = file.name.split('.').pop();
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+    const { error: uploadError } = await supabaseClient.storage.from('menu-photos').upload(path, file);
+
+    btn.disabled = false;
+    btn.textContent = 'Upload Photo';
+
+    if (uploadError) {
+      showToast(`Upload failed: ${uploadError.message}`, true);
+      return;
+    }
+
+    const { data: pub } = supabaseClient.storage.from('menu-photos').getPublicUrl(path);
+    currentDishPhotoUrl = pub.publicUrl;
+    fileInput.value = '';
+    updateDishPhotoPreview();
+  });
+
+  document.getElementById('dPhotoRemoveBtn').addEventListener('click', () => {
+    currentDishPhotoUrl = null;
+    updateDishPhotoPreview();
+  });
+
+  document.getElementById('saveDishBtn').addEventListener('click', async () => {
+    const errorEl = document.getElementById('dishEditorError');
+    errorEl.textContent = '';
+
+    const nameEn = document.getElementById('dName_en').value.trim();
+    if (!nameEn) {
+      errorEl.textContent = 'An English name is required.';
+      switchDishLangTab('en');
+      return;
+    }
+    const price = document.getElementById('dPrice').value.trim();
+    if (!price) {
+      errorEl.textContent = 'Price is required.';
+      return;
+    }
+
+    const tags = [];
+    if (document.getElementById('dTagSpicy').checked) tags.push('spicy');
+    if (document.getElementById('dTagVeg').checked) tags.push('veg');
+    if (document.getElementById('dTagNew').checked) tags.push('new');
+
+    const payload = {
+      category: document.getElementById('dCategory').value,
+      price,
+      tags,
+      photo_url: currentDishPhotoUrl,
+      published: document.getElementById('dPublished').checked,
+      sort_order: Number(document.getElementById('dSortOrder').value) || 0,
+    };
+    LANGS.forEach(lang => {
+      payload[`name_${lang}`] = document.getElementById(`dName_${lang}`).value.trim();
+      payload[`desc_${lang}`] = document.getElementById(`dDesc_${lang}`).value.trim();
+    });
+
+    const saveBtn = document.getElementById('saveDishBtn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving…';
+
+    let result;
+    if (editingDishId) {
+      result = await supabaseClient.from('menu_items').update(payload).eq('id', editingDishId);
+    } else {
+      result = await supabaseClient.from('menu_items').insert(payload);
+    }
+
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save Dish';
+
+    if (result.error) {
+      errorEl.textContent = result.error.message;
+      return;
+    }
+
+    dishOverlay.hidden = true;
+    showToast(editingDishId ? 'Dish updated.' : 'Dish added.');
+    await loadDishes();
+  });
+
+  document.getElementById('deleteDishBtn').addEventListener('click', async () => {
+    if (!editingDishId) return;
+    if (!window.confirm('Delete this dish? This cannot be undone.')) return;
+    await deleteDish(editingDishId);
+    dishOverlay.hidden = true;
+  });
+
+  async function deleteDish(id) {
+    const { error } = await supabaseClient.from('menu_items').delete().eq('id', id);
+    if (error) {
+      showToast(`Couldn't delete: ${error.message}`, true);
+      return;
+    }
+    showToast('Dish deleted.');
+    await loadDishes();
+  }
+
+  /* ---------------------------------------------------------
+     Site Settings: homepage text + contact/hours
+  --------------------------------------------------------- */
+  const settingsForm = document.getElementById('settingsForm');
+  const SETTINGS_CONTENT_KEYS = [
+    'hero_eyebrow', 'hero_title', 'hero_sub', 'about_p1',
+    'stat_dishes', 'stat_fresh', 'info_address_value', 'info_hours_value',
+  ];
+  const SETTINGS_FIELD_MAP = {
+    hero_eyebrow: 'sHeroEyebrow', hero_title: 'sHeroTitle', hero_sub: 'sHeroSub',
+    about_p1: 'sAboutP1', stat_dishes: 'sStatDishes', stat_fresh: 'sStatFresh',
+    info_address_value: 'sAddress', info_hours_value: 'sHoursValue',
+  };
+
+  function switchSettingsLangTab(lang) {
+    settingsForm.querySelectorAll('.settings-lang-tab').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+    settingsForm.querySelectorAll('.settings-lang-pane').forEach(pane => {
+      pane.hidden = pane.dataset.langPane !== lang;
+    });
+  }
+  settingsForm.querySelectorAll('.settings-lang-tab').forEach(btn => {
+    btn.addEventListener('click', () => switchSettingsLangTab(btn.dataset.lang));
+  });
+
+  async function loadSettings() {
+    const [{ data: settingsRow, error: settingsErr }, { data: contentRows, error: contentErr }] = await Promise.all([
+      supabaseClient.from('site_settings').select('*').eq('id', 1).single(),
+      supabaseClient.from('site_content').select('*'),
+    ]);
+
+    if (settingsErr || contentErr) {
+      document.getElementById('settingsLoading').textContent =
+        `Couldn't load settings: ${(settingsErr || contentErr).message}`;
+      return;
+    }
+
+    if (settingsRow) {
+      document.getElementById('sPhone').value = settingsRow.phone || '';
+      document.getElementById('sEmail').value = settingsRow.email || '';
+      document.getElementById('sOpen').value = settingsRow.weekday_open || '';
+      document.getElementById('sClose').value = settingsRow.weekday_close || '';
+    }
+
+    const byKey = {};
+    (contentRows || []).forEach(row => { byKey[row.key] = row; });
+
+    SETTINGS_CONTENT_KEYS.forEach(key => {
+      const field = SETTINGS_FIELD_MAP[key];
+      const row = byKey[key];
+      LANGS.forEach(lang => {
+        const el = document.getElementById(`${field}_${lang}`);
+        if (el) el.value = row ? (row[`value_${lang}`] || '') : '';
+      });
+    });
+
+    document.getElementById('settingsLoading').hidden = true;
+    settingsForm.hidden = false;
+  }
+
+  document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
+    const errorEl = document.getElementById('settingsError');
+    errorEl.textContent = '';
+    const btn = document.getElementById('saveSettingsBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    const settingsPayload = {
+      id: 1,
+      phone: document.getElementById('sPhone').value.trim(),
+      email: document.getElementById('sEmail').value.trim(),
+      weekday_open: document.getElementById('sOpen').value.trim(),
+      weekday_close: document.getElementById('sClose').value.trim(),
+    };
+
+    const contentPayload = SETTINGS_CONTENT_KEYS.map(key => {
+      const field = SETTINGS_FIELD_MAP[key];
+      const row = { key };
+      LANGS.forEach(lang => { row[`value_${lang}`] = document.getElementById(`${field}_${lang}`).value; });
+      return row;
+    });
+
+    const [settingsResult, contentResult] = await Promise.all([
+      supabaseClient.from('site_settings').update(settingsPayload).eq('id', 1),
+      supabaseClient.from('site_content').upsert(contentPayload, { onConflict: 'key' }),
+    ]);
+
+    btn.disabled = false;
+    btn.textContent = 'Save Settings';
+
+    if (settingsResult.error || contentResult.error) {
+      errorEl.textContent = (settingsResult.error || contentResult.error).message;
+      return;
+    }
+
+    showToast('Settings saved.');
+  });
+
+  /* ---------------------------------------------------------
      Init
   --------------------------------------------------------- */
   (async () => {
     const ok = await requireAuth();
-    if (ok) await loadPosts();
+    if (!ok) return;
+    await loadPosts();
+    await loadDishes();
+    await loadSettings();
   })();
 })();

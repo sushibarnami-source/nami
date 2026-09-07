@@ -27,7 +27,7 @@
       blog_alert: 'Full article coming soon — this is a placeholder for your blog content.',
       about_eyebrow: 'About Us', about_title: 'Our Story',
       about_p1: 'They say that Hokusai\'s famous wave began its long journey from Kanagawa and stopped in the heart of Guria. "Nami" means a wave in Japanese — a wave that brought Asian flavors right to you.',
-      stat_dishes: 'Dishes on the menu', stat_fresh: 'Fresh fish',
+      stat1_num: '25+', stat2_num: '100%', stat_dishes: 'Dishes on the menu', stat_fresh: 'Fresh fish',
       hours_title: 'Working Hours',
       day_monday: 'Monday', day_tuesday: 'Tuesday', day_wednesday: 'Wednesday', day_thursday: 'Thursday',
       day_friday: 'Friday', day_saturday: 'Saturday', day_sunday: 'Sunday',
@@ -71,7 +71,7 @@
       blog_alert: 'სრული სტატია მალე გამოქვეყნდება — ეს არის თქვენი ბლოგის კონტენტის მაგალითი.',
       about_eyebrow: 'ჩვენს შესახებ', about_title: 'ჩვენი ისტორია',
       about_p1: 'ამბობენ, რომ ჰოკუსაის ცნობილმა ტალღამ კანაგავადან შორეული მოგზაურობა დაიწყო და გურიის გულში შეჩერდა. „ნამი“ იაპონურად ტალღას ნიშნავს, ტალღას, რომელმაც თქვენამდე აზიური გემო მოიტანა.',
-      stat_dishes: 'კერძი მენიუში', stat_fresh: 'ფრეში თევზი',
+      stat1_num: '25+', stat2_num: '100%', stat_dishes: 'კერძი მენიუში', stat_fresh: 'ფრეში თევზი',
       hours_title: 'სამუშაო საათები',
       day_monday: 'ორშაბათი', day_tuesday: 'სამშაბათი', day_wednesday: 'ოთხშაბათი', day_thursday: 'ხუთშაბათი',
       day_friday: 'პარასკევი', day_saturday: 'შაბათი', day_sunday: 'კვირა',
@@ -115,7 +115,7 @@
       blog_alert: 'Полная статья скоро появится — это заглушка для содержимого вашего блога.',
       about_eyebrow: 'О нас', about_title: 'Наша история',
       about_p1: 'Говорят, что знаменитая волна Хокусаи начала свое далекое путешествие из Канагавы и остановилась в самом сердце Гурии. «Нами» по-японски означает волну — волну, которая принесла азиатский вкус прямо к вам.',
-      stat_dishes: 'блюд в меню', stat_fresh: 'Свежая рыба',
+      stat1_num: '25+', stat2_num: '100%', stat_dishes: 'блюд в меню', stat_fresh: 'Свежая рыба',
       hours_title: 'Часы работы',
       day_monday: 'Понедельник', day_tuesday: 'Вторник', day_wednesday: 'Среда', day_thursday: 'Четверг',
       day_friday: 'Пятница', day_saturday: 'Суббота', day_sunday: 'Воскресенье',
@@ -158,6 +158,8 @@
   })();
 
   function t(key) {
+    const override = SITE_CONTENT_OVERRIDES[key];
+    if (override && override[currentLang]) return override[currentLang];
     return (UI[currentLang] && UI[currentLang][key]) || UI.en[key] || key;
   }
 
@@ -165,7 +167,10 @@
      Real menu, transcribed from the printed NAMI menu.
      Prices are in ₾ (GEL). name/desc carry EN / KA / RU text.
   --------------------------------------------------------- */
-  const MENU_ITEMS = [
+  /* Shown immediately and kept if the live database is unreachable;
+     replaced by loadMenuItemsFromSupabase() once admin-managed dishes
+     arrive. */
+  let MENU_ITEMS = [
     // ატრია — Noodles
     { category: 'noodles', price: '19.00 ₾', tags: [],
       name: { en: 'Chicken Noodles', ka: 'ქათმის ხორცით', ru: 'Лапша с курицей' },
@@ -307,6 +312,89 @@
         ka: 'ნორი, ბრინჯი, კრემჩიზი, კიტრი, ორაგული.',
         ru: 'Нори, рис, сливочный сыр, огурец, лосось.' } },
   ];
+
+  /* ---------------------------------------------------------
+     Live menu items from Supabase (managed via /admin)
+  --------------------------------------------------------- */
+  async function loadMenuItemsFromSupabase() {
+    if (typeof supabaseClient === 'undefined' || !supabaseClient) return;
+    try {
+      const { data, error } = await supabaseClient
+        .from('menu_items')
+        .select('*')
+        .eq('published', true)
+        .order('category', { ascending: true })
+        .order('sort_order', { ascending: false });
+
+      if (error || !data || !data.length) return;
+
+      MENU_ITEMS = data.map(row => ({
+        category: row.category,
+        price: row.price,
+        tags: row.tags || [],
+        photo: row.photo_url || null,
+        name: { en: row.name_en, ka: row.name_ka, ru: row.name_ru },
+        desc: { en: row.desc_en, ka: row.desc_ka, ru: row.desc_ru },
+      }));
+
+      renderMenu(currentCategory);
+    } catch (e) {
+      // offline, blocked, or Supabase unreachable — keep the fallback menu
+    }
+  }
+
+  /* ---------------------------------------------------------
+     Live site text + settings from Supabase (managed via /admin)
+  --------------------------------------------------------- */
+  let SITE_CONTENT_OVERRIDES = {};
+
+  async function loadSiteContentFromSupabase() {
+    if (typeof supabaseClient === 'undefined' || !supabaseClient) return;
+    try {
+      const { data, error } = await supabaseClient.from('site_content').select('*');
+      if (error || !data || !data.length) return;
+
+      SITE_CONTENT_OVERRIDES = {};
+      data.forEach(row => {
+        SITE_CONTENT_OVERRIDES[row.key] = { en: row.value_en, ka: row.value_ka, ru: row.value_ru };
+      });
+
+      applyStaticTranslations();
+    } catch (e) {
+      // offline, blocked, or Supabase unreachable — keep the fallback text
+    }
+  }
+
+  async function loadSiteSettingsFromSupabase() {
+    if (typeof supabaseClient === 'undefined' || !supabaseClient) return;
+    try {
+      const { data, error } = await supabaseClient.from('site_settings').select('*').eq('id', 1).single();
+      if (error || !data) return;
+
+      if (data.phone) {
+        const phoneLink = document.getElementById('contactPhoneLink');
+        if (phoneLink) {
+          phoneLink.textContent = data.phone;
+          phoneLink.href = 'tel:' + data.phone.replace(/[^\d+]/g, '');
+        }
+      }
+      if (data.email) {
+        const emailLink = document.getElementById('contactEmailLink');
+        if (emailLink) {
+          emailLink.textContent = data.email;
+          emailLink.href = 'mailto:' + data.email;
+        }
+      }
+      if (data.weekday_open && data.weekday_close) {
+        document.querySelectorAll('#hoursList li:not([data-closed="true"]) span:last-child').forEach(el => {
+          el.textContent = `${data.weekday_open} – ${data.weekday_close}`;
+        });
+        updateHours();
+      }
+    } catch (e) {
+      // offline, blocked, or Supabase unreachable — keep the fallback settings
+    }
+  }
 
   /* ---------------------------------------------------------
      Illustrations used inside blog article content
@@ -459,8 +547,12 @@
 
       const name = item.name[currentLang] || item.name.en;
       const desc = item.desc[currentLang] || item.desc.en;
+      const photoHtml = item.photo
+        ? `<img class="menu-item-photo" src="${item.photo}" alt="${name}" loading="lazy">`
+        : '';
 
       card.innerHTML = `
+        ${photoHtml}
         <div class="menu-item-top">
           <h3 class="menu-item-name">${name}</h3>
           <span class="menu-item-price">${item.price}</span>
@@ -816,5 +908,8 @@
   updateHours();
   renderFooterCopy();
   loadBlogPostsFromSupabase();
+  loadMenuItemsFromSupabase();
+  loadSiteContentFromSupabase();
+  loadSiteSettingsFromSupabase();
 
 })();

@@ -19,14 +19,199 @@
 </header>
 
 <div class="admin-container">
-  <div class="admin-toolbar">
-    <h2>Blog Posts</h2>
-    <button class="admin-btn-primary" id="newPostBtn">+ New Post</button>
+  <div class="admin-main-tabs">
+    <button type="button" class="admin-main-tab-btn active" data-tab="blog">Blog Posts</button>
+    <button type="button" class="admin-main-tab-btn" data-tab="menu">Menu</button>
+    <button type="button" class="admin-main-tab-btn" data-tab="settings">Site Settings</button>
   </div>
 
-  <div id="postList" class="post-list">
-    <p class="admin-loading">Loading posts…</p>
-  </div>
+  <section id="tabBlog" class="admin-tab-pane">
+    <div class="admin-toolbar">
+      <h2>Blog Posts</h2>
+      <button class="admin-btn-primary" id="newPostBtn">+ New Post</button>
+    </div>
+
+    <div id="postList" class="post-list">
+      <p class="admin-loading">Loading posts…</p>
+    </div>
+  </section>
+
+  <section id="tabMenu" class="admin-tab-pane" hidden>
+    <div class="admin-toolbar">
+      <h2>Menu</h2>
+      <button class="admin-btn-primary" id="newDishBtn">+ New Dish</button>
+    </div>
+
+    <div class="editor-field" style="max-width:240px; margin-bottom:16px;">
+      <label for="menuCategoryFilter">Filter by category</label>
+      <select id="menuCategoryFilter">
+        <option value="">All categories</option>
+        <option value="rolls">Rolls</option>
+        <option value="nigiri">Nigiri</option>
+        <option value="maki">Maki</option>
+        <option value="futomaki">Futomaki</option>
+        <option value="tempuraRoll">Hot Rolls</option>
+        <option value="sets">Sets</option>
+        <option value="noodles">Noodles</option>
+        <option value="appetizers">Appetizers</option>
+        <option value="desserts">Desserts</option>
+        <option value="drinks">Drinks</option>
+      </select>
+    </div>
+
+    <div id="dishList" class="post-list">
+      <p class="admin-loading">Loading menu…</p>
+    </div>
+  </section>
+
+  <section id="tabSettings" class="admin-tab-pane" hidden>
+    <div class="admin-toolbar">
+      <h2>Site Settings</h2>
+    </div>
+    <p class="admin-loading" id="settingsLoading">Loading settings…</p>
+    <form id="settingsForm" hidden>
+      <h3 class="settings-group-title">Contact &amp; Hours</h3>
+      <div class="editor-row">
+        <div class="editor-field">
+          <label for="sPhone">Phone</label>
+          <input type="text" id="sPhone">
+        </div>
+        <div class="editor-field">
+          <label for="sEmail">Email</label>
+          <input type="text" id="sEmail">
+        </div>
+        <div class="editor-field">
+          <label for="sOpen">Opens at (Mon–Sat)</label>
+          <input type="text" id="sOpen" placeholder="13:30">
+        </div>
+        <div class="editor-field">
+          <label for="sClose">Closes at (Mon–Sat)</label>
+          <input type="text" id="sClose" placeholder="23:30">
+        </div>
+      </div>
+
+      <h3 class="settings-group-title">Homepage Text</h3>
+      <div class="lang-tabs">
+        <button type="button" class="lang-tab-btn settings-lang-tab active" data-lang="en">English</button>
+        <button type="button" class="lang-tab-btn settings-lang-tab" data-lang="ka">ქართული</button>
+        <button type="button" class="lang-tab-btn settings-lang-tab" data-lang="ru">Русский</button>
+      </div>
+
+      <div class="lang-pane settings-lang-pane" data-lang-pane="en">
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>Hero eyebrow (small line above the title)</label>
+          <input type="text" id="sHeroEyebrow_en">
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>Hero title</label>
+          <p class="content-help">Keep the <code>&lt;span class="accent"&gt;...&lt;/span&gt;</code> tag around the highlighted word.</p>
+          <input type="text" id="sHeroTitle_en">
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>Hero subtitle</label>
+          <textarea id="sHeroSub_en" rows="2"></textarea>
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>About Us story</label>
+          <textarea id="sAboutP1_en" rows="3"></textarea>
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>Stat label 1 (next to "25+")</label>
+          <input type="text" id="sStatDishes_en">
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>Stat label 2 (next to "100%")</label>
+          <input type="text" id="sStatFresh_en">
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>Address</label>
+          <input type="text" id="sAddress_en">
+        </div>
+        <div class="editor-field">
+          <label>Hours summary line (shown in Contact section)</label>
+          <input type="text" id="sHoursValue_en">
+        </div>
+      </div>
+
+      <div class="lang-pane settings-lang-pane" data-lang-pane="ka" hidden>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>Hero-ს ზედა წარწერა</label>
+          <input type="text" id="sHeroEyebrow_ka">
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>Hero-ს სათაური</label>
+          <p class="content-help">შეინარჩუნეთ <code>&lt;span class="accent"&gt;...&lt;/span&gt;</code> ტეგი გამოკვეთილი სიტყვის გარშემო.</p>
+          <input type="text" id="sHeroTitle_ka">
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>Hero-ს ქვეტექსტი</label>
+          <textarea id="sHeroSub_ka" rows="2"></textarea>
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>ჩვენი ისტორია</label>
+          <textarea id="sAboutP1_ka" rows="3"></textarea>
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>სტატისტიკის წარწერა 1 ("25+"-ის გვერდით)</label>
+          <input type="text" id="sStatDishes_ka">
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>სტატისტიკის წარწერა 2 ("100%"-ის გვერდით)</label>
+          <input type="text" id="sStatFresh_ka">
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>მისამართი</label>
+          <input type="text" id="sAddress_ka">
+        </div>
+        <div class="editor-field">
+          <label>სამუშაო საათების მოკლე ტექსტი (კონტაქტის სექციაში)</label>
+          <input type="text" id="sHoursValue_ka">
+        </div>
+      </div>
+
+      <div class="lang-pane settings-lang-pane" data-lang-pane="ru" hidden>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>Надпись над заголовком Hero</label>
+          <input type="text" id="sHeroEyebrow_ru">
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>Заголовок Hero</label>
+          <p class="content-help">Сохраните тег <code>&lt;span class="accent"&gt;...&lt;/span&gt;</code> вокруг выделенного слова.</p>
+          <input type="text" id="sHeroTitle_ru">
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>Подзаголовок Hero</label>
+          <textarea id="sHeroSub_ru" rows="2"></textarea>
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>Наша история</label>
+          <textarea id="sAboutP1_ru" rows="3"></textarea>
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>Подпись статистики 1 (рядом с «25+»)</label>
+          <input type="text" id="sStatDishes_ru">
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>Подпись статистики 2 (рядом с «100%»)</label>
+          <input type="text" id="sStatFresh_ru">
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>Адрес</label>
+          <input type="text" id="sAddress_ru">
+        </div>
+        <div class="editor-field">
+          <label>Краткое описание часов работы (в разделе Контакты)</label>
+          <input type="text" id="sHoursValue_ru">
+        </div>
+      </div>
+
+      <p class="login-error" id="settingsError" style="color:var(--red); font-size:.85rem;"></p>
+
+      <div class="editor-actions" style="justify-content:flex-end;">
+        <button type="button" class="admin-btn-primary" id="saveSettingsBtn">Save Settings</button>
+      </div>
+    </form>
+  </section>
 </div>
 
 <!-- ================= Editor overlay ================= -->
@@ -158,6 +343,115 @@
       <div class="editor-actions-right">
         <button type="button" class="admin-btn-secondary" id="cancelEditBtn">Cancel</button>
         <button type="button" class="admin-btn-primary" id="savePostBtn">Save Post</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Dish editor overlay ================= -->
+<div class="editor-overlay" id="dishEditorOverlay" hidden>
+  <div class="editor-panel">
+    <h2 id="dishEditorHeading">New Dish</h2>
+
+    <div class="editor-row">
+      <div class="editor-field">
+        <label for="dCategory">Category</label>
+        <select id="dCategory">
+          <option value="rolls">Rolls</option>
+          <option value="nigiri">Nigiri</option>
+          <option value="maki">Maki</option>
+          <option value="futomaki">Futomaki</option>
+          <option value="tempuraRoll">Hot Rolls</option>
+          <option value="sets">Sets</option>
+          <option value="noodles">Noodles</option>
+          <option value="appetizers">Appetizers</option>
+          <option value="desserts">Desserts</option>
+          <option value="drinks">Drinks</option>
+        </select>
+      </div>
+      <div class="editor-field">
+        <label for="dPrice">Price</label>
+        <input type="text" id="dPrice" placeholder="19.00 ₾">
+      </div>
+      <div class="editor-field">
+        <label for="dSortOrder">Sort order</label>
+        <input type="number" id="dSortOrder" value="0">
+      </div>
+      <div class="editor-checkbox">
+        <input type="checkbox" id="dPublished" checked>
+        <label for="dPublished">Published</label>
+      </div>
+    </div>
+
+    <div class="editor-row">
+      <div class="editor-checkbox" style="margin-top:0;">
+        <input type="checkbox" id="dTagSpicy">
+        <label for="dTagSpicy">🌶 Spicy</label>
+      </div>
+      <div class="editor-checkbox" style="margin-top:0;">
+        <input type="checkbox" id="dTagVeg">
+        <label for="dTagVeg">Vegetarian</label>
+      </div>
+      <div class="editor-checkbox" style="margin-top:0;">
+        <input type="checkbox" id="dTagNew">
+        <label for="dTagNew">New</label>
+      </div>
+    </div>
+
+    <div class="editor-field" style="margin-bottom:18px;">
+      <label>Photo</label>
+      <div class="photo-upload-row">
+        <input type="file" accept="image/*" id="dPhotoFile">
+        <button type="button" class="admin-btn-secondary" id="dPhotoUploadBtn">Upload Photo</button>
+        <button type="button" class="admin-btn-secondary" id="dPhotoRemoveBtn" hidden>Remove Photo</button>
+      </div>
+      <img id="dPhotoPreview" alt="" style="max-width:160px; border-radius:var(--radius-sm); margin-top:8px; display:none;">
+    </div>
+
+    <div class="lang-tabs">
+      <button type="button" class="lang-tab-btn dish-lang-tab active" data-lang="en">English</button>
+      <button type="button" class="lang-tab-btn dish-lang-tab" data-lang="ka">ქართული</button>
+      <button type="button" class="lang-tab-btn dish-lang-tab" data-lang="ru">Русский</button>
+    </div>
+
+    <div class="lang-pane dish-lang-pane" data-lang-pane="en">
+      <div class="editor-field" style="margin-bottom:14px;">
+        <label>Name</label>
+        <input type="text" id="dName_en">
+      </div>
+      <div class="editor-field">
+        <label>Description</label>
+        <textarea id="dDesc_en" rows="2"></textarea>
+      </div>
+    </div>
+    <div class="lang-pane dish-lang-pane" data-lang-pane="ka" hidden>
+      <div class="editor-field" style="margin-bottom:14px;">
+        <label>დასახელება</label>
+        <input type="text" id="dName_ka">
+      </div>
+      <div class="editor-field">
+        <label>აღწერა</label>
+        <textarea id="dDesc_ka" rows="2"></textarea>
+      </div>
+    </div>
+    <div class="lang-pane dish-lang-pane" data-lang-pane="ru" hidden>
+      <div class="editor-field" style="margin-bottom:14px;">
+        <label>Название</label>
+        <input type="text" id="dName_ru">
+      </div>
+      <div class="editor-field">
+        <label>Описание</label>
+        <textarea id="dDesc_ru" rows="2"></textarea>
+      </div>
+    </div>
+
+    <p class="login-error" id="dishEditorError" style="color:var(--red); font-size:.85rem;"></p>
+
+    <div class="editor-actions">
+      <button type="button" class="admin-btn-danger" id="deleteDishBtn" hidden>Delete Dish</button>
+      <div class="editor-actions-right">
+        <button type="button" class="admin-btn-secondary" id="cancelDishEditBtn">Cancel</button>
+        <button type="button" class="admin-btn-primary" id="saveDishBtn">Save Dish</button>
       </div>
     </div>
   </div>
