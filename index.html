@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NAMI • ნამი | Modern Sushi Bar</title>
+<meta name="description" content="NAMI • ნამი — a modern sushi bar serving hand-crafted rolls, nigiri, tempura and more. View our menu, story, hours and location.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ================= HEADER ================= -->
+<header class="site-header" id="siteHeader">
+  <div class="container header-inner">
+    <a href="#home" class="logo">
+      <img src="images/nami-logo.png" alt="NAMI logo — a great wave roundel beside the wordmark" class="logo-img">
+    </a>
+
+    <nav class="main-nav" id="mainNav">
+      <ul>
+        <li><a href="#home" class="nav-link active-link" data-i18n="nav_home">Home</a></li>
+        <li><a href="#menu" class="nav-link" data-i18n="nav_menu">Menu</a></li>
+        <li><a href="#blog" class="nav-link" data-i18n="nav_blog">Blog</a></li>
+        <li><a href="#about" class="nav-link" data-i18n="nav_about">About Us</a></li>
+        <li><a href="#contact" class="nav-link" data-i18n="nav_contact">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="lang-switch" id="langSwitch" role="group" aria-label="Language / ენა / Язык">
+      <button type="button" class="lang-btn active" data-lang="en">EN</button>
+      <button type="button" class="lang-btn" data-lang="ka">GE</button>
+      <button type="button" class="lang-btn" data-lang="ru">RU</button>
+    </div>
+
+    <a href="#contact" class="btn btn-outline nav-reserve" data-i18n="nav_reserve">Reserve a Table</a>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="home">
+  <div class="hero-artwork" aria-hidden="true"></div>
+  <div class="container hero-content">
+    <p class="eyebrow reveal" data-i18n="hero_eyebrow">Tradition &middot; Taste &middot; Innovation</p>
+    <h1 class="reveal" id="heroTitle" data-i18n-html="hero_title">
+      A <span class="accent">Wave</span> of Japanese Flavor
+    </h1>
+    <p class="hero-sub reveal" data-i18n="hero_sub">
+      A wave never stops&mdash;it only changes its form. This is how we understand
+      gastronomy: a tradition that evolves into new flavors over time.
+    </p>
+    <div class="hero-actions reveal">
+      <a href="#menu" class="btn btn-primary" data-i18n="hero_btn_menu">View Menu</a>
+      <a href="#about" class="btn btn-ghost" data-i18n="hero_btn_story">Our Story</a>
+    </div>
+  </div>
+  <a href="#menu" class="scroll-cue" aria-label="Scroll to menu"><span></span></a>
+</section>
+
+<!-- ================= MENU ================= -->
+<section class="menu-section" id="menu">
+  <div class="container">
+    <p class="section-eyebrow reveal" data-i18n="menu_eyebrow">Our Menu</p>
+    <h2 class="section-title reveal" data-i18n="menu_title">Crafted With Care</h2>
+    <p class="section-lead reveal" data-i18n="menu_lead">
+      Every dish is prepared upon order with fresh and premium ingredients.
+      Browse our categories below.
+    </p>
+
+    <div class="menu-tabs reveal" id="menuTabs" role="tablist" aria-label="Menu categories">
+      <button class="menu-tab active" data-category="rolls" role="tab" aria-selected="true" data-i18n="tab_rolls">Rolls</button>
+      <button class="menu-tab" data-category="nigiri" role="tab" aria-selected="false" data-i18n="tab_nigiri">Nigiri</button>
+      <button class="menu-tab" data-category="maki" role="tab" aria-selected="false" data-i18n="tab_maki">Maki</button>
+      <button class="menu-tab" data-category="futomaki" role="tab" aria-selected="false" data-i18n="tab_futomaki">Futomaki</button>
+      <button class="menu-tab" data-category="tempuraRoll" role="tab" aria-selected="false" data-i18n="tab_tempuraRoll">Hot Rolls</button>
+      <button class="menu-tab" data-category="sets" role="tab" aria-selected="false" data-i18n="tab_sets">Sets</button>
+      <button class="menu-tab" data-category="noodles" role="tab" aria-selected="false" data-i18n="tab_noodles">Noodles</button>
+      <button class="menu-tab" data-category="appetizers" role="tab" aria-selected="false" data-i18n="tab_appetizers">Appetizers</button>
+      <button class="menu-tab" data-category="desserts" role="tab" aria-selected="false" data-i18n="tab_desserts">Desserts</button>
+      <button class="menu-tab" data-category="drinks" role="tab" aria-selected="false" data-i18n="tab_drinks">Drinks</button>
+    </div>
+
+    <div class="menu-grid" id="menuGrid"><!-- injected by JS --></div>
+  </div>
+</section>
+
+<!-- ================= BLOG ================= -->
+<section class="blog-section" id="blog">
+  <div class="container">
+    <p class="section-eyebrow reveal" data-i18n="blog_eyebrow">Blog &amp; News</p>
+    <h2 class="section-title reveal" data-i18n="blog_title">Nami Blog</h2>
+    <p class="section-lead reveal" data-i18n="blog_lead">
+      Stories, traditions, and notes from the world of Asian culinary culture and the Nami team.
+    </p>
+
+    <div class="blog-grid" id="blogGrid"><!-- injected by JS --></div>
+  </div>
+</section>
+
+<!-- ================= ABOUT + HOURS ================= -->
+<section class="about-section" id="about">
+  <div class="container about-inner">
+    <div class="about-text reveal">
+      <p class="section-eyebrow" data-i18n="about_eyebrow">About Us</p>
+      <h2 class="section-title" data-i18n="about_title">Our Story</h2>
+      <p data-i18n="about_p1">
+        They say that Hokusai's famous wave began its long journey from Kanagawa and stopped in
+        the heart of Guria. "Nami" means a wave in Japanese — a wave that brought Asian flavors
+        right to you.
+      </p>
+      <div class="about-stats">
+        <div class="stat">
+          <span class="stat-num">25+</span>
+          <span class="stat-label" data-i18n="stat_dishes">Dishes on the menu</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">100%</span>
+          <span class="stat-label" data-i18n="stat_fresh">Fresh fish</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hours-card reveal">
+      <h3 data-i18n="hours_title">Working Hours</h3>
+      <ul class="hours-list" id="hoursList">
+        <li data-day="Monday"><span data-i18n="day_monday">Monday</span><span>13:30 – 23:30</span></li>
+        <li data-day="Tuesday"><span data-i18n="day_tuesday">Tuesday</span><span>13:30 – 23:30</span></li>
+        <li data-day="Wednesday"><span data-i18n="day_wednesday">Wednesday</span><span>13:30 – 23:30</span></li>
+        <li data-day="Thursday"><span data-i18n="day_thursday">Thursday</span><span>13:30 – 23:30</span></li>
+        <li data-day="Friday"><span data-i18n="day_friday">Friday</span><span>13:30 – 23:30</span></li>
+        <li data-day="Saturday"><span data-i18n="day_saturday">Saturday</span><span>13:30 – 23:30</span></li>
+        <li data-day="Sunday" data-closed="true"><span data-i18n="day_sunday">Sunday</span><span data-i18n="hours_closed_label">Closed</span></li>
+      </ul>
+      <p class="hours-note" id="hoursNote">Loading today's status…</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section class="contact-section" id="contact">
+  <div class="container contact-inner">
+    <div class="contact-info reveal">
+      <p class="section-eyebrow" data-i18n="contact_eyebrow">Contact &amp; Location</p>
+      <h2 class="section-title" data-i18n="contact_title">Come Say Hi</h2>
+      <p class="section-lead" data-i18n="contact_lead">
+        Walk in, call ahead, or reserve a table online &mdash; we'd love to host you.
+      </p>
+
+      <ul class="info-list">
+        <li>
+          <span class="info-icon" aria-hidden="true">📍</span>
+          <div>
+            <strong data-i18n="info_address_label">Address</strong>
+            <p data-i18n="info_address_value">15 Chavchavadze Street, Ozurgeti, Georgia</p>
+          </div>
+        </li>
+        <li>
+          <span class="info-icon" aria-hidden="true">📞</span>
+          <div>
+            <strong data-i18n="info_phone_label">Phone</strong>
+            <p><a href="tel:+995597050817">+995 597 05 08 17</a></p>
+          </div>
+        </li>
+        <li>
+          <span class="info-icon" aria-hidden="true">✉️</span>
+          <div>
+            <strong data-i18n="info_email_label">Email</strong>
+            <p><a href="mailto:sushibarnami@gmail.com">sushibarnami@gmail.com</a></p>
+          </div>
+        </li>
+        <li>
+          <span class="info-icon" aria-hidden="true">🕒</span>
+          <div>
+            <strong data-i18n="info_hours_label">Hours</strong>
+            <p data-i18n="info_hours_value">Mon–Sat 13:30–23:30 · Sunday: Closed</p>
+          </div>
+        </li>
+      </ul>
+
+      <div class="socials">
+        <a href="#" aria-label="Facebook">FB</a>
+        <a href="#" aria-label="Instagram">IG</a>
+        <a href="#" aria-label="TikTok">TT</a>
+      </div>
+
+      <div class="map-embed">
+        <iframe
+          title="NAMI location map"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2968.4497720797613!2d42.00083788390276!3d41.9261856882526!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x405d0b005a3fc069%3A0x94239d9eb4059b06!2zTkFNSSAtIOGDoeGDo-GDqOGDmCDhg5Hhg5Dhg6Dhg5g!5e0!3m2!1ska!2sge!4v1788784825935!5m2!1ska!2sge"
+          loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </div>
+
+    <form class="contact-form reveal" id="contactForm" novalidate>
+      <h3 data-i18n="form_title">Send a Message</h3>
+
+      <div class="form-row">
+        <label for="name" data-i18n="label_name">Name</label>
+        <input type="text" id="name" name="name" placeholder="Your name" data-i18n-placeholder="placeholder_name" required>
+        <span class="form-error" data-for="name"></span>
+      </div>
+
+      <div class="form-row">
+        <label for="email" data-i18n="label_email">Email</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+        <span class="form-error" data-for="email"></span>
+      </div>
+
+      <div class="form-row">
+        <label for="phone" data-i18n="label_phone">Phone (optional)</label>
+        <input type="tel" id="phone" name="phone" placeholder="+995 5xx xx xx xx" data-i18n-placeholder="placeholder_phone">
+      </div>
+
+      <div class="form-row">
+        <label for="message" data-i18n="label_message">Message</label>
+        <textarea id="message" name="message" rows="4" placeholder="Tell us about your reservation or question…" data-i18n-placeholder="placeholder_message" required></textarea>
+        <span class="form-error" data-for="message"></span>
+      </div>
+
+      <button type="submit" class="btn btn-primary form-submit" data-i18n="btn_send">Send Message</button>
+      <p class="form-success" id="formSuccess" role="status"></p>
+    </form>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <a href="#home" class="logo footer-logo">
+      <img src="images/nami-logo.png" alt="NAMI logo — a great wave roundel beside the wordmark" class="logo-img">
+    </a>
+    <nav class="footer-nav">
+      <a href="#home" data-i18n="nav_home">Home</a>
+      <a href="#menu" data-i18n="nav_menu">Menu</a>
+      <a href="#blog" data-i18n="nav_blog">Blog</a>
+      <a href="#about" data-i18n="footer_about">About</a>
+      <a href="#contact" data-i18n="nav_contact">Contact</a>
+    </nav>
+    <p class="footer-copy"><span id="footerCopy">&copy; <span id="year"></span> NAMI • ნამი Sushi Bar. All rights reserved.</span></p>
+  </div>
+</footer>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+
+<div class="blog-modal" id="blogModal" hidden>
+  <div class="blog-modal-backdrop" id="blogModalBackdrop"></div>
+  <div class="blog-modal-panel" role="dialog" aria-modal="true" aria-labelledby="blogModalTitle">
+    <button class="blog-modal-close" id="blogModalClose" aria-label="Close">&times;</button>
+    <div class="blog-modal-thumb" id="blogModalThumb"></div>
+    <div class="blog-modal-body">
+      <div class="blog-meta" id="blogModalMeta"></div>
+      <h3 class="blog-modal-title" id="blogModalTitle"></h3>
+      <div class="blog-modal-content" id="blogModalContent"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>
