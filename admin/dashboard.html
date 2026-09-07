@@ -270,15 +270,13 @@
       </div>
       <div class="editor-field">
         <label>Full article content</label>
-        <p class="content-help">
-          Separate paragraphs with a blank line. Wrap text in <code>**double asterisks**</code> to make it bold.
-          To insert an uploaded photo at a specific point, place your cursor there and use the uploader below.
-        </p>
-        <div class="photo-upload-row">
-          <input type="file" accept="image/*" data-photo-lang="en">
-          <button type="button" class="admin-btn-secondary" data-upload-btn="en">Upload &amp; Insert Photo</button>
+        <p class="content-help">Click where you want a photo, then use "Insert Photo." Select text and click <strong>B</strong> to bold it.</p>
+        <div class="rte-toolbar">
+          <button type="button" class="rte-btn" data-bold-for="en" title="Bold"><strong>B</strong></button>
+          <button type="button" class="rte-btn" data-insert-photo-for="en">🖼️ Insert Photo</button>
+          <input type="file" accept="image/*" data-photo-file-for="en" hidden>
         </div>
-        <textarea id="fContent_en" rows="10"></textarea>
+        <div class="rte-editor" id="fContentRte_en" contenteditable="true"></div>
       </div>
     </div>
 
@@ -297,15 +295,13 @@
       </div>
       <div class="editor-field">
         <label>სტატიის სრული ტექსტი</label>
-        <p class="content-help">
-          გამოყავით აბზაცები ცარიელი ხაზით. <code>**ორმაგ ვარსკვლავებში**</code> მოქცეული ტექსტი გამუქდება.
-          სურათის ჩასასმელად დააყენეთ კურსორი სასურველ ადგილას და გამოიყენეთ ატვირთვის ღილაკი ქვემოთ.
-        </p>
-        <div class="photo-upload-row">
-          <input type="file" accept="image/*" data-photo-lang="ka">
-          <button type="button" class="admin-btn-secondary" data-upload-btn="ka">ატვირთვა და ჩასმა</button>
+        <p class="content-help">დააწკაპუნეთ იქ, სადაც გინდათ ფოტო, და გამოიყენეთ „ფოტოს ჩასმა". მონიშნეთ ტექსტი და დააჭირეთ <strong>B</strong>-ს გასამუქებლად.</p>
+        <div class="rte-toolbar">
+          <button type="button" class="rte-btn" data-bold-for="ka" title="გამუქება"><strong>B</strong></button>
+          <button type="button" class="rte-btn" data-insert-photo-for="ka">🖼️ ფოტოს ჩასმა</button>
+          <input type="file" accept="image/*" data-photo-file-for="ka" hidden>
         </div>
-        <textarea id="fContent_ka" rows="10"></textarea>
+        <div class="rte-editor" id="fContentRte_ka" contenteditable="true"></div>
       </div>
     </div>
 
@@ -324,15 +320,13 @@
       </div>
       <div class="editor-field">
         <label>Полный текст статьи</label>
-        <p class="content-help">
-          Разделяйте абзацы пустой строкой. Текст в <code>**двойных звёздочках**</code> станет жирным.
-          Чтобы вставить фото в нужное место, поставьте туда курсор и используйте загрузку ниже.
-        </p>
-        <div class="photo-upload-row">
-          <input type="file" accept="image/*" data-photo-lang="ru">
-          <button type="button" class="admin-btn-secondary" data-upload-btn="ru">Загрузить и вставить</button>
+        <p class="content-help">Кликните туда, где нужно фото, и нажмите «Вставить фото». Выделите текст и нажмите <strong>B</strong>, чтобы сделать его жирным.</p>
+        <div class="rte-toolbar">
+          <button type="button" class="rte-btn" data-bold-for="ru" title="Жирный"><strong>B</strong></button>
+          <button type="button" class="rte-btn" data-insert-photo-for="ru">🖼️ Вставить фото</button>
+          <input type="file" accept="image/*" data-photo-file-for="ru" hidden>
         </div>
-        <textarea id="fContent_ru" rows="10"></textarea>
+        <div class="rte-editor" id="fContentRte_ru" contenteditable="true"></div>
       </div>
     </div>
 
