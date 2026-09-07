@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NAMI Admin — Log In</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ink);
+    padding: 24px;
+  }
+  .login-card {
+    width: 100%;
+    max-width: 380px;
+    background: var(--cream);
+    border-radius: var(--radius);
+    padding: 40px 36px;
+    box-shadow: var(--shadow);
+  }
+  .login-card h1 {
+    font-size: 1.6rem;
+    margin: 0 0 6px;
+    text-align: center;
+  }
+  .login-card p.sub {
+    text-align: center;
+    color: var(--muted);
+    font-size: .88rem;
+    margin: 0 0 28px;
+  }
+  .login-field { margin-bottom: 16px; }
+  .login-field label { display: block; font-size: .82rem; font-weight: 600; margin-bottom: 6px; }
+  .login-field input {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    font-family: var(--font-body);
+    font-size: .95rem;
+    background: var(--paper);
+  }
+  .login-error {
+    color: var(--red);
+    font-size: .85rem;
+    margin: -6px 0 16px;
+    min-height: 1.2em;
+  }
+  .login-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    background: var(--green-deep);
+    color: var(--cream);
+    font-weight: 600;
+    font-size: .95rem;
+    border: none;
+    cursor: pointer;
+    transition: background .2s ease;
+  }
+  .login-btn:hover { background: var(--ink); }
+  .login-btn:disabled { opacity: .6; cursor: default; }
+  .back-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    font-size: .82rem;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<div class="login-card">
+  <h1>NAMI Admin</h1>
+  <p class="sub">Log in to manage blog posts &amp; photos</p>
+
+  <form id="loginForm" novalidate>
+    <div class="login-field">
+      <label for="email">Email</label>
+      <input type="email" id="email" autocomplete="username" required>
+    </div>
+    <div class="login-field">
+      <label for="password">Password</label>
+      <input type="password" id="password" autocomplete="current-password" required>
+    </div>
+    <p class="login-error" id="loginError"></p>
+    <button type="submit" class="login-btn" id="loginBtn">Log In</button>
+  </form>
+
+  <a href="../index.html" class="back-link">← Back to site</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-client.js"></script>
+<script>
+  (async () => {
+    if (typeof supabaseClient === 'undefined' || !supabaseClient) return;
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) window.location.href = 'dashboard.html';
+  })();
+
+  const form = document.getElementById('loginForm');
+  const errorEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorEl.textContent = '';
+
+    if (typeof supabaseClient === 'undefined' || !supabaseClient) {
+      errorEl.textContent = "Couldn't reach the login service. Check your connection and reload.";
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Logging in…';
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      errorEl.textContent = 'Incorrect email or password.';
+      btn.disabled = false;
+      btn.textContent = 'Log In';
+      return;
+    }
+
+    window.location.href = 'dashboard.html';
+  });
+</script>
+</body>
+</html>

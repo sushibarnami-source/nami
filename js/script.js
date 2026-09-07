@@ -319,7 +319,10 @@
     return `<figure class="post-figure"><img src="${src}" alt="${caption}" loading="lazy"><figcaption>${caption}</figcaption></figure>`;
   }
 
-  const BLOG_POSTS = [
+  /* Shown immediately on load and kept if the live database is
+     unreachable; replaced by loadBlogPostsFromSupabase() once the
+     admin-managed posts arrive. */
+  let BLOG_POSTS = [
     {
       icon: '🥢',
       gradient: 'linear-gradient(135deg,#4f7a5c,#11241c)',
@@ -374,6 +377,56 @@
       },
     },
   ];
+
+  /* ---------------------------------------------------------
+     Live blog posts from Supabase (managed via /admin)
+  --------------------------------------------------------- */
+  function formatBlogDate(isoDate, lang) {
+    const parts = isoDate.split('-').map(Number);
+    const dt = new Date(parts[0], parts[1] - 1, parts[2]);
+    const locale = lang === 'ka' ? 'ka-GE' : lang === 'ru' ? 'ru-RU' : 'en-US';
+    const opts = lang === 'en'
+      ? { month: 'short', day: 'numeric', year: 'numeric' }
+      : { day: 'numeric', month: 'long', year: 'numeric' };
+    try {
+      return new Intl.DateTimeFormat(locale, opts).format(dt);
+    } catch (e) {
+      return isoDate;
+    }
+  }
+
+  async function loadBlogPostsFromSupabase() {
+    if (typeof supabaseClient === 'undefined' || !supabaseClient) return;
+    try {
+      const { data, error } = await supabaseClient
+        .from('blog_posts')
+        .select('*')
+        .eq('published', true)
+        .order('sort_order', { ascending: false })
+        .order('post_date', { ascending: false });
+
+      if (error || !data || !data.length) return;
+
+      BLOG_POSTS = data.map(row => ({
+        icon: row.icon,
+        gradient: row.gradient,
+        date: {
+          en: formatBlogDate(row.post_date, 'en'),
+          ka: formatBlogDate(row.post_date, 'ka'),
+          ru: formatBlogDate(row.post_date, 'ru'),
+        },
+        tag: { en: row.tag_en, ka: row.tag_ka, ru: row.tag_ru },
+        title: { en: row.title_en, ka: row.title_ka, ru: row.title_ru },
+        excerpt: { en: row.excerpt_en, ka: row.excerpt_ka, ru: row.excerpt_ru },
+        content: { en: row.content_en, ka: row.content_ka, ru: row.content_ru },
+      }));
+
+      renderBlog();
+      if (openPostIndex !== null) renderBlogModal(openPostIndex);
+    } catch (e) {
+      // offline, blocked, or Supabase unreachable — keep the fallback post
+    }
+  }
 
   /* ---------------------------------------------------------
      Menu rendering + filtering
@@ -762,5 +815,6 @@
   renderBlog();
   updateHours();
   renderFooterCopy();
+  loadBlogPostsFromSupabase();
 
 })();

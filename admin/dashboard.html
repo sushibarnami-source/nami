@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NAMI Admin — Dashboard</title>
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/admin.css">
+</head>
+<body class="admin-body">
+
+<header class="admin-header">
+  <h1>NAMI Admin</h1>
+  <div class="admin-header-right">
+    <span id="userEmail"></span>
+    <a href="../index.html">View site</a>
+    <button class="admin-btn" id="logoutBtn">Log out</button>
+  </div>
+</header>
+
+<div class="admin-container">
+  <div class="admin-toolbar">
+    <h2>Blog Posts</h2>
+    <button class="admin-btn-primary" id="newPostBtn">+ New Post</button>
+  </div>
+
+  <div id="postList" class="post-list">
+    <p class="admin-loading">Loading posts…</p>
+  </div>
+</div>
+
+<!-- ================= Editor overlay ================= -->
+<div class="editor-overlay" id="editorOverlay" hidden>
+  <div class="editor-panel">
+    <h2 id="editorHeading">New Post</h2>
+
+    <div class="editor-row">
+      <div class="editor-field">
+        <label for="fIcon">Icon (emoji)</label>
+        <input type="text" id="fIcon" maxlength="4" value="📝">
+      </div>
+      <div class="editor-field">
+        <label for="fGradient">Thumbnail color</label>
+        <select id="fGradient">
+          <option value="linear-gradient(135deg,#4f7a5c,#11241c)">Deep Green</option>
+          <option value="linear-gradient(135deg,#4f7a5c,#ddc98d)">Green &amp; Gold</option>
+          <option value="linear-gradient(135deg,#2c4436,#93bb9e)">Sage</option>
+          <option value="linear-gradient(135deg,#a8342a,#b7a369)">Red &amp; Gold</option>
+          <option value="linear-gradient(135deg,#11241c,#93bb9e)">Ink &amp; Sage</option>
+          <option value="linear-gradient(135deg,#b7a369,#11241c)">Gold &amp; Ink</option>
+        </select>
+      </div>
+      <div class="editor-field">
+        <label for="fDate">Date</label>
+        <input type="date" id="fDate">
+      </div>
+      <div class="editor-field">
+        <label for="fSortOrder">Sort order</label>
+        <input type="number" id="fSortOrder" value="0">
+      </div>
+      <div class="editor-checkbox">
+        <input type="checkbox" id="fPublished" checked>
+        <label for="fPublished">Published</label>
+      </div>
+    </div>
+
+    <div class="lang-tabs">
+      <button type="button" class="lang-tab-btn active" data-lang="en">English</button>
+      <button type="button" class="lang-tab-btn" data-lang="ka">ქართული</button>
+      <button type="button" class="lang-tab-btn" data-lang="ru">Русский</button>
+    </div>
+
+    <div class="lang-pane" data-lang-pane="en">
+      <div class="editor-field" style="margin-bottom:14px;">
+        <label>Tag (e.g. "Guide", "News")</label>
+        <input type="text" id="fTag_en">
+      </div>
+      <div class="editor-field" style="margin-bottom:14px;">
+        <label>Title</label>
+        <input type="text" id="fTitle_en">
+      </div>
+      <div class="editor-field" style="margin-bottom:14px;">
+        <label>Excerpt (short teaser shown on the blog card)</label>
+        <textarea id="fExcerpt_en" rows="2"></textarea>
+      </div>
+      <div class="editor-field">
+        <label>Full article content</label>
+        <p class="content-help">
+          Separate paragraphs with a blank line. Wrap text in <code>**double asterisks**</code> to make it bold.
+          To insert an uploaded photo at a specific point, place your cursor there and use the uploader below.
+        </p>
+        <div class="photo-upload-row">
+          <input type="file" accept="image/*" data-photo-lang="en">
+          <button type="button" class="admin-btn-secondary" data-upload-btn="en">Upload &amp; Insert Photo</button>
+        </div>
+        <textarea id="fContent_en" rows="10"></textarea>
+      </div>
+    </div>
+
+    <div class="lang-pane" data-lang-pane="ka" hidden>
+      <div class="editor-field" style="margin-bottom:14px;">
+        <label>ტეგი (მაგ. „გზამკვლევი", „სიახლე")</label>
+        <input type="text" id="fTag_ka">
+      </div>
+      <div class="editor-field" style="margin-bottom:14px;">
+        <label>სათაური</label>
+        <input type="text" id="fTitle_ka">
+      </div>
+      <div class="editor-field" style="margin-bottom:14px;">
+        <label>მოკლე აღწერა (ბარათზე გამოსატანი ტექსტი)</label>
+        <textarea id="fExcerpt_ka" rows="2"></textarea>
+      </div>
+      <div class="editor-field">
+        <label>სტატიის სრული ტექსტი</label>
+        <p class="content-help">
+          გამოყავით აბზაცები ცარიელი ხაზით. <code>**ორმაგ ვარსკვლავებში**</code> მოქცეული ტექსტი გამუქდება.
+          სურათის ჩასასმელად დააყენეთ კურსორი სასურველ ადგილას და გამოიყენეთ ატვირთვის ღილაკი ქვემოთ.
+        </p>
+        <div class="photo-upload-row">
+          <input type="file" accept="image/*" data-photo-lang="ka">
+          <button type="button" class="admin-btn-secondary" data-upload-btn="ka">ატვირთვა და ჩასმა</button>
+        </div>
+        <textarea id="fContent_ka" rows="10"></textarea>
+      </div>
+    </div>
+
+    <div class="lang-pane" data-lang-pane="ru" hidden>
+      <div class="editor-field" style="margin-bottom:14px;">
+        <label>Тег (напр. «Гид», «Новости»)</label>
+        <input type="text" id="fTag_ru">
+      </div>
+      <div class="editor-field" style="margin-bottom:14px;">
+        <label>Заголовок</label>
+        <input type="text" id="fTitle_ru">
+      </div>
+      <div class="editor-field" style="margin-bottom:14px;">
+        <label>Краткое описание (для карточки блога)</label>
+        <textarea id="fExcerpt_ru" rows="2"></textarea>
+      </div>
+      <div class="editor-field">
+        <label>Полный текст статьи</label>
+        <p class="content-help">
+          Разделяйте абзацы пустой строкой. Текст в <code>**двойных звёздочках**</code> станет жирным.
+          Чтобы вставить фото в нужное место, поставьте туда курсор и используйте загрузку ниже.
+        </p>
+        <div class="photo-upload-row">
+          <input type="file" accept="image/*" data-photo-lang="ru">
+          <button type="button" class="admin-btn-secondary" data-upload-btn="ru">Загрузить и вставить</button>
+        </div>
+        <textarea id="fContent_ru" rows="10"></textarea>
+      </div>
+    </div>
+
+    <p class="login-error" id="editorError" style="color:var(--red); font-size:.85rem;"></p>
+
+    <div class="editor-actions">
+      <button type="button" class="admin-btn-danger" id="deletePostBtn" hidden>Delete Post</button>
+      <div class="editor-actions-right">
+        <button type="button" class="admin-btn-secondary" id="cancelEditBtn">Cancel</button>
+        <button type="button" class="admin-btn-primary" id="savePostBtn">Save Post</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="admin-toast" id="toast" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-client.js"></script>
+<script src="dashboard.js"></script>
+</body>
+</html>
