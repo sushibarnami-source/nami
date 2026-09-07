@@ -310,6 +310,50 @@
 
   const BLOG_POSTS = [
     {
+      icon: '🥢',
+      gradient: 'linear-gradient(135deg,#4f7a5c,#11241c)',
+      date: { en: 'Sep 7, 2026', ka: '7 სექტემბერი, 2026', ru: '7 сентября 2026' },
+      tag: { en: 'Guide', ka: 'გზამკვლევი', ru: 'Гид' },
+      title: { en: 'How to Eat Sushi Properly?', ka: 'როგორ ვჭამოთ სწორად?', ru: 'Как правильно есть суши?' },
+      excerpt: {
+        en: 'Ever wondered why ginger, wasabi, and soy sauce are served with sushi? Discover their real history — and how to use them the right way.',
+        ka: 'გაინტერესებთ, რატომ მირთმევენ ჯანჯაფილს, ვასაბსა და სოიოს სოუსს სუშისთან ერთად? გაეცანით მათ ნამდვილ ისტორიას და სწორად მირთმევის წესებს.',
+        ru: 'Задумывались, почему имбирь, васаби и соевый соус подают с суши? Узнайте их настоящую историю — и как использовать их правильно.',
+      },
+      content: {
+        en: [
+          `Did you know where the tradition of using soy sauce, wasabi, and ginger comes from, and what they were actually used for in ancient Japan?`,
+          `<strong>生姜 - Ginger:</strong> In ancient times, before refrigerators existed, the Japanese used vinegar and spices to preserve fish. Ginger has natural antimicrobial properties and was originally added primarily for hygiene and safety.`,
+          `<strong>How to eat it:</strong> It is never eaten together with a roll — it is a "palate cleanser" meant to be enjoyed between different bites to neutralize flavors.`,
+          `<strong>わさび - Wasabi:</strong> Real wasabi was a rare and expensive product in ancient Japan, placed alongside raw fish due to its antiseptic properties to neutralize bacteria.`,
+          `<strong>How to eat it:</strong> The chef already places the exact dose on your plate — dissolving wasabi into soy sauce disrupts the balance and ruins the dish's original flavor.`,
+          `<strong>醤油 - Soy Sauce:</strong> The tradition of using soy sauce developed a little later, enhancing the unique umami flavor of raw fish (sashimi and sushi).`,
+          `<strong>How to eat it:</strong> Dip by the fish side, not the rice — rice quickly absorbs liquid, becomes overly soaked, and falls apart.`,
+          `Small tradition, big flavor! Drop by to put this knowledge into practice!`,
+        ],
+        ka: [
+          `იცით თუ არა, საიდან მოდის სოიოს, ვასაბისა და ჯანჯაფილის გამოყენების ტრადიცია და რეალურად რისთვის იყენებდნენ მათ ძველ იაპონიაში?`,
+          `<strong>生姜 - ჯანჯაფილი:</strong> ძველად, როდესაც მაცივრები არ არსებობდა, იაპონელები თევზის შესანახად ძმარსა და სანელებლებს იყენებდნენ. ჯანჯაფილს კი ბუნებრივი ანტიმიკრობული თვისებები აქვს და მას პირველ რიგში ჰიგიენისა და უსაფრთხოებისთვის ამატებდნენ.`,
+          `<strong>როგორ მივირთვათ:</strong> ის არასდროს იჭმევა როლთან ერთად - ის არის „პირის გამწმენდი“, რომელსაც სხვადასხვა გემოს შორის მიირთმევენ, გემოების გასანეიტრებლად.`,
+          `<strong>わさび - ვასაბი:</strong> ნამდვილი ვასაბი ძველ იაპონიაში იშვიათი და ძვირად ღირებული პროდუქტი იყო, რომელსაც ანტისეპტიკური თვისებების გამო უმი თევზის გვერდით დებდნენ ბაქტერიების გასანეიტრებლად.`,
+          `<strong>როგორ მივირთვათ:</strong> შეფი უკვე დებს ზუსტ დოზას თეფშზე - ვასაბის სოიაში გახსნა კერძის ბალანსსა და მის თავდაპირველ გემოს არღვევს.`,
+          `<strong>醤油 - სოიოს სოუსი:</strong> სოიოს სოუსის გამოყენების ტრადიცია ოდნავ მოგვიანებით განვითარდა და ის უმი თევზის (საშიმის და სუშის) უნიკალურ უმამის გემოს აძლიერებს.`,
+          `<strong>როგორ მივირთვათ:</strong> ჩააწეთ თევზის მხრიდან და არა ბრინჯის - ბრინჯი სწრაფად შთანთქავს სითხეს, ზედმეტად იჟღინთება და იშლება.`,
+          `პატარა ტრადიცია, დიდი გემო! მობრძანდით, რომ ცოდნა პრაქტიკაში გამოსცადოთ!`,
+        ],
+        ru: [
+          `Знаете ли вы, откуда происходит традиция использования соевого соуса, васаби и имбиря, и для чего на самом деле они использовались в древней Японии?`,
+          `<strong>生姜 - Имбирь:</strong> В древние времена, когда не было холодильников, японцы использовали уксус и специи для сохранения рыбы. Имбирь обладает природными антимикробными свойствами и изначально добавлялся в первую очередь для гигиены и безопасности.`,
+          `<strong>Как есть:</strong> Его никогда не едят вместе с роллами — это «очиститель вкуса», который едят между разными блюдами для нейтрализации вкусов.`,
+          `<strong>わさび - Васаби:</strong> Настоящий васаби в древней Японии был редким и дорогим продуктом, который клали рядом с сырой рыбой из-за его антисептических свойств для нейтрализации бактерий.`,
+          `<strong>Как есть:</strong> Шеф-повар уже кладет точную дозу на тарелку — растворение васаби в соевом соусе нарушает баланс и первоначальный вкус блюда.`,
+          `<strong>醤油 - Соевый соус:</strong> Традиция использования соевого соуса развилась чуть позже, он усиливает уникальный умами-вкус сырой рыбы (сашими и суши).`,
+          `<strong>Как есть:</strong> Макайте стороной рыбы, а не риса — рис быстро впитывает жидкость, перенасыщается и разваливается.`,
+          `Маленькая традиция, большой вкус! Загляните к нам, чтобы применить эти знания на практике!`,
+        ],
+      },
+    },
+    {
       icon: '🍣',
       gradient: 'linear-gradient(135deg,#4f7a5c,#ddc98d)',
       date: { en: 'Aug 12, 2026', ka: '12 აგვისტო, 2026', ru: '12 августа 2026' },
@@ -447,7 +491,7 @@
   const blogGrid = document.getElementById('blogGrid');
 
   function renderBlog() {
-    blogGrid.innerHTML = BLOG_POSTS.map(post => {
+    blogGrid.innerHTML = BLOG_POSTS.map((post, i) => {
       const title = post.title[currentLang] || post.title.en;
       const excerpt = post.excerpt[currentLang] || post.excerpt.en;
       const tag = post.tag[currentLang] || post.tag.en;
@@ -459,18 +503,72 @@
           <div class="blog-meta"><span>${tag}</span><span>${date}</span></div>
           <h3 class="blog-title">${title}</h3>
           <p class="blog-excerpt">${excerpt}</p>
-          <a href="#" class="blog-readmore" data-title="${title}">${t('blog_readmore')}</a>
+          <a href="#" class="blog-readmore" data-index="${i}" data-title="${title}">${t('blog_readmore')}</a>
         </div>
       </article>
     `;
     }).join('');
   }
 
+  /* ---------------------------------------------------------
+     Blog article modal
+  --------------------------------------------------------- */
+  const blogModal = document.getElementById('blogModal');
+  const blogModalBackdrop = document.getElementById('blogModalBackdrop');
+  const blogModalClose = document.getElementById('blogModalClose');
+  const blogModalThumb = document.getElementById('blogModalThumb');
+  const blogModalMeta = document.getElementById('blogModalMeta');
+  const blogModalTitle = document.getElementById('blogModalTitle');
+  const blogModalContent = document.getElementById('blogModalContent');
+  let openPostIndex = null;
+
+  function renderBlogModal(index) {
+    const post = BLOG_POSTS[index];
+    if (!post) return;
+    const title = post.title[currentLang] || post.title.en;
+    const tag = post.tag[currentLang] || post.tag.en;
+    const date = post.date[currentLang] || post.date.en;
+    const paragraphs = post.content[currentLang] || post.content.en;
+
+    blogModalThumb.style.background = post.gradient;
+    blogModalThumb.textContent = post.icon;
+    blogModalMeta.innerHTML = `<span>${tag}</span><span>${date}</span>`;
+    blogModalTitle.textContent = title;
+    blogModalContent.innerHTML = paragraphs.map(p => `<p>${p}</p>`).join('');
+  }
+
+  function openBlogModal(index) {
+    const post = BLOG_POSTS[index];
+    if (!post || !post.content) return;
+    openPostIndex = index;
+    renderBlogModal(index);
+    blogModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeBlogModal() {
+    openPostIndex = null;
+    blogModal.hidden = true;
+    document.body.style.overflow = '';
+  }
+
   blogGrid.addEventListener('click', (e) => {
     const link = e.target.closest('.blog-readmore');
     if (!link) return;
     e.preventDefault();
-    alert(`"${link.dataset.title}"\n\n${t('blog_alert')}`);
+    const index = Number(link.dataset.index);
+    const post = BLOG_POSTS[index];
+    if (post && post.content) {
+      openBlogModal(index);
+    } else {
+      alert(`"${link.dataset.title}"\n\n${t('blog_alert')}`);
+    }
+  });
+
+  blogModalBackdrop.addEventListener('click', closeBlogModal);
+  blogModalClose.addEventListener('click', closeBlogModal);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !blogModal.hidden) closeBlogModal();
   });
 
   /* ---------------------------------------------------------
@@ -502,6 +600,7 @@
     applyStaticTranslations();
     renderMenu(currentCategory);
     renderBlog();
+    if (openPostIndex !== null) renderBlogModal(openPostIndex);
     updateHours();
     renderFooterCopy();
 

@@ -464,6 +464,63 @@ section { padding: 110px 0; }
 }
 .blog-readmore:hover { border-color: var(--green-deep); }
 
+.blog-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.blog-modal[hidden] { display: none; }
+.blog-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(17, 36, 28, .65);
+}
+.blog-modal-panel {
+  position: relative;
+  background: var(--cream);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 640px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+  animation: blogModalIn .25s ease;
+}
+@keyframes blogModalIn {
+  from { opacity: 0; transform: translateY(16px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.blog-modal-close {
+  position: absolute;
+  top: 14px; right: 14px;
+  z-index: 2;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.85);
+  color: var(--ink);
+  font-size: 1.4rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.blog-modal-close:hover { background: #fff; }
+.blog-modal-thumb {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+}
+.blog-modal-body { padding: 28px 32px 34px; display: flex; flex-direction: column; gap: 14px; }
+.blog-modal-title { font-size: 1.7rem; margin: 0; }
+.blog-modal-content { color: var(--ink-soft); font-size: .98rem; line-height: 1.7; display: flex; flex-direction: column; gap: 14px; }
+.blog-modal-content strong { color: var(--green-deep); }
+
 /* ---------- About & Hours ---------- */
 .about-section { background: var(--paper); }
 .about-inner {
