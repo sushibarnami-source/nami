@@ -530,10 +530,17 @@ section { padding: 110px 0; }
   background: var(--paper-dim);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 16px 20px 14px;
+  overflow: hidden;
+  padding: 0 0 14px;
 }
-.post-figure svg { width: 140px; height: 98px; }
+.post-figure img {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  display: block;
+}
 .post-figure figcaption {
+  margin-top: 4px;
   font-size: .74rem;
   letter-spacing: .06em;
   text-transform: uppercase;

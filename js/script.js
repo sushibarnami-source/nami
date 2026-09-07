@@ -309,33 +309,14 @@
   ];
 
   /* ---------------------------------------------------------
-     Small inline illustrations used inside blog article content
+     Illustrations used inside blog article content
   --------------------------------------------------------- */
-  const SVG_GINGER = `<svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
-    <ellipse cx="100" cy="78" rx="52" ry="30" fill="#ddc98d"/>
-    <circle cx="58" cy="65" r="20" fill="#ddc98d"/>
-    <circle cx="140" cy="60" r="22" fill="#ddc98d"/>
-    <circle cx="115" cy="50" r="16" fill="#ddc98d"/>
-    <path d="M70 70 Q80 85 75 100" stroke="#8a7440" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <path d="M100 65 Q108 82 100 98" stroke="#8a7440" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <path d="M128 68 Q135 84 126 96" stroke="#8a7440" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <ellipse cx="100" cy="78" rx="52" ry="30" fill="none" stroke="#b7a369" stroke-width="2"/>
-  </svg>`;
-  const SVG_WASABI = `<svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
-    <ellipse cx="100" cy="100" rx="30" ry="18" fill="#4f7a5c"/>
-    <path d="M100 85 C95 60 70 45 55 30 C75 40 92 55 100 75 C108 55 125 40 145 30 C130 45 105 60 100 85 Z" fill="#93bb9e"/>
-    <path d="M100 82 C96 65 85 50 78 38" stroke="#2c4436" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <path d="M100 82 C104 65 115 50 122 38" stroke="#2c4436" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <ellipse cx="100" cy="100" rx="30" ry="18" fill="none" stroke="#2c4436" stroke-width="2"/>
-  </svg>`;
-  const SVG_SOY = `<svg viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
-    <ellipse cx="100" cy="90" rx="70" ry="24" fill="#eceee0" stroke="#b7a369" stroke-width="2"/>
-    <ellipse cx="100" cy="88" rx="42" ry="14" fill="#11241c"/>
-    <ellipse cx="88" cy="84" rx="10" ry="4" fill="#2c4436" opacity="0.6"/>
-  </svg>`;
+  const IMG_GINGER = 'images/blog-ginger.png';
+  const IMG_WASABI = 'images/blog-wasabi.png';
+  const IMG_SOY = 'images/blog-soy-sauce.png';
 
-  function figure(svg, caption) {
-    return `<figure class="post-figure">${svg}<figcaption>${caption}</figcaption></figure>`;
+  function figure(src, caption) {
+    return `<figure class="post-figure"><img src="${src}" alt="${caption}" loading="lazy"><figcaption>${caption}</figcaption></figure>`;
   }
 
   const BLOG_POSTS = [
@@ -354,39 +335,39 @@
         en: [
           `Did you know where the tradition of using soy sauce, wasabi, and ginger comes from, and what they were actually used for in ancient Japan?`,
           `<strong>生姜 - Ginger:</strong> In ancient times, before refrigerators existed, the Japanese used vinegar and spices to preserve fish. Ginger has natural antimicrobial properties and was originally added primarily for hygiene and safety.`,
-          figure(SVG_GINGER, 'Ginger (生姜)'),
+          figure(IMG_GINGER, 'Ginger (生姜)'),
           `<strong>How to eat it:</strong> It is never eaten together with a roll — it is a "palate cleanser" meant to be enjoyed between different bites to neutralize flavors.`,
           `<strong>わさび - Wasabi:</strong> Real wasabi was a rare and expensive product in ancient Japan, placed alongside raw fish due to its antiseptic properties to neutralize bacteria.`,
-          figure(SVG_WASABI, 'Wasabi (わさび)'),
+          figure(IMG_WASABI, 'Wasabi (わさび)'),
           `<strong>How to eat it:</strong> The chef already places the exact dose on your plate — dissolving wasabi into soy sauce disrupts the balance and ruins the dish's original flavor.`,
           `<strong>醤油 - Soy Sauce:</strong> The tradition of using soy sauce developed a little later, enhancing the unique umami flavor of raw fish (sashimi and sushi).`,
-          figure(SVG_SOY, 'Soy Sauce (醤油)'),
+          figure(IMG_SOY, 'Soy Sauce (醤油)'),
           `<strong>How to eat it:</strong> Dip by the fish side, not the rice — rice quickly absorbs liquid, becomes overly soaked, and falls apart.`,
           `Small tradition, big flavor! Drop by to put this knowledge into practice!`,
         ],
         ka: [
           `იცით თუ არა, საიდან მოდის სოიოს, ვასაბისა და ჯანჯაფილის გამოყენების ტრადიცია და რეალურად რისთვის იყენებდნენ მათ ძველ იაპონიაში?`,
           `<strong>生姜 - ჯანჯაფილი:</strong> ძველად, როდესაც მაცივრები არ არსებობდა, იაპონელები თევზის შესანახად ძმარსა და სანელებლებს იყენებდნენ. ჯანჯაფილს კი ბუნებრივი ანტიმიკრობული თვისებები აქვს და მას პირველ რიგში ჰიგიენისა და უსაფრთხოებისთვის ამატებდნენ.`,
-          figure(SVG_GINGER, 'ჯანჯაფილი (生姜)'),
+          figure(IMG_GINGER, 'ჯანჯაფილი (生姜)'),
           `<strong>როგორ მივირთვათ:</strong> ის არასდროს იჭმევა როლთან ერთად - ის არის „პირის გამწმენდი“, რომელსაც სხვადასხვა გემოს შორის მიირთმევენ, გემოების გასანეიტრებლად.`,
           `<strong>わさび - ვასაბი:</strong> ნამდვილი ვასაბი ძველ იაპონიაში იშვიათი და ძვირად ღირებული პროდუქტი იყო, რომელსაც ანტისეპტიკური თვისებების გამო უმი თევზის გვერდით დებდნენ ბაქტერიების გასანეიტრებლად.`,
-          figure(SVG_WASABI, 'ვასაბი (わさび)'),
+          figure(IMG_WASABI, 'ვასაბი (わさび)'),
           `<strong>როგორ მივირთვათ:</strong> შეფი უკვე დებს ზუსტ დოზას თეფშზე - ვასაბის სოიაში გახსნა კერძის ბალანსსა და მის თავდაპირველ გემოს არღვევს.`,
           `<strong>醤油 - სოიოს სოუსი:</strong> სოიოს სოუსის გამოყენების ტრადიცია ოდნავ მოგვიანებით განვითარდა და ის უმი თევზის (საშიმის და სუშის) უნიკალურ უმამის გემოს აძლიერებს.`,
-          figure(SVG_SOY, 'სოიოს სოუსი (醤油)'),
+          figure(IMG_SOY, 'სოიოს სოუსი (醤油)'),
           `<strong>როგორ მივირთვათ:</strong> ჩააწეთ თევზის მხრიდან და არა ბრინჯის - ბრინჯი სწრაფად შთანთქავს სითხეს, ზედმეტად იჟღინთება და იშლება.`,
           `პატარა ტრადიცია, დიდი გემო! მობრძანდით, რომ ცოდნა პრაქტიკაში გამოსცადოთ!`,
         ],
         ru: [
           `Знаете ли вы, откуда происходит традиция использования соевого соуса, васаби и имбиря, и для чего на самом деле они использовались в древней Японии?`,
           `<strong>生姜 - Имбирь:</strong> В древние времена, когда не было холодильников, японцы использовали уксус и специи для сохранения рыбы. Имбирь обладает природными антимикробными свойствами и изначально добавлялся в первую очередь для гигиены и безопасности.`,
-          figure(SVG_GINGER, 'Имбирь (生姜)'),
+          figure(IMG_GINGER, 'Имбирь (生姜)'),
           `<strong>Как есть:</strong> Его никогда не едят вместе с роллами — это «очиститель вкуса», который едят между разными блюдами для нейтрализации вкусов.`,
           `<strong>わさび - Васаби:</strong> Настоящий васаби в древней Японии был редким и дорогим продуктом, который клали рядом с сырой рыбой из-за его антисептических свойств для нейтрализации бактерий.`,
-          figure(SVG_WASABI, 'Васаби (わさび)'),
+          figure(IMG_WASABI, 'Васаби (わさび)'),
           `<strong>Как есть:</strong> Шеф-повар уже кладет точную дозу на тарелку — растворение васаби в соевом соусе нарушает баланс и первоначальный вкус блюда.`,
           `<strong>醤油 - Соевый соус:</strong> Традиция использования соевого соуса развилась чуть позже, он усиливает уникальный умами-вкус сырой рыбы (сашими и суши).`,
-          figure(SVG_SOY, 'Соевый соус (醤油)'),
+          figure(IMG_SOY, 'Соевый соус (醤油)'),
           `<strong>Как есть:</strong> Макайте стороной рыбы, а не риса — рис быстро впитывает жидкость, перенасыщается и разваливается.`,
           `Маленькая традиция, большой вкус! Загляните к нам, чтобы применить эти знания на практике!`,
         ],
