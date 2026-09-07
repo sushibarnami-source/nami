@@ -560,9 +560,53 @@
         <p class="menu-item-desc">${desc}</p>
         ${tagsHtml ? `<div class="menu-item-tags">${tagsHtml}</div>` : ''}
       `;
+      card.addEventListener('click', () => openDishModal(item));
       menuGrid.appendChild(card);
     });
   }
+
+  /* ---------------------------------------------------------
+     Dish detail modal
+  --------------------------------------------------------- */
+  const dishModal = document.getElementById('dishModal');
+  const dishModalBackdrop = document.getElementById('dishModalBackdrop');
+  const dishModalClose = document.getElementById('dishModalClose');
+  const dishModalPhotoWrap = document.getElementById('dishModalPhotoWrap');
+  const dishModalName = document.getElementById('dishModalName');
+  const dishModalPrice = document.getElementById('dishModalPrice');
+  const dishModalTags = document.getElementById('dishModalTags');
+  const dishModalDesc = document.getElementById('dishModalDesc');
+
+  function openDishModal(item) {
+    const name = item.name[currentLang] || item.name.en;
+    const desc = item.desc[currentLang] || item.desc.en;
+    const tagLabels = TAG_LABELS[currentLang] || TAG_LABELS.en;
+
+    dishModalPhotoWrap.innerHTML = item.photo
+      ? `<img src="${item.photo}" alt="${name}" loading="lazy">`
+      : '';
+    dishModalPhotoWrap.hidden = !item.photo;
+    dishModalName.textContent = name;
+    dishModalPrice.textContent = item.price;
+    dishModalDesc.textContent = desc;
+    dishModalTags.innerHTML = (item.tags || [])
+      .map(tag => `<span class="tag ${tag}">${tagLabels[tag] || tag}</span>`)
+      .join('');
+
+    dishModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDishModal() {
+    dishModal.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  dishModalBackdrop.addEventListener('click', closeDishModal);
+  dishModalClose.addEventListener('click', closeDishModal);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !dishModal.hidden) closeDishModal();
+  });
 
   menuTabs.addEventListener('click', (e) => {
     const btn = e.target.closest('.menu-tab');
