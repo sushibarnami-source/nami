@@ -101,7 +101,13 @@
   (async () => {
     if (typeof supabaseClient === 'undefined' || !supabaseClient) return;
     const { data: { session } } = await supabaseClient.auth.getSession();
-    if (session) window.location.href = 'dashboard.html';
+    if (!session) return;
+    const { data: isAdmin } = await supabaseClient.rpc('is_admin');
+    if (isAdmin) {
+      window.location.href = 'dashboard.html';
+    } else {
+      await supabaseClient.auth.signOut();
+    }
   })();
 
   const form = document.getElementById('loginForm');

@@ -31,6 +31,12 @@
       window.location.href = 'login.html';
       return false;
     }
+    const { data: isAdmin } = await supabaseClient.rpc('is_admin');
+    if (!isAdmin) {
+      await supabaseClient.auth.signOut();
+      window.location.href = 'login.html';
+      return false;
+    }
     currentUser = session.user;
     document.getElementById('userEmail').textContent = currentUser.email || '';
     return true;
