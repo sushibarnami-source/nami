@@ -23,6 +23,7 @@
     <button type="button" class="admin-main-tab-btn active" data-tab="blog">Blog Posts</button>
     <button type="button" class="admin-main-tab-btn" data-tab="menu">Menu</button>
     <button type="button" class="admin-main-tab-btn" data-tab="inventory">Inventory</button>
+    <button type="button" class="admin-main-tab-btn" data-tab="messages">Messages <span id="unreadMessageBadge" class="admin-tab-badge" hidden></span></button>
     <button type="button" class="admin-main-tab-btn" data-tab="settings">Site Settings</button>
   </div>
 
@@ -264,6 +265,16 @@
         <button type="button" class="admin-btn-primary" id="saveSettingsBtn">Save Settings</button>
       </div>
     </form>
+  </section>
+
+  <section id="tabMessages" class="admin-tab-pane" hidden>
+    <div class="admin-toolbar">
+      <h2>Messages</h2>
+    </div>
+    <p class="content-help">Submissions from the "Send a Message" form on the public site.</p>
+    <div id="messageList" class="post-list">
+      <p class="admin-loading">Loading messages…</p>
+    </div>
   </section>
 </div>
 

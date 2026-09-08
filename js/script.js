@@ -42,14 +42,16 @@
       info_hours_label: 'Hours', info_hours_value: 'Mon–Sat 13:30–23:30 · Sunday: Closed',
       form_title: 'Send a Message',
       label_name: 'Name', placeholder_name: 'Your name',
-      label_email: 'Email',
-      label_phone: 'Phone (optional)', placeholder_phone: '+995 5xx xx xx xx',
+      label_email: 'Email (optional)',
+      label_phone: 'Phone', placeholder_phone: '+995 5xx xx xx xx',
       label_message: 'Message', placeholder_message: 'Tell us about your reservation or question…',
       btn_send: 'Send Message',
       err_name: 'Please enter your name.',
       err_email: 'Please enter a valid email.',
+      err_phone: 'Please enter your phone number.',
       err_message: 'Message should be at least 10 characters.',
       form_success: "Thanks, {name}! Your message has been received — we'll be in touch soon.",
+      form_error: "Something went wrong sending your message — please try again, or call us directly.",
       footer_copy: '© {year} NAMI • ნამი Sushi Bar. All rights reserved.',
     },
     ka: {
@@ -86,14 +88,16 @@
       info_hours_label: 'სამუშაო საათები', info_hours_value: 'ორშ–შაბ 13:30–23:30 · კვირა: დასვენების დღე',
       form_title: 'მოგვწერეთ შეტყობინება',
       label_name: 'სახელი', placeholder_name: 'თქვენი სახელი',
-      label_email: 'ელფოსტა',
-      label_phone: 'ტელეფონი (არასავალდებულო)', placeholder_phone: '+995 5xx xx xx xx',
+      label_email: 'ელფოსტა (არასავალდებულო)',
+      label_phone: 'ტელეფონი', placeholder_phone: '+995 5xx xx xx xx',
       label_message: 'შეტყობინება', placeholder_message: 'გვიამბეთ თქვენი ჯავშნის ან შეკითხვის შესახებ…',
       btn_send: 'გაგზავნა',
       err_name: 'გთხოვთ, შეიყვანოთ სახელი.',
       err_email: 'გთხოვთ, შეიყვანოთ ვალიდური ელფოსტა.',
+      err_phone: 'გთხოვთ, შეიყვანოთ ტელეფონის ნომერი.',
       err_message: 'შეტყობინება უნდა შეიცავდეს მინიმუმ 10 სიმბოლოს.',
       form_success: 'მადლობა, {name}! თქვენი შეტყობინება მიღებულია — მალე დაგიკავშირდებით.',
+      form_error: 'შეტყობინების გაგზავნა ვერ მოხერხდა — გთხოვთ, სცადოთ ხელახლა, ან დაგვირეკეთ პირდაპირ.',
       footer_copy: '© {year} NAMI • ნამი სუში ბარი. ყველა უფლება დაცულია.',
     },
     ru: {
@@ -130,14 +134,16 @@
       info_hours_label: 'Часы работы', info_hours_value: 'Пн–Сб 13:30–23:30 · Вс: выходной',
       form_title: 'Отправить сообщение',
       label_name: 'Имя', placeholder_name: 'Ваше имя',
-      label_email: 'Эл. почта',
-      label_phone: 'Телефон (необязательно)', placeholder_phone: '+995 5xx xx xx xx',
+      label_email: 'Эл. почта (необязательно)',
+      label_phone: 'Телефон', placeholder_phone: '+995 5xx xx xx xx',
       label_message: 'Сообщение', placeholder_message: 'Расскажите о брони или вашем вопросе…',
       btn_send: 'Отправить',
       err_name: 'Пожалуйста, введите ваше имя.',
       err_email: 'Пожалуйста, введите корректный email.',
+      err_phone: 'Пожалуйста, введите номер телефона.',
       err_message: 'Сообщение должно содержать не менее 10 символов.',
       form_success: 'Спасибо, {name}! Ваше сообщение получено — мы скоро с вами свяжемся.',
+      form_error: 'Не удалось отправить сообщение — попробуйте ещё раз или позвоните нам напрямую.',
       footer_copy: '© {year} NAMI • ნამი Суши-бар. Все права защищены.',
     },
   };
@@ -887,8 +893,11 @@
     else setError('name', '');
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(data.email.trim())) { setError('email', t('err_email')); valid = false; }
+    if (data.email.trim() && !emailPattern.test(data.email.trim())) { setError('email', t('err_email')); valid = false; }
     else setError('email', '');
+
+    if (!data.phone.trim()) { setError('phone', t('err_phone')); valid = false; }
+    else setError('phone', '');
 
     if (!data.message.trim() || data.message.trim().length < 10) {
       setError('message', t('err_message'));
@@ -898,7 +907,7 @@
     return valid;
   }
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const data = {
       name: form.name.value,
@@ -909,13 +918,32 @@
 
     if (!validateForm(data)) {
       successMsg.textContent = '';
+      successMsg.classList.remove('is-error');
       return;
     }
 
-    // Demo only — no backend wired up yet. Replace with a real fetch() call
-    // to your API / form service (e.g. Formspree, EmailJS, your own endpoint).
-    successMsg.textContent = t('form_success').replace('{name}', data.name.split(' ')[0]);
-    form.reset();
+    const submitBtn = form.querySelector('.form-submit');
+    submitBtn.disabled = true;
+    successMsg.textContent = '';
+    successMsg.classList.remove('is-error');
+
+    try {
+      if (typeof supabaseClient === 'undefined' || !supabaseClient) throw new Error('no client');
+      const { error } = await supabaseClient.from('contact_messages').insert({
+        name: data.name.trim(),
+        email: data.email.trim() || null,
+        phone: data.phone.trim(),
+        message: data.message.trim(),
+      });
+      if (error) throw error;
+      successMsg.textContent = t('form_success').replace('{name}', data.name.split(' ')[0]);
+      form.reset();
+    } catch (err) {
+      successMsg.textContent = t('form_error');
+      successMsg.classList.add('is-error');
+    } finally {
+      submitBtn.disabled = false;
+    }
   });
 
   /* ---------------------------------------------------------

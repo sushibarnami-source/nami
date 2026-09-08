@@ -22,6 +22,7 @@
       document.getElementById('postList').innerHTML = msg;
       document.getElementById('dishList').innerHTML = msg;
       document.getElementById('inventoryList').innerHTML = msg;
+      document.getElementById('messageList').innerHTML = msg;
       document.getElementById('settingsLoading').textContent = "Couldn't reach the login service. Check your connection and reload.";
       return false;
     }
@@ -362,6 +363,7 @@
     blog: document.getElementById('tabBlog'),
     menu: document.getElementById('tabMenu'),
     inventory: document.getElementById('tabInventory'),
+    messages: document.getElementById('tabMessages'),
     settings: document.getElementById('tabSettings'),
   };
   document.querySelectorAll('.admin-main-tab-btn').forEach(btn => {
@@ -369,6 +371,93 @@
       document.querySelectorAll('.admin-main-tab-btn').forEach(b => b.classList.toggle('active', b === btn));
       Object.entries(mainTabPanes).forEach(([key, pane]) => { pane.hidden = key !== btn.dataset.tab; });
     });
+  });
+
+  /* ---------------------------------------------------------
+     Messages: contact form submissions
+  --------------------------------------------------------- */
+  const messageListEl = document.getElementById('messageList');
+  const unreadBadgeEl = document.getElementById('unreadMessageBadge');
+  let messages = [];
+
+  function formatMessageDate(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    return d.toLocaleString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+
+  function updateUnreadBadge() {
+    const unread = messages.filter(m => !m.is_read).length;
+    unreadBadgeEl.hidden = unread === 0;
+    unreadBadgeEl.textContent = String(unread);
+  }
+
+  async function loadMessages() {
+    messageListEl.innerHTML = '<p class="admin-loading">Loading messages…</p>';
+    const { data, error } = await supabaseClient
+      .from('contact_messages')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      messageListEl.innerHTML = `<p class="admin-empty">Couldn't load messages: ${escapeHtml(error.message)}</p>`;
+      return;
+    }
+
+    messages = data || [];
+    renderMessageList();
+    updateUnreadBadge();
+  }
+
+  function renderMessageList() {
+    if (!messages.length) {
+      messageListEl.innerHTML = '<p class="admin-empty">No messages yet.</p>';
+      return;
+    }
+
+    messageListEl.innerHTML = messages.map(m => `
+      <div class="post-row message-row ${m.is_read ? '' : 'is-unread'}">
+        <div class="post-row-icon">${m.is_read ? '📩' : '✉️'}</div>
+        <div class="post-row-main">
+          <p class="post-row-title">${escapeHtml(m.name)}</p>
+          <p class="message-row-contact">
+            <a href="tel:${escapeHtml(m.phone)}">${escapeHtml(m.phone)}</a>
+            ${m.email ? ` · <a href="mailto:${escapeHtml(m.email)}">${escapeHtml(m.email)}</a>` : ''} ·
+            ${formatMessageDate(m.created_at)}
+          </p>
+          <p class="message-row-text">${escapeHtml(m.message)}</p>
+        </div>
+        <div class="post-row-actions">
+          ${m.is_read ? '' : `<button class="admin-btn-secondary" data-mark-read="${m.id}">Mark read</button>`}
+          <button class="admin-btn-danger" data-delete-message="${m.id}">Delete</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  messageListEl.addEventListener('click', async (e) => {
+    const readBtn = e.target.closest('[data-mark-read]');
+    if (readBtn) {
+      const id = readBtn.dataset.markRead;
+      const { error } = await supabaseClient.from('contact_messages').update({ is_read: true }).eq('id', id);
+      if (error) { showToast(`Couldn't update: ${error.message}`, true); return; }
+      const m = messages.find(msg => msg.id === id);
+      if (m) m.is_read = true;
+      renderMessageList();
+      updateUnreadBadge();
+      return;
+    }
+    const delBtn = e.target.closest('[data-delete-message]');
+    if (delBtn) {
+      if (!window.confirm('Delete this message? This cannot be undone.')) return;
+      const id = delBtn.dataset.deleteMessage;
+      const { error } = await supabaseClient.from('contact_messages').delete().eq('id', id);
+      if (error) { showToast(`Couldn't delete: ${error.message}`, true); return; }
+      messages = messages.filter(msg => msg.id !== id);
+      renderMessageList();
+      updateUnreadBadge();
+    }
   });
 
   /* ---------------------------------------------------------
@@ -1040,6 +1129,7 @@
     await loadPosts();
     await loadDishes();
     await loadInventory();
+    await loadMessages();
     await loadSettings();
   })();
 })();
