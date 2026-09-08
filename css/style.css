@@ -603,7 +603,9 @@ section { padding: 110px 0; }
   flex-shrink: 0;
 }
 .account-btn:hover { border-color: var(--cream); background: rgba(250,246,239,.08); }
+.account-btn[hidden] { display: none; }
 .account-loggedin { display: flex; align-items: center; gap: 10px; font-size: .85rem; color: var(--cream); opacity: .9; }
+.account-loggedin[hidden] { display: none; }
 .account-logout-btn {
   padding: 6px 12px;
   border-radius: 999px;
@@ -663,6 +665,7 @@ section { padding: 110px 0; }
 .account-profile-greeting { font-size: 1rem; margin: 0 0 18px; }
 
 .account-tabs { display: flex; gap: 6px; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+.account-tabs[hidden] { display: none; }
 .account-tab-btn {
   flex: 1;
   padding: 9px 4px;
