@@ -937,6 +937,8 @@ section { padding: 110px 0; }
   .nav-link { font-size: 1.05rem; }
   .nav-reserve { display: none; }
   .nav-toggle { display: flex; }
+  .account-area { display: none; }
+  .nav-account-item { display: block; }
 }
 
 @media (max-width: 600px) {
