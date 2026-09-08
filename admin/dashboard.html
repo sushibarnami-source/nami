@@ -22,6 +22,7 @@
   <div class="admin-main-tabs">
     <button type="button" class="admin-main-tab-btn active" data-tab="blog">Blog Posts</button>
     <button type="button" class="admin-main-tab-btn" data-tab="menu">Menu</button>
+    <button type="button" class="admin-main-tab-btn" data-tab="inventory">Inventory</button>
     <button type="button" class="admin-main-tab-btn" data-tab="messages">Messages <span id="unreadMessageBadge" class="admin-tab-badge" hidden></span></button>
     <button type="button" class="admin-main-tab-btn" data-tab="settings">Site Settings</button>
   </div>
@@ -62,6 +63,58 @@
 
     <div id="dishList" class="post-list">
       <p class="admin-loading">Loading menu…</p>
+    </div>
+  </section>
+
+  <section id="tabInventory" class="admin-tab-pane" hidden>
+    <div class="admin-toolbar">
+      <h2>Kitchen Inventory</h2>
+      <button class="admin-btn-primary" id="newItemBtn">+ New Item</button>
+    </div>
+
+    <div class="stat-cards" id="inventoryStats">
+      <div class="stat-card">
+        <p class="stat-card-value" id="statTotalItems">–</p>
+        <p class="stat-card-label">Items tracked</p>
+      </div>
+      <div class="stat-card is-warning">
+        <p class="stat-card-value" id="statLowStock">–</p>
+        <p class="stat-card-label">Low stock</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-card-value" id="statTotalValue">–</p>
+        <p class="stat-card-label">Stock value</p>
+      </div>
+    </div>
+
+    <div class="inventory-filters">
+      <div class="editor-field" style="max-width:220px;">
+        <label for="invCategoryFilter">Category</label>
+        <select id="invCategoryFilter">
+          <option value="">All categories</option>
+          <option value="seafood">Seafood</option>
+          <option value="produce">Produce</option>
+          <option value="rice_noodles">Rice &amp; Noodles</option>
+          <option value="sauces_condiments">Sauces &amp; Condiments</option>
+          <option value="dairy">Dairy</option>
+          <option value="dry_goods">Dry Goods</option>
+          <option value="beverages">Beverages</option>
+          <option value="packaging">Packaging</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="editor-field" style="max-width:220px;">
+        <label for="invSearch">Search</label>
+        <input type="text" id="invSearch" placeholder="Item name…">
+      </div>
+      <div class="editor-checkbox" style="margin-top:22px;">
+        <input type="checkbox" id="invLowStockOnly">
+        <label for="invLowStockOnly">Low stock only</label>
+      </div>
+    </div>
+
+    <div id="inventoryList" class="post-list">
+      <p class="admin-loading">Loading inventory…</p>
     </div>
   </section>
 
@@ -458,6 +511,128 @@
         <button type="button" class="admin-btn-secondary" id="cancelDishEditBtn">Cancel</button>
         <button type="button" class="admin-btn-primary" id="saveDishBtn">Save Dish</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Inventory item editor overlay ================= -->
+<div class="editor-overlay" id="itemEditorOverlay" hidden>
+  <div class="editor-panel">
+    <h2 id="itemEditorHeading">New Item</h2>
+
+    <div class="editor-field" style="margin-bottom:18px;">
+      <label for="iName">Name</label>
+      <input type="text" id="iName" placeholder="e.g. Salmon fillet">
+    </div>
+
+    <div class="editor-row">
+      <div class="editor-field">
+        <label for="iCategory">Category</label>
+        <select id="iCategory">
+          <option value="seafood">Seafood</option>
+          <option value="produce">Produce</option>
+          <option value="rice_noodles">Rice &amp; Noodles</option>
+          <option value="sauces_condiments">Sauces &amp; Condiments</option>
+          <option value="dairy">Dairy</option>
+          <option value="dry_goods">Dry Goods</option>
+          <option value="beverages">Beverages</option>
+          <option value="packaging">Packaging</option>
+          <option value="other" selected>Other</option>
+        </select>
+      </div>
+      <div class="editor-field">
+        <label for="iUnit">Unit</label>
+        <select id="iUnit">
+          <option value="kg">kg</option>
+          <option value="g">g</option>
+          <option value="l">l</option>
+          <option value="ml">ml</option>
+          <option value="pcs" selected>pcs</option>
+          <option value="box">box</option>
+        </select>
+      </div>
+      <div class="editor-field">
+        <label for="iQuantity">Starting quantity</label>
+        <input type="number" id="iQuantity" step="any" value="0">
+        <p class="content-help" id="iQuantityHelp" hidden>To change stock on hand, use "Record Movement" from the item's row instead.</p>
+      </div>
+      <div class="editor-field">
+        <label for="iMinQuantity">Low-stock threshold</label>
+        <input type="number" id="iMinQuantity" step="any" value="0">
+      </div>
+    </div>
+
+    <div class="editor-row">
+      <div class="editor-field">
+        <label for="iCostPerUnit">Cost per unit (₾)</label>
+        <input type="number" id="iCostPerUnit" step="any" value="0">
+      </div>
+      <div class="editor-field">
+        <label for="iSupplier">Supplier</label>
+        <input type="text" id="iSupplier">
+      </div>
+    </div>
+
+    <div class="editor-field">
+      <label for="iNotes">Notes</label>
+      <textarea id="iNotes" rows="2"></textarea>
+    </div>
+
+    <p class="login-error" id="itemEditorError" style="color:var(--red); font-size:.85rem;"></p>
+
+    <div class="editor-actions">
+      <button type="button" class="admin-btn-danger" id="deleteItemBtn" hidden>Delete Item</button>
+      <div class="editor-actions-right">
+        <button type="button" class="admin-btn-secondary" id="cancelItemEditBtn">Cancel</button>
+        <button type="button" class="admin-btn-primary" id="saveItemBtn">Save Item</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Stock movement overlay ================= -->
+<div class="editor-overlay" id="movementOverlay" hidden>
+  <div class="editor-panel" style="max-width:480px;">
+    <h2>Record Movement</h2>
+    <p class="content-help" id="movementItemLabel" style="margin-bottom:18px;"></p>
+
+    <div class="editor-row">
+      <div class="editor-field">
+        <label for="mType">Type</label>
+        <select id="mType">
+          <option value="restock">Restock (+)</option>
+          <option value="usage">Usage (–)</option>
+          <option value="waste">Waste (–)</option>
+          <option value="adjustment">Adjustment (±)</option>
+        </select>
+      </div>
+      <div class="editor-field">
+        <label for="mQuantity" id="mQuantityLabel">Amount</label>
+        <input type="number" id="mQuantity" step="any" placeholder="0">
+      </div>
+    </div>
+
+    <div class="editor-field" style="margin-bottom:0;">
+      <label for="mNote">Note</label>
+      <textarea id="mNote" rows="2" placeholder="Optional"></textarea>
+    </div>
+
+    <p class="login-error" id="movementError" style="color:var(--red); font-size:.85rem;"></p>
+
+    <div class="editor-actions" style="justify-content:flex-end;">
+      <button type="button" class="admin-btn-secondary" id="cancelMovementBtn">Cancel</button>
+      <button type="button" class="admin-btn-primary" id="saveMovementBtn">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Movement history overlay ================= -->
+<div class="editor-overlay" id="historyOverlay" hidden>
+  <div class="editor-panel" style="max-width:560px;">
+    <h2 id="historyHeading">History</h2>
+    <div id="historyList" class="post-list"></div>
+    <div class="editor-actions" style="justify-content:flex-end;">
+      <button type="button" class="admin-btn-secondary" id="closeHistoryBtn">Close</button>
     </div>
   </div>
 </div>
