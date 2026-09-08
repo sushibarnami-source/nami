@@ -128,6 +128,13 @@
     return div.innerHTML;
   }
 
+  // Cost per usable unit, after accounting for trim/waste (yield_pct).
+  // 45 ₾/kg at 80% yield → 56.25 ₾/kg of actually-usable product.
+  function effectiveCostPerUnit(item) {
+    const yieldFraction = (Number(item.yield_pct) || 100) / 100;
+    return (Number(item.cost_per_unit) || 0) / yieldFraction;
+  }
+
   // Chrome/Firefox differ on which tag execCommand('bold') produces;
   // normalize to <strong> so saved HTML is consistent either way.
   function normalizeInlineHtml(html) {
@@ -512,7 +519,7 @@
     }
 
     const costByInvId = {};
-    inventoryItems.forEach(i => { costByInvId[i.id] = Number(i.cost_per_unit) || 0; });
+    inventoryItems.forEach(i => { costByInvId[i.id] = effectiveCostPerUnit(i); });
 
     const totals = {};
     (data || []).forEach(r => {
@@ -655,7 +662,7 @@
 
   function updateRecipeCostSummary() {
     const costByInvId = {};
-    inventoryItems.forEach(i => { costByInvId[i.id] = Number(i.cost_per_unit) || 0; });
+    inventoryItems.forEach(i => { costByInvId[i.id] = effectiveCostPerUnit(i); });
     const foodCost = currentDishRecipeRows.reduce(
       (sum, r) => sum + (costByInvId[r.inventory_item_id] || 0) * (Number(r.quantity) || 0), 0
     );
@@ -932,7 +939,7 @@
         <div class="post-row-icon">📦</div>
         <div class="post-row-main">
           <p class="post-row-title">${escapeHtml(i.name)}</p>
-          <p class="post-row-qty">${formatQty(i.quantity)} ${escapeHtml(i.unit)} on hand · min ${formatQty(i.min_quantity)} ${escapeHtml(i.unit)}${i.supplier ? ` · ${escapeHtml(i.supplier)}` : ''}</p>
+          <p class="post-row-qty">${formatQty(i.quantity)} ${escapeHtml(i.unit)} on hand · min ${formatQty(i.min_quantity)} ${escapeHtml(i.unit)}${i.supplier ? ` · ${escapeHtml(i.supplier)}` : ''}${Number(i.yield_pct) < 100 ? ` · Yield ${formatQty(i.yield_pct)}% (effective ${effectiveCostPerUnit(i).toFixed(2)} ₾/${escapeHtml(i.unit)})` : ''}</p>
         </div>
         <span class="post-row-category">${escapeHtml(INV_CATEGORY_LABELS[i.category] || i.category)}</span>
         <span class="post-row-badge ${isLowStock(i) ? 'is-low-stock' : 'is-published'}">${isLowStock(i) ? 'Low stock' : 'OK'}</span>
@@ -984,6 +991,7 @@
     document.getElementById('iQuantityHelp').hidden = !item;
     document.getElementById('iMinQuantity').value = item ? item.min_quantity : 0;
     document.getElementById('iCostPerUnit').value = item ? item.cost_per_unit : 0;
+    document.getElementById('iYieldPct').value = item && item.yield_pct ? item.yield_pct : 100;
     document.getElementById('iSupplier').value = item ? item.supplier : '';
     document.getElementById('iNotes').value = item ? item.notes : '';
 
@@ -1002,6 +1010,11 @@
       errorEl.textContent = 'Name is required.';
       return;
     }
+    const yieldPct = Number(document.getElementById('iYieldPct').value) || 100;
+    if (yieldPct <= 0 || yieldPct > 100) {
+      errorEl.textContent = 'Yield % must be between 1 and 100.';
+      return;
+    }
 
     const payload = {
       name,
@@ -1009,6 +1022,7 @@
       unit: document.getElementById('iUnit').value,
       min_quantity: Number(document.getElementById('iMinQuantity').value) || 0,
       cost_per_unit: Number(document.getElementById('iCostPerUnit').value) || 0,
+      yield_pct: yieldPct,
       supplier: document.getElementById('iSupplier').value.trim(),
       notes: document.getElementById('iNotes').value.trim(),
     };
