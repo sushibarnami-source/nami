@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>NAMI — მიმტანის აპლიკაცია</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/admin.css">
+</head>
+<body class="admin-body waiter-body">
+
+<header class="admin-header">
+  <h1>NAMI — მიმტანი</h1>
+  <div class="admin-header-right">
+    <span id="userEmail"></span>
+    <a href="dashboard.html">← Dashboard — მართვის პანელი</a>
+    <button class="admin-btn" id="logoutBtn">Log out — გასვლა</button>
+  </div>
+</header>
+
+<div class="admin-container waiter-container">
+
+  <!-- ================= TABLE PICKER ================= -->
+  <section id="waiterTablesScreen">
+    <div class="admin-toolbar">
+      <h2>აირჩიეთ მაგიდა — Pick a table</h2>
+      <button type="button" class="admin-btn-secondary" id="refreshTablesBtn">⟳ განახლება — Refresh</button>
+    </div>
+    <div id="tableGrid" class="waiter-table-grid">
+      <p class="admin-loading">იტვირთება… — Loading…</p>
+    </div>
+  </section>
+
+  <!-- ================= ORDER BUILDER ================= -->
+  <section id="waiterOrderScreen" hidden>
+    <div class="admin-toolbar">
+      <button type="button" class="admin-btn-secondary" id="backToTablesBtn">← მაგიდები — Tables</button>
+      <h2 id="waiterTableTitle">მაგიდა —</h2>
+    </div>
+
+    <div id="waiterOpenOrders"></div>
+
+    <p class="admin-loading" id="wMenuLoading">მენიუ იტვირთება… — Loading menu…</p>
+    <div class="menu-tabs" id="wMenuTabs" hidden>
+      <button class="menu-tab active" data-category="rolls">როლი</button>
+      <button class="menu-tab" data-category="nigiri">ნიგირი</button>
+      <button class="menu-tab" data-category="maki">მაკი</button>
+      <button class="menu-tab" data-category="futomaki">ფუტომაკი</button>
+      <button class="menu-tab" data-category="tempuraRoll">ცხელი როლი</button>
+      <button class="menu-tab" data-category="sets">სეტი</button>
+      <button class="menu-tab" data-category="noodles">ატრია</button>
+      <button class="menu-tab" data-category="appetizers">ხემსი</button>
+      <button class="menu-tab" data-category="desserts">დესერტი</button>
+      <button class="menu-tab" data-category="drinks">სასმელი</button>
+    </div>
+    <div class="menu-grid order-menu-grid" id="wMenuGrid"></div>
+  </section>
+</div>
+
+<!-- ================= CART BAR ================= -->
+<div class="order-cart-bar" id="cartBar" hidden>
+  <button type="button" id="openCartBtn">
+    <span><span id="cartCount">0</span> ერთეული</span>
+    <span id="cartTotal">0.00 ₾</span>
+  </button>
+</div>
+
+<!-- ================= CART MODAL ================= -->
+<div class="order-cart-modal" id="cartModal" hidden>
+  <div class="order-cart-backdrop" id="cartBackdrop"></div>
+  <div class="order-cart-panel" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+    <button class="blog-modal-close" id="cartCloseBtn" aria-label="Close">&times;</button>
+    <h3 id="cartTitle">ეს რაუნდი — This round</h3>
+    <div id="cartItemsList"></div>
+    <div class="order-cart-total-row">
+      <span>ჯამი — Total</span>
+      <span id="cartModalTotal">0.00 ₾</span>
+    </div>
+    <textarea id="orderNote" rows="2" placeholder="შენიშვნა სამზარეულოსთვის (არასავალდებულო)"></textarea>
+    <p class="order-gate-error" id="cartError" hidden></p>
+    <button type="button" class="btn btn-primary" id="submitOrderBtn" style="width:100%; margin-top:16px;">გაგზავნა სამზარეულოში — Send to kitchen</button>
+  </div>
+</div>
+
+<div id="printArea"></div>
+<div class="admin-toast" id="toast" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase-client.js"></script>
+<script src="waiter.js"></script>
+</body>
+</html>

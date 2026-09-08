@@ -398,3 +398,44 @@ body.is-printing #printArea { display: block !important; }
 @media print {
   @page { margin: 6mm; }
 }
+
+.receipt.is-kitchen .receipt-logo { font-size: 1.05rem; }
+.receipt-kitchen-list { list-style: none; margin: 4px 0 0; padding: 0; font-size: 1.15rem; }
+.receipt-kitchen-list li { padding: 5px 0; border-bottom: 1px dashed #000; }
+
+/* ---------- Waiter app (admin/waiter.html) ---------- */
+.waiter-container { padding-bottom: 110px; }
+
+.waiter-table-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 14px;
+}
+.waiter-table-btn {
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--border);
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-body);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: border-color .2s ease, transform .15s ease;
+}
+.waiter-table-btn:hover { border-color: var(--green); transform: translateY(-2px); }
+.waiter-table-btn:active { transform: translateY(0); }
+.waiter-table-num { font-size: 1.8rem; font-weight: 700; }
+.waiter-table-btn.has-open-order { border-color: var(--red); background: rgba(184, 58, 46, .06); }
+.waiter-table-badge { font-size: .72rem; font-weight: 600; color: var(--red); }
+
+.waiter-open-orders-box {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin-bottom: 22px;
+}
