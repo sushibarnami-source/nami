@@ -1,4 +1,4 @@
--- NAMI website — schema v3: kitchen inventory management
+-- NAMI website — schema v4: kitchen inventory management
 -- Run this once in Supabase SQL Editor, AFTER schema.sql (it reuses
 -- the set_updated_at() function defined there).
 --
