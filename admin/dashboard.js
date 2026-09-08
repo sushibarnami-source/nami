@@ -21,6 +21,7 @@
       const msg = '<p class="admin-empty">Couldn\'t reach the login service. Check your connection and reload.</p>';
       document.getElementById('postList').innerHTML = msg;
       document.getElementById('dishList').innerHTML = msg;
+      document.getElementById('inventoryList').innerHTML = msg;
       document.getElementById('settingsLoading').textContent = "Couldn't reach the login service. Check your connection and reload.";
       return false;
     }
@@ -360,6 +361,7 @@
   const mainTabPanes = {
     blog: document.getElementById('tabBlog'),
     menu: document.getElementById('tabMenu'),
+    inventory: document.getElementById('tabInventory'),
     settings: document.getElementById('tabSettings'),
   };
   document.querySelectorAll('.admin-main-tab-btn').forEach(btn => {
@@ -610,6 +612,327 @@
   }
 
   /* ---------------------------------------------------------
+     Inventory: load + render items, item editor, stock movements
+  --------------------------------------------------------- */
+  const INV_CATEGORY_LABELS = {
+    seafood: 'Seafood', produce: 'Produce', rice_noodles: 'Rice & Noodles',
+    sauces_condiments: 'Sauces & Condiments', dairy: 'Dairy', dry_goods: 'Dry Goods',
+    beverages: 'Beverages', packaging: 'Packaging', other: 'Other',
+  };
+  const INV_MOVEMENT_LABELS = { restock: 'Restock', usage: 'Usage', waste: 'Waste', adjustment: 'Adjustment' };
+
+  const inventoryListEl = document.getElementById('inventoryList');
+  const itemOverlay = document.getElementById('itemEditorOverlay');
+  const movementOverlay = document.getElementById('movementOverlay');
+  const historyOverlay = document.getElementById('historyOverlay');
+  const invCategoryFilter = document.getElementById('invCategoryFilter');
+  const invSearch = document.getElementById('invSearch');
+  const invLowStockOnly = document.getElementById('invLowStockOnly');
+
+  let inventoryItems = [];
+  let editingItemId = null;
+  let movementItemId = null;
+
+  function isLowStock(item) {
+    return Number(item.quantity) <= Number(item.min_quantity);
+  }
+
+  async function loadInventory() {
+    inventoryListEl.innerHTML = '<p class="admin-loading">Loading inventory…</p>';
+    const { data, error } = await supabaseClient
+      .from('inventory_items')
+      .select('*')
+      .order('name', { ascending: true });
+
+    if (error) {
+      inventoryListEl.innerHTML = `<p class="admin-empty">Couldn't load inventory: ${escapeHtml(error.message)}</p>`;
+      return;
+    }
+
+    inventoryItems = data || [];
+    renderInventoryStats();
+    renderInventoryList();
+  }
+
+  function renderInventoryStats() {
+    const lowStockCount = inventoryItems.filter(isLowStock).length;
+    const totalValue = inventoryItems.reduce((sum, i) => sum + Number(i.quantity) * Number(i.cost_per_unit), 0);
+    document.getElementById('statTotalItems').textContent = String(inventoryItems.length);
+    document.getElementById('statLowStock').textContent = String(lowStockCount);
+    document.getElementById('statTotalValue').textContent = `${totalValue.toFixed(2)} ₾`;
+  }
+
+  function renderInventoryList() {
+    const category = invCategoryFilter.value;
+    const search = invSearch.value.trim().toLowerCase();
+    const lowOnly = invLowStockOnly.checked;
+
+    const filtered = inventoryItems.filter(i => {
+      if (category && i.category !== category) return false;
+      if (search && !i.name.toLowerCase().includes(search)) return false;
+      if (lowOnly && !isLowStock(i)) return false;
+      return true;
+    });
+
+    if (!filtered.length) {
+      inventoryListEl.innerHTML = '<p class="admin-empty">No items match — click "New Item" to add stock to track.</p>';
+      return;
+    }
+
+    inventoryListEl.innerHTML = filtered.map(i => `
+      <div class="post-row">
+        <div class="post-row-icon">📦</div>
+        <div class="post-row-main">
+          <p class="post-row-title">${escapeHtml(i.name)}</p>
+          <p class="post-row-qty">${formatQty(i.quantity)} ${escapeHtml(i.unit)} on hand · min ${formatQty(i.min_quantity)} ${escapeHtml(i.unit)}${i.supplier ? ` · ${escapeHtml(i.supplier)}` : ''}</p>
+        </div>
+        <span class="post-row-category">${escapeHtml(INV_CATEGORY_LABELS[i.category] || i.category)}</span>
+        <span class="post-row-badge ${isLowStock(i) ? 'is-low-stock' : 'is-published'}">${isLowStock(i) ? 'Low stock' : 'OK'}</span>
+        <div class="post-row-actions">
+          <button class="admin-btn-secondary" data-move="${i.id}">Move</button>
+          <button class="admin-btn-secondary" data-history="${i.id}">History</button>
+          <button class="admin-btn-secondary" data-edit-item="${i.id}">Edit</button>
+          <button class="admin-btn-danger" data-delete-item="${i.id}">Delete</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function formatQty(n) {
+    const num = Number(n);
+    return Number.isInteger(num) ? String(num) : num.toFixed(2);
+  }
+
+  invCategoryFilter.addEventListener('change', renderInventoryList);
+  invSearch.addEventListener('input', renderInventoryList);
+  invLowStockOnly.addEventListener('change', renderInventoryList);
+
+  inventoryListEl.addEventListener('click', (e) => {
+    const editBtn = e.target.closest('[data-edit-item]');
+    if (editBtn) {
+      openItemEditor(inventoryItems.find(i => i.id === editBtn.dataset.editItem));
+      return;
+    }
+    const delBtn = e.target.closest('[data-delete-item]');
+    if (delBtn) { deleteItem(delBtn.dataset.deleteItem); return; }
+    const moveBtn = e.target.closest('[data-move]');
+    if (moveBtn) { openMovement(moveBtn.dataset.move); return; }
+    const histBtn = e.target.closest('[data-history]');
+    if (histBtn) { openHistory(histBtn.dataset.history); }
+  });
+
+  /* --- Item editor --- */
+  function openItemEditor(item) {
+    editingItemId = item ? item.id : null;
+    document.getElementById('itemEditorHeading').textContent = item ? 'Edit Item' : 'New Item';
+    document.getElementById('deleteItemBtn').hidden = !item;
+    document.getElementById('itemEditorError').textContent = '';
+
+    document.getElementById('iName').value = item ? item.name : '';
+    document.getElementById('iCategory').value = item ? item.category : 'other';
+    document.getElementById('iUnit').value = item ? item.unit : 'pcs';
+    document.getElementById('iQuantity').value = item ? item.quantity : 0;
+    document.getElementById('iQuantity').disabled = !!item;
+    document.getElementById('iQuantityHelp').hidden = !item;
+    document.getElementById('iMinQuantity').value = item ? item.min_quantity : 0;
+    document.getElementById('iCostPerUnit').value = item ? item.cost_per_unit : 0;
+    document.getElementById('iSupplier').value = item ? item.supplier : '';
+    document.getElementById('iNotes').value = item ? item.notes : '';
+
+    itemOverlay.hidden = false;
+  }
+
+  document.getElementById('newItemBtn').addEventListener('click', () => openItemEditor(null));
+  document.getElementById('cancelItemEditBtn').addEventListener('click', () => { itemOverlay.hidden = true; });
+
+  document.getElementById('saveItemBtn').addEventListener('click', async () => {
+    const errorEl = document.getElementById('itemEditorError');
+    errorEl.textContent = '';
+
+    const name = document.getElementById('iName').value.trim();
+    if (!name) {
+      errorEl.textContent = 'Name is required.';
+      return;
+    }
+
+    const payload = {
+      name,
+      category: document.getElementById('iCategory').value,
+      unit: document.getElementById('iUnit').value,
+      min_quantity: Number(document.getElementById('iMinQuantity').value) || 0,
+      cost_per_unit: Number(document.getElementById('iCostPerUnit').value) || 0,
+      supplier: document.getElementById('iSupplier').value.trim(),
+      notes: document.getElementById('iNotes').value.trim(),
+    };
+    if (!editingItemId) {
+      payload.quantity = Number(document.getElementById('iQuantity').value) || 0;
+    }
+
+    const saveBtn = document.getElementById('saveItemBtn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving…';
+
+    let result;
+    if (editingItemId) {
+      result = await supabaseClient.from('inventory_items').update(payload).eq('id', editingItemId);
+    } else {
+      result = await supabaseClient.from('inventory_items').insert(payload);
+    }
+
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save Item';
+
+    if (result.error) {
+      errorEl.textContent = result.error.message;
+      return;
+    }
+
+    itemOverlay.hidden = true;
+    showToast(editingItemId ? 'Item updated.' : 'Item added.');
+    await loadInventory();
+  });
+
+  document.getElementById('deleteItemBtn').addEventListener('click', async () => {
+    if (!editingItemId) return;
+    if (!window.confirm('Delete this item and its movement history? This cannot be undone.')) return;
+    await deleteItem(editingItemId);
+    itemOverlay.hidden = true;
+  });
+
+  async function deleteItem(id) {
+    const { error } = await supabaseClient.from('inventory_items').delete().eq('id', id);
+    if (error) {
+      showToast(`Couldn't delete: ${error.message}`, true);
+      return;
+    }
+    showToast('Item deleted.');
+    await loadInventory();
+  }
+
+  /* --- Stock movement --- */
+  function openMovement(itemId) {
+    const item = inventoryItems.find(i => i.id === itemId);
+    if (!item) return;
+    movementItemId = itemId;
+    document.getElementById('movementItemLabel').textContent =
+      `${item.name} — ${formatQty(item.quantity)} ${item.unit} currently on hand.`;
+    document.getElementById('mType').value = 'restock';
+    document.getElementById('mQuantity').value = '';
+    document.getElementById('mNote').value = '';
+    document.getElementById('movementError').textContent = '';
+    updateMovementLabel();
+    movementOverlay.hidden = false;
+  }
+
+  function updateMovementLabel() {
+    const type = document.getElementById('mType').value;
+    document.getElementById('mQuantityLabel').textContent =
+      type === 'adjustment' ? 'Amount (use a negative number to subtract)' : 'Amount';
+  }
+  document.getElementById('mType').addEventListener('change', updateMovementLabel);
+
+  document.getElementById('cancelMovementBtn').addEventListener('click', () => { movementOverlay.hidden = true; });
+
+  document.getElementById('saveMovementBtn').addEventListener('click', async () => {
+    const errorEl = document.getElementById('movementError');
+    errorEl.textContent = '';
+
+    const item = inventoryItems.find(i => i.id === movementItemId);
+    if (!item) return;
+
+    const type = document.getElementById('mType').value;
+    const rawAmount = Number(document.getElementById('mQuantity').value);
+    if (!rawAmount) {
+      errorEl.textContent = 'Enter a non-zero amount.';
+      return;
+    }
+
+    const delta = type === 'adjustment' ? rawAmount
+      : (type === 'restock' ? Math.abs(rawAmount) : -Math.abs(rawAmount));
+
+    const newQuantity = Number(item.quantity) + delta;
+    if (newQuantity < 0) {
+      errorEl.textContent = `That would leave stock at ${formatQty(newQuantity)} ${item.unit}. Check the amount.`;
+      return;
+    }
+
+    const note = document.getElementById('mNote').value.trim();
+    const saveBtn = document.getElementById('saveMovementBtn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving…';
+
+    const { error: updateError } = await supabaseClient
+      .from('inventory_items')
+      .update({ quantity: newQuantity })
+      .eq('id', item.id);
+
+    if (!updateError) {
+      const { error: txError } = await supabaseClient.from('inventory_transactions').insert({
+        item_id: item.id,
+        type,
+        delta,
+        note,
+        created_by: (currentUser && currentUser.email) || '',
+      });
+      if (txError) {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save';
+        errorEl.textContent = txError.message;
+        return;
+      }
+    }
+
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save';
+
+    if (updateError) {
+      errorEl.textContent = updateError.message;
+      return;
+    }
+
+    movementOverlay.hidden = true;
+    showToast('Stock updated.');
+    await loadInventory();
+  });
+
+  /* --- Movement history --- */
+  async function openHistory(itemId) {
+    const item = inventoryItems.find(i => i.id === itemId);
+    if (!item) return;
+    document.getElementById('historyHeading').textContent = `History — ${item.name}`;
+    const listEl = document.getElementById('historyList');
+    listEl.innerHTML = '<p class="admin-loading">Loading…</p>';
+    historyOverlay.hidden = false;
+
+    const { data, error } = await supabaseClient
+      .from('inventory_transactions')
+      .select('*')
+      .eq('item_id', itemId)
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (error) {
+      listEl.innerHTML = `<p class="admin-empty">Couldn't load history: ${escapeHtml(error.message)}</p>`;
+      return;
+    }
+    if (!data || !data.length) {
+      listEl.innerHTML = '<p class="admin-empty">No movements recorded yet.</p>';
+      return;
+    }
+
+    listEl.innerHTML = data.map(t => `
+      <div class="post-row">
+        <div class="post-row-main">
+          <p class="post-row-title">${INV_MOVEMENT_LABELS[t.type] || t.type} · ${t.delta > 0 ? '+' : ''}${formatQty(t.delta)} ${escapeHtml(item.unit)}</p>
+          <p class="post-row-meta">${new Date(t.created_at).toLocaleString()}${t.created_by ? ` · ${escapeHtml(t.created_by)}` : ''}${t.note ? ` · ${escapeHtml(t.note)}` : ''}</p>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('closeHistoryBtn').addEventListener('click', () => { historyOverlay.hidden = true; });
+
+  /* ---------------------------------------------------------
      Site Settings: homepage text + contact/hours
   --------------------------------------------------------- */
   const settingsForm = document.getElementById('settingsForm');
@@ -716,6 +1039,7 @@
     if (!ok) return;
     await loadPosts();
     await loadDishes();
+    await loadInventory();
     await loadSettings();
   })();
 })();
