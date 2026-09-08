@@ -13,85 +13,85 @@
   <h1>NAMI Admin</h1>
   <div class="admin-header-right">
     <span id="userEmail"></span>
-    <a href="../index.html">View site</a>
-    <button class="admin-btn" id="logoutBtn">Log out</button>
+    <a href="../index.html">View site — საიტის ნახვა</a>
+    <button class="admin-btn" id="logoutBtn">Log out — გასვლა</button>
   </div>
 </header>
 
 <div class="admin-container">
   <div class="admin-main-tabs">
-    <button type="button" class="admin-main-tab-btn active" data-tab="blog">Blog Posts</button>
-    <button type="button" class="admin-main-tab-btn" data-tab="menu">Menu</button>
-    <button type="button" class="admin-main-tab-btn" data-tab="inventory">Inventory</button>
-    <button type="button" class="admin-main-tab-btn" data-tab="messages">Messages <span id="unreadMessageBadge" class="admin-tab-badge" hidden></span></button>
-    <button type="button" class="admin-main-tab-btn" data-tab="settings">Site Settings</button>
+    <button type="button" class="admin-main-tab-btn active" data-tab="blog">Blog Posts — ბლოგი</button>
+    <button type="button" class="admin-main-tab-btn" data-tab="menu">Menu — მენიუ</button>
+    <button type="button" class="admin-main-tab-btn" data-tab="inventory">Inventory — მარაგი</button>
+    <button type="button" class="admin-main-tab-btn" data-tab="messages">Messages — შეტყობინებები <span id="unreadMessageBadge" class="admin-tab-badge" hidden></span></button>
+    <button type="button" class="admin-main-tab-btn" data-tab="settings">Site Settings — პარამეტრები</button>
   </div>
 
   <section id="tabBlog" class="admin-tab-pane">
     <div class="admin-toolbar">
-      <h2>Blog Posts</h2>
-      <button class="admin-btn-primary" id="newPostBtn">+ New Post</button>
+      <h2>Blog Posts — ბლოგის სტატიები</h2>
+      <button class="admin-btn-primary" id="newPostBtn">+ New Post — ახალი სტატია</button>
     </div>
 
     <div id="postList" class="post-list">
-      <p class="admin-loading">Loading posts…</p>
+      <p class="admin-loading">Loading posts… — იტვირთება...</p>
     </div>
   </section>
 
   <section id="tabMenu" class="admin-tab-pane" hidden>
     <div class="admin-toolbar">
-      <h2>Menu</h2>
-      <button class="admin-btn-primary" id="newDishBtn">+ New Dish</button>
+      <h2>Menu — მენიუ</h2>
+      <button class="admin-btn-primary" id="newDishBtn">+ New Dish — ახალი კერძი</button>
     </div>
 
     <div class="editor-field" style="max-width:240px; margin-bottom:16px;">
-      <label for="menuCategoryFilter">Filter by category</label>
+      <label for="menuCategoryFilter">Filter by category — ფილტრი კატეგორიით</label>
       <select id="menuCategoryFilter">
-        <option value="">All categories</option>
-        <option value="rolls">Rolls</option>
-        <option value="nigiri">Nigiri</option>
-        <option value="maki">Maki</option>
-        <option value="futomaki">Futomaki</option>
-        <option value="tempuraRoll">Hot Rolls</option>
-        <option value="sets">Sets</option>
-        <option value="noodles">Noodles</option>
-        <option value="appetizers">Appetizers</option>
-        <option value="desserts">Desserts</option>
-        <option value="drinks">Drinks</option>
+        <option value="">All categories — ყველა კატეგორია</option>
+        <option value="rolls">Rolls — როლები</option>
+        <option value="nigiri">Nigiri — ნიგირი</option>
+        <option value="maki">Maki — მაკი</option>
+        <option value="futomaki">Futomaki — ფუტომაკი</option>
+        <option value="tempuraRoll">Hot Rolls — ცხელი როლები</option>
+        <option value="sets">Sets — სეტები</option>
+        <option value="noodles">Noodles — ნუდლი</option>
+        <option value="appetizers">Appetizers — აპეტაიზერები</option>
+        <option value="desserts">Desserts — დესერტები</option>
+        <option value="drinks">Drinks — სასმელები</option>
       </select>
     </div>
 
     <div id="dishList" class="post-list">
-      <p class="admin-loading">Loading menu…</p>
+      <p class="admin-loading">Loading menu… — იტვირთება...</p>
     </div>
   </section>
 
   <section id="tabInventory" class="admin-tab-pane" hidden>
     <div class="admin-toolbar">
-      <h2>Kitchen Inventory</h2>
-      <button class="admin-btn-primary" id="newItemBtn">+ New Item</button>
+      <h2>Kitchen Inventory — სამზარეულოს მარაგი</h2>
+      <button class="admin-btn-primary" id="newItemBtn">+ New Item — ახალი ნივთი</button>
     </div>
 
     <div class="stat-cards" id="inventoryStats">
       <div class="stat-card">
         <p class="stat-card-value" id="statTotalItems">–</p>
-        <p class="stat-card-label">Items tracked</p>
+        <p class="stat-card-label">Items tracked — ნივთების რაოდენობა</p>
       </div>
       <div class="stat-card is-warning">
         <p class="stat-card-value" id="statLowStock">–</p>
-        <p class="stat-card-label">Low stock</p>
+        <p class="stat-card-label">Low stock — დაბალი მარაგი</p>
       </div>
       <div class="stat-card">
         <p class="stat-card-value" id="statTotalValue">–</p>
-        <p class="stat-card-label">Stock value</p>
+        <p class="stat-card-label">Stock value — მარაგის ღირებულება</p>
       </div>
     </div>
 
     <div class="inventory-filters">
       <div class="editor-field" style="max-width:220px;">
-        <label for="invCategoryFilter">Category</label>
+        <label for="invCategoryFilter">Category — კატეგორია</label>
         <select id="invCategoryFilter">
-          <option value="">All categories</option>
+          <option value="">All categories — ყველა კატეგორია</option>
           <option value="seafood">Seafood — თევზი/ზღვის პროდუქტი</option>
           <option value="produce">Produce — ბოსტნეული/ხილი</option>
           <option value="rice_noodles">Rice &amp; Noodles — ბრინჯი/ნუდლი</option>
@@ -104,47 +104,47 @@
         </select>
       </div>
       <div class="editor-field" style="max-width:220px;">
-        <label for="invSearch">Search</label>
-        <input type="text" id="invSearch" placeholder="Item name…">
+        <label for="invSearch">Search — ძებნა</label>
+        <input type="text" id="invSearch" placeholder="Item name… — ნივთის სახელი...">
       </div>
       <div class="editor-checkbox" style="margin-top:22px;">
         <input type="checkbox" id="invLowStockOnly">
-        <label for="invLowStockOnly">Low stock only</label>
+        <label for="invLowStockOnly">Low stock only — მხოლოდ დაბალი მარაგი</label>
       </div>
     </div>
 
     <div id="inventoryList" class="post-list">
-      <p class="admin-loading">Loading inventory…</p>
+      <p class="admin-loading">Loading inventory… — იტვირთება...</p>
     </div>
   </section>
 
   <section id="tabSettings" class="admin-tab-pane" hidden>
     <div class="admin-toolbar">
-      <h2>Site Settings</h2>
+      <h2>Site Settings — საიტის პარამეტრები</h2>
     </div>
-    <p class="admin-loading" id="settingsLoading">Loading settings…</p>
+    <p class="admin-loading" id="settingsLoading">Loading settings… — იტვირთება...</p>
     <form id="settingsForm" hidden>
-      <h3 class="settings-group-title">Contact &amp; Hours</h3>
+      <h3 class="settings-group-title">Contact &amp; Hours — კონტაქტი და სამუშაო საათები</h3>
       <div class="editor-row">
         <div class="editor-field">
-          <label for="sPhone">Phone</label>
+          <label for="sPhone">Phone — ტელეფონი</label>
           <input type="text" id="sPhone">
         </div>
         <div class="editor-field">
-          <label for="sEmail">Email</label>
+          <label for="sEmail">Email — ელფოსტა</label>
           <input type="text" id="sEmail">
         </div>
         <div class="editor-field">
-          <label for="sOpen">Opens at (Mon–Sat)</label>
+          <label for="sOpen">Opens at (Mon–Sat) — იხსნება (ორშ-შაბ)</label>
           <input type="text" id="sOpen" placeholder="13:30">
         </div>
         <div class="editor-field">
-          <label for="sClose">Closes at (Mon–Sat)</label>
+          <label for="sClose">Closes at (Mon–Sat) — იხურება (ორშ-შაბ)</label>
           <input type="text" id="sClose" placeholder="23:30">
         </div>
       </div>
 
-      <h3 class="settings-group-title">Homepage Text</h3>
+      <h3 class="settings-group-title">Homepage Text — მთავარი გვერდის ტექსტი</h3>
       <div class="lang-tabs">
         <button type="button" class="lang-tab-btn settings-lang-tab active" data-lang="en">English</button>
         <button type="button" class="lang-tab-btn settings-lang-tab" data-lang="ka">ქართული</button>
@@ -262,18 +262,18 @@
       <p class="login-error" id="settingsError" style="color:var(--red); font-size:.85rem;"></p>
 
       <div class="editor-actions" style="justify-content:flex-end;">
-        <button type="button" class="admin-btn-primary" id="saveSettingsBtn">Save Settings</button>
+        <button type="button" class="admin-btn-primary" id="saveSettingsBtn">Save Settings — შენახვა</button>
       </div>
     </form>
   </section>
 
   <section id="tabMessages" class="admin-tab-pane" hidden>
     <div class="admin-toolbar">
-      <h2>Messages</h2>
+      <h2>Messages — შეტყობინებები</h2>
     </div>
-    <p class="content-help">Submissions from the "Send a Message" form on the public site.</p>
+    <p class="content-help">Submissions from the "Send a Message" form on the public site. — საჯარო საიტზე „შეტყობინების გაგზავნის" ფორმიდან შემოსული მოთხოვნები.</p>
     <div id="messageList" class="post-list">
-      <p class="admin-loading">Loading messages…</p>
+      <p class="admin-loading">Loading messages… — იტვირთება...</p>
     </div>
   </section>
 </div>
@@ -281,35 +281,35 @@
 <!-- ================= Editor overlay ================= -->
 <div class="editor-overlay" id="editorOverlay" hidden>
   <div class="editor-panel">
-    <h2 id="editorHeading">New Post</h2>
+    <h2 id="editorHeading">New Post — ახალი სტატია</h2>
 
     <div class="editor-row">
       <div class="editor-field">
-        <label for="fIcon">Icon (emoji)</label>
+        <label for="fIcon">Icon (emoji) — აიქონი</label>
         <input type="text" id="fIcon" maxlength="4" value="📝">
       </div>
       <div class="editor-field">
-        <label for="fGradient">Thumbnail color</label>
+        <label for="fGradient">Thumbnail color — ფერი</label>
         <select id="fGradient">
-          <option value="linear-gradient(135deg,#4f7a5c,#11241c)">Deep Green</option>
-          <option value="linear-gradient(135deg,#4f7a5c,#ddc98d)">Green &amp; Gold</option>
-          <option value="linear-gradient(135deg,#2c4436,#93bb9e)">Sage</option>
-          <option value="linear-gradient(135deg,#a8342a,#b7a369)">Red &amp; Gold</option>
-          <option value="linear-gradient(135deg,#11241c,#93bb9e)">Ink &amp; Sage</option>
-          <option value="linear-gradient(135deg,#b7a369,#11241c)">Gold &amp; Ink</option>
+          <option value="linear-gradient(135deg,#4f7a5c,#11241c)">Deep Green — მუქი მწვანე</option>
+          <option value="linear-gradient(135deg,#4f7a5c,#ddc98d)">Green &amp; Gold — მწვანე და ოქრო</option>
+          <option value="linear-gradient(135deg,#2c4436,#93bb9e)">Sage — სალათისფერი</option>
+          <option value="linear-gradient(135deg,#a8342a,#b7a369)">Red &amp; Gold — წითელი და ოქრო</option>
+          <option value="linear-gradient(135deg,#11241c,#93bb9e)">Ink &amp; Sage — მელანი და სალათისფერი</option>
+          <option value="linear-gradient(135deg,#b7a369,#11241c)">Gold &amp; Ink — ოქრო და მელანი</option>
         </select>
       </div>
       <div class="editor-field">
-        <label for="fDate">Date</label>
+        <label for="fDate">Date — თარიღი</label>
         <input type="date" id="fDate">
       </div>
       <div class="editor-field">
-        <label for="fSortOrder">Sort order</label>
+        <label for="fSortOrder">Sort order — თანმიმდევრობა</label>
         <input type="number" id="fSortOrder" value="0">
       </div>
       <div class="editor-checkbox">
         <input type="checkbox" id="fPublished" checked>
-        <label for="fPublished">Published</label>
+        <label for="fPublished">Published — გამოქვეყნებული</label>
       </div>
     </div>
 
@@ -397,10 +397,10 @@
     <p class="login-error" id="editorError" style="color:var(--red); font-size:.85rem;"></p>
 
     <div class="editor-actions">
-      <button type="button" class="admin-btn-danger" id="deletePostBtn" hidden>Delete Post</button>
+      <button type="button" class="admin-btn-danger" id="deletePostBtn" hidden>Delete Post — წაშლა</button>
       <div class="editor-actions-right">
-        <button type="button" class="admin-btn-secondary" id="cancelEditBtn">Cancel</button>
-        <button type="button" class="admin-btn-primary" id="savePostBtn">Save Post</button>
+        <button type="button" class="admin-btn-secondary" id="cancelEditBtn">Cancel — გაუქმება</button>
+        <button type="button" class="admin-btn-primary" id="savePostBtn">Save Post — შენახვა</button>
       </div>
     </div>
   </div>
@@ -409,71 +409,71 @@
 <!-- ================= Dish editor overlay ================= -->
 <div class="editor-overlay" id="dishEditorOverlay" hidden>
   <div class="editor-panel">
-    <h2 id="dishEditorHeading">New Dish</h2>
+    <h2 id="dishEditorHeading">New Dish — ახალი კერძი</h2>
 
     <div class="editor-row">
       <div class="editor-field">
-        <label for="dCategory">Category</label>
+        <label for="dCategory">Category — კატეგორია</label>
         <select id="dCategory">
-          <option value="rolls">Rolls</option>
-          <option value="nigiri">Nigiri</option>
-          <option value="maki">Maki</option>
-          <option value="futomaki">Futomaki</option>
-          <option value="tempuraRoll">Hot Rolls</option>
-          <option value="sets">Sets</option>
-          <option value="noodles">Noodles</option>
-          <option value="appetizers">Appetizers</option>
-          <option value="desserts">Desserts</option>
-          <option value="drinks">Drinks</option>
+          <option value="rolls">Rolls — როლები</option>
+          <option value="nigiri">Nigiri — ნიგირი</option>
+          <option value="maki">Maki — მაკი</option>
+          <option value="futomaki">Futomaki — ფუტომაკი</option>
+          <option value="tempuraRoll">Hot Rolls — ცხელი როლები</option>
+          <option value="sets">Sets — სეტები</option>
+          <option value="noodles">Noodles — ნუდლი</option>
+          <option value="appetizers">Appetizers — აპეტაიზერები</option>
+          <option value="desserts">Desserts — დესერტები</option>
+          <option value="drinks">Drinks — სასმელები</option>
         </select>
       </div>
       <div class="editor-field">
-        <label for="dPrice">Price (shown on site)</label>
+        <label for="dPrice">Price (shown on site) — ფასი (საიტზე გამოსატანი)</label>
         <input type="text" id="dPrice" placeholder="19.00 ₾">
       </div>
       <div class="editor-field">
-        <label for="dPriceAmount">Price (number, ₾)</label>
+        <label for="dPriceAmount">Price (number, ₾) — ფასი (რიცხვი)</label>
         <input type="number" id="dPriceAmount" step="0.01" placeholder="19.00">
       </div>
       <div class="editor-field">
-        <label for="dSortOrder">Sort order</label>
+        <label for="dSortOrder">Sort order — თანმიმდევრობა</label>
         <input type="number" id="dSortOrder" value="0">
       </div>
       <div class="editor-checkbox">
         <input type="checkbox" id="dPublished" checked>
-        <label for="dPublished">Published</label>
+        <label for="dPublished">Published — გამოქვეყნებული</label>
       </div>
     </div>
 
     <div class="editor-row">
       <div class="editor-checkbox" style="margin-top:0;">
         <input type="checkbox" id="dTagSpicy">
-        <label for="dTagSpicy">🌶 Spicy</label>
+        <label for="dTagSpicy">🌶 Spicy — ცხარე</label>
       </div>
       <div class="editor-checkbox" style="margin-top:0;">
         <input type="checkbox" id="dTagVeg">
-        <label for="dTagVeg">Vegetarian</label>
+        <label for="dTagVeg">Vegetarian — ვეგეტარიანული</label>
       </div>
       <div class="editor-checkbox" style="margin-top:0;">
         <input type="checkbox" id="dTagNew">
-        <label for="dTagNew">New</label>
+        <label for="dTagNew">New — ახალი</label>
       </div>
     </div>
 
     <div class="editor-field" style="margin-bottom:18px;">
-      <label>Recipe (ingredients used per serving)</label>
-      <p class="content-help">Pulls from Inventory items and their cost — used to compute food cost and margin below.</p>
+      <label>Recipe (ingredients used per serving) — რეცეპტი (ინგრედიენტები ერთ პორციაზე)</label>
+      <p class="content-help">Pulls from Inventory items and their cost — used to compute food cost and margin below. — მარაგის ნივთებიდან ირჩევთ, გამოიყენება თვითღირებულების/მარჟის გამოსათვლელად.</p>
       <div id="dRecipeRows"></div>
-      <button type="button" class="admin-btn-secondary" id="dAddIngredientBtn">+ Add Ingredient</button>
+      <button type="button" class="admin-btn-secondary" id="dAddIngredientBtn">+ Add Ingredient — ინგრედიენტის დამატება</button>
       <p class="recipe-summary" id="dRecipeCostSummary"></p>
     </div>
 
     <div class="editor-field" style="margin-bottom:18px;">
-      <label>Photo</label>
+      <label>Photo — ფოტო</label>
       <div class="photo-upload-row">
         <input type="file" accept="image/*" id="dPhotoFile">
-        <button type="button" class="admin-btn-secondary" id="dPhotoUploadBtn">Upload Photo</button>
-        <button type="button" class="admin-btn-secondary" id="dPhotoRemoveBtn" hidden>Remove Photo</button>
+        <button type="button" class="admin-btn-secondary" id="dPhotoUploadBtn">Upload Photo — ატვირთვა</button>
+        <button type="button" class="admin-btn-secondary" id="dPhotoRemoveBtn" hidden>Remove Photo — წაშლა</button>
       </div>
       <img id="dPhotoPreview" alt="" style="max-width:160px; border-radius:var(--radius-sm); margin-top:8px; display:none;">
     </div>
@@ -518,10 +518,10 @@
     <p class="login-error" id="dishEditorError" style="color:var(--red); font-size:.85rem;"></p>
 
     <div class="editor-actions">
-      <button type="button" class="admin-btn-danger" id="deleteDishBtn" hidden>Delete Dish</button>
+      <button type="button" class="admin-btn-danger" id="deleteDishBtn" hidden>Delete Dish — წაშლა</button>
       <div class="editor-actions-right">
-        <button type="button" class="admin-btn-secondary" id="cancelDishEditBtn">Cancel</button>
-        <button type="button" class="admin-btn-primary" id="saveDishBtn">Save Dish</button>
+        <button type="button" class="admin-btn-secondary" id="cancelDishEditBtn">Cancel — გაუქმება</button>
+        <button type="button" class="admin-btn-primary" id="saveDishBtn">Save Dish — შენახვა</button>
       </div>
     </div>
   </div>
@@ -530,17 +530,17 @@
 <!-- ================= Inventory item editor overlay ================= -->
 <div class="editor-overlay" id="itemEditorOverlay" hidden>
   <div class="editor-panel">
-    <h2 id="itemEditorHeading">New Item</h2>
+    <h2 id="itemEditorHeading">New Item — ახალი ნივთი</h2>
 
     <div class="editor-field" style="margin-bottom:18px;">
-      <label for="iName">Name</label>
+      <label for="iName">Name — დასახელება</label>
       <input type="text" id="iName" placeholder="e.g. Salmon fillet">
       <p class="content-help">ინგრედიენტის სახელი — შეგიძლიათ ქართულადაც (მაგ. ორაგული, ბრინჯი, ნორი). მხოლოდ შიდა გამოყენებისთვისაა, საიტზე არ ჩანს.</p>
     </div>
 
     <div class="editor-row">
       <div class="editor-field">
-        <label for="iCategory">Category</label>
+        <label for="iCategory">Category — კატეგორია</label>
         <select id="iCategory">
           <option value="seafood">Seafood — თევზი/ზღვის პროდუქტი</option>
           <option value="produce">Produce — ბოსტნეული/ხილი</option>
@@ -554,7 +554,7 @@
         </select>
       </div>
       <div class="editor-field">
-        <label for="iUnit">Unit</label>
+        <label for="iUnit">Unit — ერთეული</label>
         <select id="iUnit">
           <option value="kg">kg — კილოგრამი</option>
           <option value="g">g — გრამი</option>
@@ -565,13 +565,13 @@
         </select>
       </div>
       <div class="editor-field">
-        <label for="iQuantity">Starting quantity</label>
+        <label for="iQuantity">Starting quantity — საწყისი რაოდენობა</label>
         <input type="number" id="iQuantity" step="any" value="0">
         <p class="content-help">რამდენი გაქვთ ახლა საწყობში, ზემოთ არჩეულ ერთეულში.</p>
-        <p class="content-help" id="iQuantityHelp" hidden>To change stock on hand, use "Record Movement" from the item's row instead.</p>
+        <p class="content-help" id="iQuantityHelp" hidden>To change stock on hand, use "Record Movement" from the item's row instead. — მარაგის შესაცვლელად გამოიყენეთ „მოძრაობის ჩაწერა" ნივთის სტრიქონიდან.</p>
       </div>
       <div class="editor-field">
-        <label for="iMinQuantity">Low-stock threshold</label>
+        <label for="iMinQuantity">Low-stock threshold — დაბალი მარაგის ზღვარი</label>
         <input type="number" id="iMinQuantity" step="any" value="0">
         <p class="content-help">რა რაოდენობაზე დაბლა გინდათ "Low stock" გაფრთხილება.</p>
       </div>
@@ -579,25 +579,25 @@
 
     <div class="editor-row">
       <div class="editor-field">
-        <label for="iCostPerUnit">Cost per unit (₾)</label>
+        <label for="iCostPerUnit">Cost per unit (₾) — ფასი ერთეულზე</label>
         <input type="number" id="iCostPerUnit" step="any" value="0">
         <p class="content-help">რა ღირს 1 ერთეული (1კგ/1ც/1ლ) მომწოდებელთან — შესყიდვის ფასი, არა გასაყიდი.</p>
       </div>
       <div class="editor-field">
-        <label for="iYieldPct">Yield % (usable after trim/waste)</label>
+        <label for="iYieldPct">Yield % (usable after trim/waste) — გამოსავლიანობა %</label>
         <input type="number" id="iYieldPct" step="any" min="1" max="100" value="100">
         <p class="content-help">E.g. 80 if 20% of the as-purchased weight is trimmed away (skin, bones…). Raises the effective cost used in recipe math below.</p>
         <p class="content-help">რამდენი % რჩება გამოსაყენებელი დამუშავების შემდეგ (მაგ. 80, თუ 20% იკარგება ძვალზე/კანზე). თუ არ იცით ზუსტად — დატოვეთ 100.</p>
       </div>
       <div class="editor-field">
-        <label for="iSupplier">Supplier</label>
+        <label for="iSupplier">Supplier — მომწოდებელი</label>
         <input type="text" id="iSupplier">
         <p class="content-help">მომწოდებლის სახელი (არასავალდებულო).</p>
       </div>
     </div>
 
     <div class="editor-field">
-      <label for="iNotes">Notes</label>
+      <label for="iNotes">Notes — შენიშვნები</label>
       <textarea id="iNotes" rows="2"></textarea>
       <p class="content-help">ნებისმიერი დამატებითი შენიშვნა (არასავალდებულო).</p>
     </div>
@@ -605,10 +605,10 @@
     <p class="login-error" id="itemEditorError" style="color:var(--red); font-size:.85rem;"></p>
 
     <div class="editor-actions">
-      <button type="button" class="admin-btn-danger" id="deleteItemBtn" hidden>Delete Item</button>
+      <button type="button" class="admin-btn-danger" id="deleteItemBtn" hidden>Delete Item — წაშლა</button>
       <div class="editor-actions-right">
-        <button type="button" class="admin-btn-secondary" id="cancelItemEditBtn">Cancel</button>
-        <button type="button" class="admin-btn-primary" id="saveItemBtn">Save Item</button>
+        <button type="button" class="admin-btn-secondary" id="cancelItemEditBtn">Cancel — გაუქმება</button>
+        <button type="button" class="admin-btn-primary" id="saveItemBtn">Save Item — შენახვა</button>
       </div>
     </div>
   </div>
@@ -617,12 +617,12 @@
 <!-- ================= Stock movement overlay ================= -->
 <div class="editor-overlay" id="movementOverlay" hidden>
   <div class="editor-panel" style="max-width:480px;">
-    <h2>Record Movement</h2>
+    <h2>Record Movement — მოძრაობის ჩაწერა</h2>
     <p class="content-help" id="movementItemLabel" style="margin-bottom:18px;"></p>
 
     <div class="editor-row">
       <div class="editor-field">
-        <label for="mType">Type</label>
+        <label for="mType">Type — ტიპი</label>
         <select id="mType">
           <option value="restock">Restock (+) — შემოსავალი/მიღება</option>
           <option value="usage">Usage (–) — მოხმარება</option>
@@ -631,14 +631,14 @@
         </select>
       </div>
       <div class="editor-field">
-        <label for="mQuantity" id="mQuantityLabel">Amount</label>
+        <label for="mQuantity" id="mQuantityLabel">Amount — რაოდენობა</label>
         <input type="number" id="mQuantity" step="any" placeholder="0">
         <p class="content-help">რაოდენობა იმ ერთეულში, რომელიც ამ ნივთს აქვს მითითებული (მაგ. კგ).</p>
       </div>
     </div>
 
     <div class="editor-field" style="margin-bottom:0;">
-      <label for="mNote">Note</label>
+      <label for="mNote">Note — შენიშვნა</label>
       <textarea id="mNote" rows="2" placeholder="Optional"></textarea>
       <p class="content-help">არასავალდებულო შენიშვნა — მაგ. მომწოდებლის სახელი ან მიზეზი.</p>
     </div>
@@ -646,8 +646,8 @@
     <p class="login-error" id="movementError" style="color:var(--red); font-size:.85rem;"></p>
 
     <div class="editor-actions" style="justify-content:flex-end;">
-      <button type="button" class="admin-btn-secondary" id="cancelMovementBtn">Cancel</button>
-      <button type="button" class="admin-btn-primary" id="saveMovementBtn">Save</button>
+      <button type="button" class="admin-btn-secondary" id="cancelMovementBtn">Cancel — გაუქმება</button>
+      <button type="button" class="admin-btn-primary" id="saveMovementBtn">Save — შენახვა</button>
     </div>
   </div>
 </div>
@@ -655,10 +655,10 @@
 <!-- ================= Movement history overlay ================= -->
 <div class="editor-overlay" id="historyOverlay" hidden>
   <div class="editor-panel" style="max-width:560px;">
-    <h2 id="historyHeading">History</h2>
+    <h2 id="historyHeading">History — ისტორია</h2>
     <div id="historyList" class="post-list"></div>
     <div class="editor-actions" style="justify-content:flex-end;">
-      <button type="button" class="admin-btn-secondary" id="closeHistoryBtn">Close</button>
+      <button type="button" class="admin-btn-secondary" id="closeHistoryBtn">Close — დახურვა</button>
     </div>
   </div>
 </div>
