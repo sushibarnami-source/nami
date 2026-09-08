@@ -92,15 +92,15 @@
         <label for="invCategoryFilter">Category</label>
         <select id="invCategoryFilter">
           <option value="">All categories</option>
-          <option value="seafood">Seafood</option>
-          <option value="produce">Produce</option>
-          <option value="rice_noodles">Rice &amp; Noodles</option>
-          <option value="sauces_condiments">Sauces &amp; Condiments</option>
-          <option value="dairy">Dairy</option>
-          <option value="dry_goods">Dry Goods</option>
-          <option value="beverages">Beverages</option>
-          <option value="packaging">Packaging</option>
-          <option value="other">Other</option>
+          <option value="seafood">Seafood — თევზი/ზღვის პროდუქტი</option>
+          <option value="produce">Produce — ბოსტნეული/ხილი</option>
+          <option value="rice_noodles">Rice &amp; Noodles — ბრინჯი/ნუდლი</option>
+          <option value="sauces_condiments">Sauces &amp; Condiments — სოუსები</option>
+          <option value="dairy">Dairy — რძის პროდუქტები</option>
+          <option value="dry_goods">Dry Goods — საშრობი/სანელებელი</option>
+          <option value="beverages">Beverages — სასმელები</option>
+          <option value="packaging">Packaging — შეფუთვა</option>
+          <option value="other">Other — სხვა</option>
         </select>
       </div>
       <div class="editor-field" style="max-width:220px;">
@@ -535,42 +535,45 @@
     <div class="editor-field" style="margin-bottom:18px;">
       <label for="iName">Name</label>
       <input type="text" id="iName" placeholder="e.g. Salmon fillet">
+      <p class="content-help">ინგრედიენტის სახელი — შეგიძლიათ ქართულადაც (მაგ. ორაგული, ბრინჯი, ნორი). მხოლოდ შიდა გამოყენებისთვისაა, საიტზე არ ჩანს.</p>
     </div>
 
     <div class="editor-row">
       <div class="editor-field">
         <label for="iCategory">Category</label>
         <select id="iCategory">
-          <option value="seafood">Seafood</option>
-          <option value="produce">Produce</option>
-          <option value="rice_noodles">Rice &amp; Noodles</option>
-          <option value="sauces_condiments">Sauces &amp; Condiments</option>
-          <option value="dairy">Dairy</option>
-          <option value="dry_goods">Dry Goods</option>
-          <option value="beverages">Beverages</option>
-          <option value="packaging">Packaging</option>
-          <option value="other" selected>Other</option>
+          <option value="seafood">Seafood — თევზი/ზღვის პროდუქტი</option>
+          <option value="produce">Produce — ბოსტნეული/ხილი</option>
+          <option value="rice_noodles">Rice &amp; Noodles — ბრინჯი/ნუდლი</option>
+          <option value="sauces_condiments">Sauces &amp; Condiments — სოუსები</option>
+          <option value="dairy">Dairy — რძის პროდუქტები</option>
+          <option value="dry_goods">Dry Goods — საშრობი/სანელებელი</option>
+          <option value="beverages">Beverages — სასმელები</option>
+          <option value="packaging">Packaging — შეფუთვა</option>
+          <option value="other" selected>Other — სხვა</option>
         </select>
       </div>
       <div class="editor-field">
         <label for="iUnit">Unit</label>
         <select id="iUnit">
-          <option value="kg">kg</option>
-          <option value="g">g</option>
-          <option value="l">l</option>
-          <option value="ml">ml</option>
-          <option value="pcs" selected>pcs</option>
-          <option value="box">box</option>
+          <option value="kg">kg — კილოგრამი</option>
+          <option value="g">g — გრამი</option>
+          <option value="l">l — ლიტრი</option>
+          <option value="ml">ml — მილილიტრი</option>
+          <option value="pcs" selected>pcs — ცალი</option>
+          <option value="box">box — ყუთი/კოლოფი</option>
         </select>
       </div>
       <div class="editor-field">
         <label for="iQuantity">Starting quantity</label>
         <input type="number" id="iQuantity" step="any" value="0">
+        <p class="content-help">რამდენი გაქვთ ახლა საწყობში, ზემოთ არჩეულ ერთეულში.</p>
         <p class="content-help" id="iQuantityHelp" hidden>To change stock on hand, use "Record Movement" from the item's row instead.</p>
       </div>
       <div class="editor-field">
         <label for="iMinQuantity">Low-stock threshold</label>
         <input type="number" id="iMinQuantity" step="any" value="0">
+        <p class="content-help">რა რაოდენობაზე დაბლა გინდათ "Low stock" გაფრთხილება.</p>
       </div>
     </div>
 
@@ -578,21 +581,25 @@
       <div class="editor-field">
         <label for="iCostPerUnit">Cost per unit (₾)</label>
         <input type="number" id="iCostPerUnit" step="any" value="0">
+        <p class="content-help">რა ღირს 1 ერთეული (1კგ/1ც/1ლ) მომწოდებელთან — შესყიდვის ფასი, არა გასაყიდი.</p>
       </div>
       <div class="editor-field">
         <label for="iYieldPct">Yield % (usable after trim/waste)</label>
         <input type="number" id="iYieldPct" step="any" min="1" max="100" value="100">
         <p class="content-help">E.g. 80 if 20% of the as-purchased weight is trimmed away (skin, bones…). Raises the effective cost used in recipe math below.</p>
+        <p class="content-help">რამდენი % რჩება გამოსაყენებელი დამუშავების შემდეგ (მაგ. 80, თუ 20% იკარგება ძვალზე/კანზე). თუ არ იცით ზუსტად — დატოვეთ 100.</p>
       </div>
       <div class="editor-field">
         <label for="iSupplier">Supplier</label>
         <input type="text" id="iSupplier">
+        <p class="content-help">მომწოდებლის სახელი (არასავალდებულო).</p>
       </div>
     </div>
 
     <div class="editor-field">
       <label for="iNotes">Notes</label>
       <textarea id="iNotes" rows="2"></textarea>
+      <p class="content-help">ნებისმიერი დამატებითი შენიშვნა (არასავალდებულო).</p>
     </div>
 
     <p class="login-error" id="itemEditorError" style="color:var(--red); font-size:.85rem;"></p>
@@ -617,21 +624,23 @@
       <div class="editor-field">
         <label for="mType">Type</label>
         <select id="mType">
-          <option value="restock">Restock (+)</option>
-          <option value="usage">Usage (–)</option>
-          <option value="waste">Waste (–)</option>
-          <option value="adjustment">Adjustment (±)</option>
+          <option value="restock">Restock (+) — შემოსავალი/მიღება</option>
+          <option value="usage">Usage (–) — მოხმარება</option>
+          <option value="waste">Waste (–) — დანაკარგი/ხარჯვა</option>
+          <option value="adjustment">Adjustment (±) — კორექტირება</option>
         </select>
       </div>
       <div class="editor-field">
         <label for="mQuantity" id="mQuantityLabel">Amount</label>
         <input type="number" id="mQuantity" step="any" placeholder="0">
+        <p class="content-help">რაოდენობა იმ ერთეულში, რომელიც ამ ნივთს აქვს მითითებული (მაგ. კგ).</p>
       </div>
     </div>
 
     <div class="editor-field" style="margin-bottom:0;">
       <label for="mNote">Note</label>
       <textarea id="mNote" rows="2" placeholder="Optional"></textarea>
+      <p class="content-help">არასავალდებულო შენიშვნა — მაგ. მომწოდებლის სახელი ან მიზეზი.</p>
     </div>
 
     <p class="login-error" id="movementError" style="color:var(--red); font-size:.85rem;"></p>
