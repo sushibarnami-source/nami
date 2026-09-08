@@ -328,3 +328,73 @@ body.admin-body {
   z-index: 600;
 }
 .admin-toast.is-error { background: var(--red); }
+
+/* ---------- Orders ---------- */
+.order-row { align-items: flex-start; border-left: 4px solid var(--border); }
+.order-row.status-new { border-left-color: var(--red); }
+.order-row.status-preparing { border-left-color: #c98a2c; }
+.order-row.status-served { border-left-color: var(--green); }
+.order-row.status-paid { border-left-color: var(--muted); opacity: .75; }
+.order-row.status-cancelled { border-left-color: var(--muted); opacity: .55; }
+
+.post-row-badge.status-new { background: rgba(184, 58, 46, .14); color: var(--red); }
+.post-row-badge.status-preparing { background: rgba(201, 138, 44, .16); color: #8a5c17; }
+.post-row-badge.status-served { background: var(--green-light); color: var(--green-deep); }
+.post-row-badge.status-paid { background: var(--paper-dim); color: var(--ink-soft); }
+.post-row-badge.status-cancelled { background: var(--paper-dim); color: var(--muted); }
+
+.order-items-list { list-style: none; margin: 8px 0 0; padding: 0; font-size: .86rem; color: var(--ink-soft); }
+.order-items-list li { padding: 1px 0; }
+.order-note { font-size: .82rem; color: var(--muted); margin: 6px 0 0; font-style: italic; }
+.order-row-total { font-weight: 700; color: var(--green-deep); white-space: nowrap; }
+
+.order-status-select {
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  font-family: var(--font-body);
+  font-size: .8rem;
+  background: var(--paper);
+}
+
+/* ---------- Tables & QR ---------- */
+.table-links-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-top: 18px; max-height: 340px; overflow-y: auto; }
+.table-link-card { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; text-align: center; background: var(--paper); }
+.table-link-card img { width: 96px; height: 96px; display: block; margin: 0 auto 8px; border-radius: 6px; background: #fff; }
+.table-link-card p { margin: 0 0 8px; font-weight: 600; }
+.table-link-card .admin-btn-secondary { font-size: .72rem; padding: 5px 10px; }
+
+/* ---------- Printing (receipts + table cards) ----------
+   #printArea is filled with the receipt/cards markup right before
+   window.print() is called; while body.is-printing is set, it's the
+   only thing shown, on-screen or on paper. */
+#printArea { display: none; }
+body.is-printing > *:not(#printArea) { display: none !important; }
+body.is-printing #printArea { display: block !important; }
+
+.receipt { font-family: 'Jost', monospace; width: 100%; max-width: 74mm; margin: 0 auto; color: #000; }
+.receipt p { margin: 0 0 4px; color: #000; }
+.receipt hr { border: none; border-top: 1px dashed #000; margin: 8px 0; }
+.receipt-header { text-align: center; }
+.receipt-logo { font-size: 1.2rem; font-weight: 700; letter-spacing: .08em; }
+.receipt-table { font-size: 1.1rem; font-weight: 700; text-align: center; margin-top: 6px; }
+.receipt-meta { font-size: .78rem; text-align: center; color: #333; }
+.receipt-items { width: 100%; border-collapse: collapse; font-size: .85rem; }
+.receipt-items td { padding: 2px 0; vertical-align: top; }
+.receipt-items td:first-child { width: 28px; }
+.receipt-items td:last-child { text-align: right; white-space: nowrap; }
+.receipt-total { font-size: 1rem; font-weight: 700; text-align: right; }
+.receipt-note { font-size: .82rem; font-style: italic; }
+.receipt-footer { text-align: center; margin-top: 10px; }
+.receipt + .receipt { margin-top: 0; page-break-before: always; }
+
+.table-card { width: 100%; max-width: 80mm; margin: 0 auto; text-align: center; padding: 14mm 4mm; page-break-after: always; }
+.table-card:last-child { page-break-after: auto; }
+.table-card img { width: 46mm; height: 46mm; margin: 8mm auto; display: block; }
+.table-card .table-card-brand { font-size: 1rem; letter-spacing: .1em; color: #000; }
+.table-card .table-card-number { font-size: 2.6rem; font-weight: 700; margin: 4mm 0; color: #000; }
+.table-card .table-card-url { font-size: .72rem; color: #333; word-break: break-all; }
+
+@media print {
+  @page { margin: 6mm; }
+}

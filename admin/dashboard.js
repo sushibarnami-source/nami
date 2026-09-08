@@ -22,6 +22,7 @@
       document.getElementById('postList').innerHTML = msg;
       document.getElementById('dishList').innerHTML = msg;
       document.getElementById('inventoryList').innerHTML = msg;
+      document.getElementById('orderList').innerHTML = msg;
       document.getElementById('messageList').innerHTML = msg;
       document.getElementById('settingsLoading').textContent = "Couldn't reach the login service. Check your connection and reload. — ვერ ხერხდება სერვისთან დაკავშირება.";
       return false;
@@ -370,12 +371,346 @@
   }
 
   /* ---------------------------------------------------------
+     Orders: table orders + printing to a receipt printer
+  --------------------------------------------------------- */
+  const ORDER_STATUSES = ['new', 'preparing', 'served', 'paid', 'cancelled'];
+  const ORDER_STATUS_LABELS = {
+    new: 'New — ახალი',
+    preparing: 'Preparing — მზადდება',
+    served: 'Served — მიწოდებული',
+    paid: 'Paid — გადახდილი',
+    cancelled: 'Cancelled — გაუქმებული',
+  };
+
+  const orderListEl = document.getElementById('orderList');
+  const newOrderBadgeEl = document.getElementById('newOrderBadge');
+  const orderStatusFilter = document.getElementById('orderStatusFilter');
+  const autoPrintToggle = document.getElementById('autoPrintToggle');
+  const printAreaEl = document.getElementById('printArea');
+  let orders = []; // each: { ...order row, items: [order_items rows] }
+  let knownOrderIds = new Set();
+  let siteTableCount = 12;
+
+  try { autoPrintToggle.checked = localStorage.getItem('nami_admin_autoprint') === '1'; } catch (e) { /* ignore */ }
+  autoPrintToggle.addEventListener('change', () => {
+    try { localStorage.setItem('nami_admin_autoprint', autoPrintToggle.checked ? '1' : '0'); } catch (e) { /* ignore */ }
+  });
+
+  function parsePrice(price) {
+    const m = String(price || '0').match(/[\d]+([.,]\d+)?/);
+    return m ? parseFloat(m[0].replace(',', '.')) : 0;
+  }
+  function formatMoney(n) { return n.toFixed(2) + ' ₾'; }
+  function orderTotal(order) {
+    return (order.items || []).reduce((sum, it) => sum + parsePrice(it.price) * it.quantity, 0);
+  }
+  function formatOrderDate(iso) {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    return d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+
+  async function loadOrders() {
+    orderListEl.innerHTML = '<p class="admin-loading">Loading orders… — იტვირთება...</p>';
+    const { data: orderRows, error } = await supabaseClient
+      .from('orders')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(200);
+
+    if (error) {
+      orderListEl.innerHTML = `<p class="admin-empty">Couldn't load orders: ${escapeHtml(error.message)} — ვერ ჩაიტვირთა</p>`;
+      return;
+    }
+
+    const orderIds = (orderRows || []).map(o => o.id);
+    const { data: itemRows } = await supabaseClient
+      .from('order_items')
+      .select('*')
+      .in('order_id', orderIds.length ? orderIds : ['00000000-0000-0000-0000-000000000000']);
+
+    const itemsByOrder = {};
+    (itemRows || []).forEach(it => { (itemsByOrder[it.order_id] = itemsByOrder[it.order_id] || []).push(it); });
+
+    orders = (orderRows || []).map(o => ({ ...o, items: itemsByOrder[o.id] || [] }));
+    knownOrderIds = new Set(orders.map(o => o.id));
+    renderOrderList();
+    renderOrderStats();
+  }
+
+  function renderOrderList() {
+    const filter = orderStatusFilter.value;
+    let filtered = orders;
+    if (filter === '') filtered = orders.filter(o => o.status !== 'paid' && o.status !== 'cancelled');
+    else if (filter !== 'everything') filtered = orders.filter(o => o.status === filter);
+
+    if (!filtered.length) {
+      orderListEl.innerHTML = '<p class="admin-empty">No orders here. — შეკვეთები არ არის.</p>';
+      return;
+    }
+
+    orderListEl.innerHTML = filtered.map(o => {
+      const itemsHtml = (o.items || [])
+        .map(it => `<li>${it.quantity}× ${escapeHtml(it.name_ka || it.name_en)} — ${escapeHtml(it.price)}</li>`)
+        .join('');
+      const statusOptions = ORDER_STATUSES
+        .map(s => `<option value="${s}" ${s === o.status ? 'selected' : ''}>${ORDER_STATUS_LABELS[s]}</option>`)
+        .join('');
+      return `
+        <div class="post-row order-row status-${o.status}">
+          <div class="post-row-icon">🍣</div>
+          <div class="post-row-main">
+            <p class="post-row-title">
+              Table ${o.table_number} — მაგიდა ${o.table_number}
+              <span class="post-row-badge status-${o.status}">${ORDER_STATUS_LABELS[o.status]}</span>
+            </p>
+            <p class="post-row-meta">${formatOrderDate(o.created_at)} · <span class="order-row-total">${formatMoney(orderTotal(o))}</span></p>
+            <ul class="order-items-list">${itemsHtml}</ul>
+            ${o.note ? `<p class="order-note">📝 ${escapeHtml(o.note)}</p>` : ''}
+          </div>
+          <div class="post-row-actions">
+            <select class="order-status-select" data-order-status="${o.id}">${statusOptions}</select>
+            <button class="admin-btn-secondary" data-print-order="${o.id}">Print — ბეჭდვა</button>
+            <button class="admin-btn-danger" data-delete-order="${o.id}">Delete — წაშლა</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderOrderStats() {
+    document.getElementById('statNewOrders').textContent = orders.filter(o => o.status === 'new').length;
+    document.getElementById('statPreparingOrders').textContent = orders.filter(o => o.status === 'preparing').length;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const paidToday = orders.filter(o => o.status === 'paid' && new Date(o.created_at) >= today);
+    document.getElementById('statTodayRevenue').textContent = formatMoney(paidToday.reduce((sum, o) => sum + orderTotal(o), 0));
+
+    const newCount = orders.filter(o => o.status === 'new').length;
+    newOrderBadgeEl.hidden = newCount === 0;
+    newOrderBadgeEl.textContent = String(newCount);
+  }
+
+  orderListEl.addEventListener('change', async (e) => {
+    const sel = e.target.closest('[data-order-status]');
+    if (!sel) return;
+    const id = sel.dataset.orderStatus;
+    const { error } = await supabaseClient.from('orders').update({ status: sel.value }).eq('id', id);
+    if (error) { showToast(`Couldn't update: ${error.message} — ვერ განახლდა`, true); return; }
+    const o = orders.find(x => x.id === id);
+    if (o) o.status = sel.value;
+    renderOrderList();
+    renderOrderStats();
+  });
+
+  orderListEl.addEventListener('click', async (e) => {
+    const printBtn = e.target.closest('[data-print-order]');
+    if (printBtn) { printOrder(orders.find(o => o.id === printBtn.dataset.printOrder)); return; }
+
+    const delBtn = e.target.closest('[data-delete-order]');
+    if (delBtn) {
+      if (!window.confirm('Delete this order? This cannot be undone. — წავშალო შეკვეთა? დაბრუნება შეუძლებელია.')) return;
+      const id = delBtn.dataset.deleteOrder;
+      const { error } = await supabaseClient.from('orders').delete().eq('id', id);
+      if (error) { showToast(`Couldn't delete: ${error.message} — ვერ წაიშალა`, true); return; }
+      orders = orders.filter(o => o.id !== id);
+      knownOrderIds.delete(id);
+      renderOrderList();
+      renderOrderStats();
+    }
+  });
+
+  document.getElementById('refreshOrdersBtn').addEventListener('click', () => loadOrders());
+  orderStatusFilter.addEventListener('change', renderOrderList);
+
+  /* ---------------------------------------------------------
+     Printing — receipt (thermal/check printer) + table cards.
+     #printArea is filled, body.is-printing is set (see admin.css,
+     which hides everything else on paper/preview), then the OS
+     print dialog opens; picking the till's receipt printer there
+     is what "connects" this to a physical check printer.
+  --------------------------------------------------------- */
+  function printHtml(html) {
+    printAreaEl.innerHTML = html;
+    document.body.classList.add('is-printing');
+    window.print();
+  }
+  window.addEventListener('afterprint', () => {
+    document.body.classList.remove('is-printing');
+    printAreaEl.innerHTML = '';
+  });
+
+  function buildReceiptHtml(order) {
+    const itemsHtml = (order.items || []).map(it => `
+      <tr>
+        <td>${it.quantity}×</td>
+        <td>${escapeHtml(it.name_ka || it.name_en)}</td>
+        <td>${formatMoney(parsePrice(it.price) * it.quantity)}</td>
+      </tr>
+    `).join('');
+    return `
+      <div class="receipt">
+        <div class="receipt-header">
+          <p class="receipt-logo">NAMI • ნამი</p>
+          <p>სუში ბარი</p>
+        </div>
+        <p class="receipt-table">მაგიდა #${order.table_number}</p>
+        <p class="receipt-meta">${formatOrderDate(order.created_at)} · #${order.id.slice(0, 8)}</p>
+        <hr>
+        <table class="receipt-items">${itemsHtml}</table>
+        <hr>
+        <p class="receipt-total">სულ: ${formatMoney(orderTotal(order))}</p>
+        ${order.note ? `<p class="receipt-note">შენიშვნა: ${escapeHtml(order.note)}</p>` : ''}
+        <p class="receipt-footer">გმადლობთ! 🙏</p>
+      </div>
+    `;
+  }
+
+  function printOrder(order) {
+    if (!order) return;
+    printHtml(buildReceiptHtml(order));
+  }
+
+  /* ---------------------------------------------------------
+     Tables & QR — how many tables, and a printable QR/link per
+     table pointing at ../order.html?table=N
+  --------------------------------------------------------- */
+  const tablesOverlay = document.getElementById('tablesOverlay');
+  const tableCountInput = document.getElementById('tableCountInput');
+  const tableLinksListEl = document.getElementById('tableLinksList');
+
+  function siteBaseUrl() {
+    return window.location.origin + window.location.pathname.replace(/admin\/dashboard\.html$/, '');
+  }
+  function tableOrderUrl(n) { return `${siteBaseUrl()}order.html?table=${n}`; }
+  function qrImageUrl(data, size) {
+    return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(data)}`;
+  }
+  function tableCardHtml(n) {
+    return `
+      <div class="table-card">
+        <p class="table-card-brand">NAMI • ნამი</p>
+        <img src="${qrImageUrl(tableOrderUrl(n), 300)}" alt="QR — Table ${n}">
+        <p class="table-card-number">Table ${n} — მაგიდა ${n}</p>
+        <p class="table-card-url">${escapeHtml(tableOrderUrl(n))}</p>
+      </div>
+    `;
+  }
+
+  function renderTableLinks() {
+    let html = '';
+    for (let n = 1; n <= siteTableCount; n++) {
+      html += `
+        <div class="table-link-card">
+          <img src="${qrImageUrl(tableOrderUrl(n), 160)}" alt="QR — Table ${n}" loading="lazy">
+          <p>Table ${n} — მაგიდა ${n}</p>
+          <button type="button" class="admin-btn-secondary" data-print-table="${n}">Print — ბეჭდვა</button>
+        </div>
+      `;
+    }
+    tableLinksListEl.innerHTML = html;
+  }
+
+  document.getElementById('manageTablesBtn').addEventListener('click', () => {
+    tableCountInput.value = siteTableCount;
+    document.getElementById('tableCountError').textContent = '';
+    renderTableLinks();
+    tablesOverlay.hidden = false;
+  });
+  document.getElementById('closeTablesBtn').addEventListener('click', () => { tablesOverlay.hidden = true; });
+
+  document.getElementById('saveTableCountBtn').addEventListener('click', async () => {
+    const errorEl = document.getElementById('tableCountError');
+    errorEl.textContent = '';
+    const n = parseInt(tableCountInput.value, 10);
+    if (!n || n < 1 || n > 200) {
+      errorEl.textContent = 'Enter a number between 1 and 200. — შეიყვანეთ რიცხვი 1-დან 200-მდე.';
+      return;
+    }
+    const { error } = await supabaseClient.from('site_settings').update({ table_count: n }).eq('id', 1);
+    if (error) { errorEl.textContent = error.message; return; }
+    siteTableCount = n;
+    renderTableLinks();
+    showToast('Table count saved. — მაგიდების რაოდენობა შენახულია.');
+  });
+
+  document.getElementById('printAllTablesBtn').addEventListener('click', () => {
+    let html = '';
+    for (let n = 1; n <= siteTableCount; n++) html += tableCardHtml(n);
+    printHtml(html);
+  });
+
+  tableLinksListEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-print-table]');
+    if (!btn) return;
+    printHtml(tableCardHtml(parseInt(btn.dataset.printTable, 10)));
+  });
+
+  async function loadTableCount() {
+    const { data } = await supabaseClient.from('site_settings').select('table_count').eq('id', 1).single();
+    if (data && data.table_count) siteTableCount = data.table_count;
+  }
+
+  /* ---------------------------------------------------------
+     Realtime: new orders show up (and can auto-print) instantly
+  --------------------------------------------------------- */
+  function playBeep() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.frequency.value = 880;
+      gain.gain.value = 0.15;
+      osc.connect(gain).connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.18);
+      osc.onended = () => ctx.close();
+    } catch (e) { /* audio unavailable */ }
+  }
+
+  async function handleIncomingOrder(newOrderRow) {
+    if (knownOrderIds.has(newOrderRow.id)) return;
+    // order_items are inserted right after the order row by the
+    // customer's browser — give them a moment to land before fetching.
+    await new Promise(resolve => setTimeout(resolve, 900));
+    const { data: itemRows } = await supabaseClient.from('order_items').select('*').eq('order_id', newOrderRow.id);
+    const order = { ...newOrderRow, items: itemRows || [] };
+    orders.unshift(order);
+    knownOrderIds.add(order.id);
+    renderOrderList();
+    renderOrderStats();
+    playBeep();
+    if (autoPrintToggle.checked) printOrder(order);
+  }
+
+  function subscribeToOrders() {
+    if (!supabaseClient || typeof supabaseClient.channel !== 'function') return;
+    supabaseClient.channel('admin-orders')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, (payload) => {
+        handleIncomingOrder(payload.new);
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, (payload) => {
+        const o = orders.find(x => x.id === payload.new.id);
+        if (o) { Object.assign(o, payload.new); renderOrderList(); renderOrderStats(); }
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'orders' }, (payload) => {
+        orders = orders.filter(o => o.id !== payload.old.id);
+        knownOrderIds.delete(payload.old.id);
+        renderOrderList();
+        renderOrderStats();
+      })
+      .subscribe();
+  }
+
+  /* ---------------------------------------------------------
      Main tabs: Blog Posts / Menu / Site Settings
   --------------------------------------------------------- */
   const mainTabPanes = {
     blog: document.getElementById('tabBlog'),
     menu: document.getElementById('tabMenu'),
     inventory: document.getElementById('tabInventory'),
+    orders: document.getElementById('tabOrders'),
     messages: document.getElementById('tabMessages'),
     settings: document.getElementById('tabSettings'),
   };
@@ -1305,5 +1640,8 @@
     await loadDishes();
     await loadMessages();
     await loadSettings();
+    await loadTableCount();
+    await loadOrders();
+    subscribeToOrders();
   })();
 })();

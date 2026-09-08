@@ -23,6 +23,7 @@
     <button type="button" class="admin-main-tab-btn active" data-tab="blog">Blog Posts — ბლოგი</button>
     <button type="button" class="admin-main-tab-btn" data-tab="menu">Menu — მენიუ</button>
     <button type="button" class="admin-main-tab-btn" data-tab="inventory">Inventory — მარაგი</button>
+    <button type="button" class="admin-main-tab-btn" data-tab="orders">Orders — შეკვეთები <span id="newOrderBadge" class="admin-tab-badge" hidden></span></button>
     <button type="button" class="admin-main-tab-btn" data-tab="messages">Messages — შეტყობინებები <span id="unreadMessageBadge" class="admin-tab-badge" hidden></span></button>
     <button type="button" class="admin-main-tab-btn" data-tab="settings">Site Settings — პარამეტრები</button>
   </div>
@@ -265,6 +266,52 @@
         <button type="button" class="admin-btn-primary" id="saveSettingsBtn">Save Settings — შენახვა</button>
       </div>
     </form>
+  </section>
+
+  <section id="tabOrders" class="admin-tab-pane" hidden>
+    <div class="admin-toolbar">
+      <h2>Table Orders — შეკვეთები მაგიდებიდან</h2>
+      <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+        <label style="font-size:.8rem; display:flex; align-items:center; gap:6px; cursor:pointer;">
+          <input type="checkbox" id="autoPrintToggle">
+          Auto-print new orders — ავტომატური ბეჭდვა
+        </label>
+        <button type="button" class="admin-btn-secondary" id="refreshOrdersBtn">⟳ Refresh — განახლება</button>
+        <button type="button" class="admin-btn-secondary" id="manageTablesBtn">Tables &amp; QR — მაგიდები და QR</button>
+      </div>
+    </div>
+
+    <div class="stat-cards" id="orderStats">
+      <div class="stat-card">
+        <p class="stat-card-value" id="statNewOrders">–</p>
+        <p class="stat-card-label">New — ახალი</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-card-value" id="statPreparingOrders">–</p>
+        <p class="stat-card-label">Preparing — მზადდება</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-card-value" id="statTodayRevenue">–</p>
+        <p class="stat-card-label">Paid today — გადახდილი დღეს</p>
+      </div>
+    </div>
+
+    <div class="editor-field" style="max-width:240px; margin-bottom:16px;">
+      <label for="orderStatusFilter">Filter — ფილტრი</label>
+      <select id="orderStatusFilter">
+        <option value="">Active — აქტიური</option>
+        <option value="new">New — ახალი</option>
+        <option value="preparing">Preparing — მზადდება</option>
+        <option value="served">Served — მიწოდებული</option>
+        <option value="paid">Paid — გადახდილი</option>
+        <option value="cancelled">Cancelled — გაუქმებული</option>
+        <option value="everything">Everything — ყველაფერი</option>
+      </select>
+    </div>
+
+    <div id="orderList" class="post-list">
+      <p class="admin-loading">Loading orders… — იტვირთება...</p>
+    </div>
   </section>
 
   <section id="tabMessages" class="admin-tab-pane" hidden>
@@ -662,6 +709,37 @@
     </div>
   </div>
 </div>
+
+<!-- ================= Tables & QR overlay ================= -->
+<div class="editor-overlay" id="tablesOverlay" hidden>
+  <div class="editor-panel" style="max-width:660px;">
+    <h2>Tables &amp; QR Codes — მაგიდები და QR კოდები</h2>
+    <p class="content-help">დააგენერირეთ თითო QR კოდი თითოეული მაგიდისთვის — მომხმარებელი სკანირებით პირდაპირ თავის მაგიდაზე შეკვეთის გვერდზე გადადის.</p>
+
+    <div class="editor-row">
+      <div class="editor-field" style="max-width:200px;">
+        <label for="tableCountInput">Number of tables — მაგიდების რაოდენობა</label>
+        <input type="number" id="tableCountInput" min="1" max="200" step="1">
+      </div>
+    </div>
+
+    <div class="editor-actions" style="justify-content:flex-start;">
+      <button type="button" class="admin-btn-primary" id="saveTableCountBtn">Save — შენახვა</button>
+      <button type="button" class="admin-btn-secondary" id="printAllTablesBtn">Print all table cards — ყველას ბეჭდვა</button>
+    </div>
+    <p class="login-error" id="tableCountError" style="color:var(--red); font-size:.85rem;"></p>
+
+    <div id="tableLinksList" class="table-links-list"></div>
+
+    <div class="editor-actions" style="justify-content:flex-end;">
+      <button type="button" class="admin-btn-secondary" id="closeTablesBtn">Close — დახურვა</button>
+    </div>
+  </div>
+</div>
+
+<!-- Filled just before window.print() and hidden on screen; #printArea
+     is the only thing visible while body.is-printing is set (see admin.css) -->
+<div id="printArea"></div>
 
 <div class="admin-toast" id="toast" hidden></div>
 
