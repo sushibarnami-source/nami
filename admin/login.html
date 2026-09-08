@@ -80,22 +80,22 @@
 
 <div class="login-card">
   <h1>NAMI Admin</h1>
-  <p class="sub">Log in to manage blog posts &amp; photos</p>
+  <p class="sub">Log in to manage blog posts &amp; photos — შედით ადმინისტრირებისთვის</p>
 
   <form id="loginForm" novalidate>
     <div class="login-field">
-      <label for="email">Email</label>
+      <label for="email">Email — ელფოსტა</label>
       <input type="email" id="email" autocomplete="username" required>
     </div>
     <div class="login-field">
-      <label for="password">Password</label>
+      <label for="password">Password — პაროლი</label>
       <input type="password" id="password" autocomplete="current-password" required>
     </div>
     <p class="login-error" id="loginError"></p>
-    <button type="submit" class="login-btn" id="loginBtn">Log In</button>
+    <button type="submit" class="login-btn" id="loginBtn">Log In — შესვლა</button>
   </form>
 
-  <a href="../index.html" class="back-link">← Back to site</a>
+  <a href="../index.html" class="back-link">← Back to site — საიტზე დაბრუნება</a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -122,12 +122,12 @@
     errorEl.textContent = '';
 
     if (typeof supabaseClient === 'undefined' || !supabaseClient) {
-      errorEl.textContent = "Couldn't reach the login service. Check your connection and reload.";
+      errorEl.textContent = "Couldn't reach the login service. Check your connection and reload. — ვერ ხერხდება სერვისთან დაკავშირება, შეამოწმეთ ინტერნეტი და განაახლეთ გვერდი.";
       return;
     }
 
     btn.disabled = true;
-    btn.textContent = 'Logging in…';
+    btn.textContent = 'Logging in… — შედის...';
 
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
@@ -135,9 +135,9 @@
     const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
     if (error) {
-      errorEl.textContent = 'Incorrect email or password.';
+      errorEl.textContent = 'Incorrect email or password. — არასწორი ელფოსტა ან პაროლი.';
       btn.disabled = false;
-      btn.textContent = 'Log In';
+      btn.textContent = 'Log In — შესვლა';
       return;
     }
 

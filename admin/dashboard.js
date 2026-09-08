@@ -18,12 +18,12 @@
   --------------------------------------------------------- */
   async function requireAuth() {
     if (typeof supabaseClient === 'undefined' || !supabaseClient) {
-      const msg = '<p class="admin-empty">Couldn\'t reach the login service. Check your connection and reload.</p>';
+      const msg = '<p class="admin-empty">Couldn\'t reach the login service. Check your connection and reload. — ვერ ხერხდება სერვისთან დაკავშირება, შეამოწმეთ ინტერნეტი და განაახლეთ გვერდი.</p>';
       document.getElementById('postList').innerHTML = msg;
       document.getElementById('dishList').innerHTML = msg;
       document.getElementById('inventoryList').innerHTML = msg;
       document.getElementById('messageList').innerHTML = msg;
-      document.getElementById('settingsLoading').textContent = "Couldn't reach the login service. Check your connection and reload.";
+      document.getElementById('settingsLoading').textContent = "Couldn't reach the login service. Check your connection and reload. — ვერ ხერხდება სერვისთან დაკავშირება.";
       return false;
     }
     const { data: { session } } = await supabaseClient.auth.getSession();
@@ -63,7 +63,7 @@
      Load + render post list
   --------------------------------------------------------- */
   async function loadPosts() {
-    postListEl.innerHTML = '<p class="admin-loading">Loading posts…</p>';
+    postListEl.innerHTML = '<p class="admin-loading">Loading posts… — იტვირთება...</p>';
     const { data, error } = await supabaseClient
       .from('blog_posts')
       .select('*')
@@ -71,7 +71,7 @@
       .order('post_date', { ascending: false });
 
     if (error) {
-      postListEl.innerHTML = `<p class="admin-empty">Couldn't load posts: ${escapeHtml(error.message)}</p>`;
+      postListEl.innerHTML = `<p class="admin-empty">Couldn't load posts: ${escapeHtml(error.message)} — ვერ ჩაიტვირთა სტატიები</p>`;
       return;
     }
 
@@ -81,7 +81,7 @@
 
   function renderPostList() {
     if (!posts.length) {
-      postListEl.innerHTML = '<p class="admin-empty">No posts yet — click "New Post" to add your first one.</p>';
+      postListEl.innerHTML = '<p class="admin-empty">No posts yet — click "New Post" to add your first one. — სტატიები ჯერ არ არის, დააჭირეთ „New Post"-ს.</p>';
       return;
     }
 
@@ -92,10 +92,10 @@
           <p class="post-row-title">${escapeHtml(p.title_en)}</p>
           <p class="post-row-meta">${escapeHtml(p.post_date)} · ${escapeHtml(p.tag_en)}</p>
         </div>
-        <span class="post-row-badge ${p.published ? 'is-published' : ''}">${p.published ? 'Published' : 'Draft'}</span>
+        <span class="post-row-badge ${p.published ? 'is-published' : ''}">${p.published ? 'გამოქვეყნებული' : 'მონახაზი'}</span>
         <div class="post-row-actions">
-          <button class="admin-btn-secondary" data-edit="${p.id}">Edit</button>
-          <button class="admin-btn-danger" data-delete="${p.id}">Delete</button>
+          <button class="admin-btn-secondary" data-edit="${p.id}">Edit — რედაქტირება</button>
+          <button class="admin-btn-danger" data-delete="${p.id}">Delete — წაშლა</button>
         </div>
       </div>
     `).join('');
@@ -209,7 +209,7 @@
 
   function openEditor(post) {
     editingId = post ? post.id : null;
-    document.getElementById('editorHeading').textContent = post ? 'Edit Post' : 'New Post';
+    document.getElementById('editorHeading').textContent = post ? 'Edit Post — სტატიის რედაქტირება' : 'New Post — ახალი სტატია';
     document.getElementById('deletePostBtn').hidden = !post;
     document.getElementById('editorError').textContent = '';
 
@@ -262,12 +262,12 @@
       const file = photoFileInput.files[0];
       if (!file) return;
 
-      const caption = window.prompt('Caption for this photo (shown under it, in this language):', '');
+      const caption = window.prompt('Caption for this photo (shown under it, in this language): — წარწერა ფოტოს ქვეშ (ამ ენაზე):', '');
       if (caption === null) { photoFileInput.value = ''; return; }
 
       const originalLabel = insertPhotoBtn.textContent;
       insertPhotoBtn.disabled = true;
-      insertPhotoBtn.textContent = 'Uploading…';
+      insertPhotoBtn.textContent = 'Uploading… — იტვირთება...';
 
       const ext = file.name.split('.').pop();
       const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
@@ -277,7 +277,7 @@
       insertPhotoBtn.textContent = originalLabel;
 
       if (uploadError) {
-        showToast(`Upload failed: ${uploadError.message}`, true);
+        showToast(`Upload failed: ${uploadError.message} — ატვირთვა ვერ მოხერხდა`, true);
         photoFileInput.value = '';
         return;
       }
@@ -307,7 +307,7 @@
 
     const titleEn = document.getElementById('fTitle_en').value.trim();
     if (!titleEn) {
-      errorEl.textContent = 'An English title is required (used to generate the post link).';
+      errorEl.textContent = 'An English title is required (used to generate the post link). — ინგლისური სათაური სავალდებულოა.';
       switchLangTab('en');
       return;
     }
@@ -329,7 +329,7 @@
 
     const saveBtn = document.getElementById('savePostBtn');
     saveBtn.disabled = true;
-    saveBtn.textContent = 'Saving…';
+    saveBtn.textContent = 'Saving… — ინახება...';
 
     let result;
     if (editingId) {
@@ -340,7 +340,7 @@
     }
 
     saveBtn.disabled = false;
-    saveBtn.textContent = 'Save Post';
+    saveBtn.textContent = 'Save Post — შენახვა';
 
     if (result.error) {
       errorEl.textContent = result.error.message;
@@ -348,13 +348,13 @@
     }
 
     overlay.hidden = true;
-    showToast(editingId ? 'Post updated.' : 'Post created.');
+    showToast(editingId ? 'Post updated. — სტატია განახლდა.' : 'Post created. — სტატია დაემატა.');
     await loadPosts();
   });
 
   document.getElementById('deletePostBtn').addEventListener('click', async () => {
     if (!editingId) return;
-    if (!window.confirm('Delete this post? This cannot be undone.')) return;
+    if (!window.confirm('Delete this post? This cannot be undone. — წავშალო სტატია? დაბრუნება შეუძლებელია.')) return;
     await deletePost(editingId);
     overlay.hidden = true;
   });
@@ -362,10 +362,10 @@
   async function deletePost(id) {
     const { error } = await supabaseClient.from('blog_posts').delete().eq('id', id);
     if (error) {
-      showToast(`Couldn't delete: ${error.message}`, true);
+      showToast(`Couldn't delete: ${error.message} — ვერ წაიშალა`, true);
       return;
     }
-    showToast('Post deleted.');
+    showToast('Post deleted. — სტატია წაიშალა.');
     await loadPosts();
   }
 
@@ -407,14 +407,14 @@
   }
 
   async function loadMessages() {
-    messageListEl.innerHTML = '<p class="admin-loading">Loading messages…</p>';
+    messageListEl.innerHTML = '<p class="admin-loading">Loading messages… — იტვირთება...</p>';
     const { data, error } = await supabaseClient
       .from('contact_messages')
       .select('*')
       .order('created_at', { ascending: false });
 
     if (error) {
-      messageListEl.innerHTML = `<p class="admin-empty">Couldn't load messages: ${escapeHtml(error.message)}</p>`;
+      messageListEl.innerHTML = `<p class="admin-empty">Couldn't load messages: ${escapeHtml(error.message)} — ვერ ჩაიტვირთა</p>`;
       return;
     }
 
@@ -425,7 +425,7 @@
 
   function renderMessageList() {
     if (!messages.length) {
-      messageListEl.innerHTML = '<p class="admin-empty">No messages yet.</p>';
+      messageListEl.innerHTML = '<p class="admin-empty">No messages yet. — შეტყობინებები ჯერ არ არის.</p>';
       return;
     }
 
@@ -442,8 +442,8 @@
           <p class="message-row-text">${escapeHtml(m.message)}</p>
         </div>
         <div class="post-row-actions">
-          ${m.is_read ? '' : `<button class="admin-btn-secondary" data-mark-read="${m.id}">Mark read</button>`}
-          <button class="admin-btn-danger" data-delete-message="${m.id}">Delete</button>
+          ${m.is_read ? '' : `<button class="admin-btn-secondary" data-mark-read="${m.id}">Mark read — წაკითხულია</button>`}
+          <button class="admin-btn-danger" data-delete-message="${m.id}">Delete — წაშლა</button>
         </div>
       </div>
     `).join('');
@@ -454,7 +454,7 @@
     if (readBtn) {
       const id = readBtn.dataset.markRead;
       const { error } = await supabaseClient.from('contact_messages').update({ is_read: true }).eq('id', id);
-      if (error) { showToast(`Couldn't update: ${error.message}`, true); return; }
+      if (error) { showToast(`Couldn't update: ${error.message} — ვერ განახლდა`, true); return; }
       const m = messages.find(msg => msg.id === id);
       if (m) m.is_read = true;
       renderMessageList();
@@ -463,10 +463,10 @@
     }
     const delBtn = e.target.closest('[data-delete-message]');
     if (delBtn) {
-      if (!window.confirm('Delete this message? This cannot be undone.')) return;
+      if (!window.confirm('Delete this message? This cannot be undone. — წავშალო შეტყობინება? დაბრუნება შეუძლებელია.')) return;
       const id = delBtn.dataset.deleteMessage;
       const { error } = await supabaseClient.from('contact_messages').delete().eq('id', id);
-      if (error) { showToast(`Couldn't delete: ${error.message}`, true); return; }
+      if (error) { showToast(`Couldn't delete: ${error.message} — ვერ წაიშალა`, true); return; }
       messages = messages.filter(msg => msg.id !== id);
       renderMessageList();
       updateUnreadBadge();
@@ -477,9 +477,9 @@
      Menu: load + render dish list
   --------------------------------------------------------- */
   const CATEGORY_LABELS = {
-    rolls: 'Rolls', nigiri: 'Nigiri', maki: 'Maki', futomaki: 'Futomaki',
-    tempuraRoll: 'Hot Rolls', sets: 'Sets', noodles: 'Noodles',
-    appetizers: 'Appetizers', desserts: 'Desserts', drinks: 'Drinks',
+    rolls: 'როლები', nigiri: 'ნიგირი', maki: 'მაკი', futomaki: 'ფუტომაკი',
+    tempuraRoll: 'ცხელი როლები', sets: 'სეტები', noodles: 'ნუდლი',
+    appetizers: 'აპეტაიზერები', desserts: 'დესერტები', drinks: 'სასმელები',
   };
 
   const dishListEl = document.getElementById('dishList');
@@ -492,7 +492,7 @@
   let dishRecipeCosts = {}; // menu_item_id -> total food cost, from recipe_items x inventory cost
 
   async function loadDishes() {
-    dishListEl.innerHTML = '<p class="admin-loading">Loading menu…</p>';
+    dishListEl.innerHTML = '<p class="admin-loading">Loading menu… — იტვირთება...</p>';
     const { data, error } = await supabaseClient
       .from('menu_items')
       .select('*')
@@ -500,7 +500,7 @@
       .order('sort_order', { ascending: false });
 
     if (error) {
-      dishListEl.innerHTML = `<p class="admin-empty">Couldn't load menu: ${escapeHtml(error.message)}</p>`;
+      dishListEl.innerHTML = `<p class="admin-empty">Couldn't load menu: ${escapeHtml(error.message)} — ვერ ჩაიტვირთა მენიუ</p>`;
       return;
     }
 
@@ -534,7 +534,7 @@
     const filtered = filter ? dishes.filter(d => d.category === filter) : dishes;
 
     if (!filtered.length) {
-      dishListEl.innerHTML = '<p class="admin-empty">No dishes yet — click "New Dish" to add one.</p>';
+      dishListEl.innerHTML = '<p class="admin-empty">No dishes yet — click "New Dish" to add one. — კერძები ჯერ არ არის, დააჭირეთ „New Dish"-ს.</p>';
       return;
     }
 
@@ -549,10 +549,10 @@
           ${dishCostLine(d)}
         </div>
         <span class="post-row-category">${escapeHtml(CATEGORY_LABELS[d.category] || d.category)}</span>
-        <span class="post-row-badge ${d.published ? 'is-published' : ''}">${d.published ? 'Published' : 'Draft'}</span>
+        <span class="post-row-badge ${d.published ? 'is-published' : ''}">${d.published ? 'გამოქვეყნებული' : 'მონახაზი'}</span>
         <div class="post-row-actions">
-          <button class="admin-btn-secondary" data-edit-dish="${d.id}">Edit</button>
-          <button class="admin-btn-danger" data-delete-dish="${d.id}">Delete</button>
+          <button class="admin-btn-secondary" data-edit-dish="${d.id}">Edit — რედაქტირება</button>
+          <button class="admin-btn-danger" data-delete-dish="${d.id}">Delete — წაშლა</button>
         </div>
       </div>
     `).join('');
@@ -562,12 +562,12 @@
     const cost = dishRecipeCosts[dish.id];
     if (cost === undefined) return '';
     const priceAmt = Number(dish.price_amount) || 0;
-    let line = `Cost: ${cost.toFixed(2)} ₾`;
+    let line = `თვითღირებულება: ${cost.toFixed(2)} ₾`;
     if (priceAmt > 0) {
       const margin = priceAmt - cost;
       const marginPct = margin / priceAmt * 100;
       const cls = margin >= 0 ? 'margin-positive' : 'margin-negative';
-      line += ` · Margin: <span class="${cls}">${margin.toFixed(2)} ₾ (${marginPct.toFixed(0)}%)</span>`;
+      line += ` · მარჟა: <span class="${cls}">${margin.toFixed(2)} ₾ (${marginPct.toFixed(0)}%)</span>`;
     }
     return `<p class="post-row-cost">${line}</p>`;
   }
@@ -599,7 +599,7 @@
   async function openDishEditor(dish) {
     editingDishId = dish ? dish.id : null;
     currentDishPhotoUrl = dish ? (dish.photo_url || null) : null;
-    document.getElementById('dishEditorHeading').textContent = dish ? 'Edit Dish' : 'New Dish';
+    document.getElementById('dishEditorHeading').textContent = dish ? 'Edit Dish — კერძის რედაქტირება' : 'New Dish — ახალი კერძი';
     document.getElementById('deleteDishBtn').hidden = !dish;
     document.getElementById('dishEditorError').textContent = '';
 
@@ -640,7 +640,7 @@
   function renderRecipeRows() {
     const container = document.getElementById('dRecipeRows');
     if (!currentDishRecipeRows.length) {
-      container.innerHTML = '<p class="content-help">No ingredients yet — click "Add Ingredient".</p>';
+      container.innerHTML = '<p class="content-help">No ingredients yet — click "Add Ingredient". — ინგრედიენტები ჯერ არ არის, დააჭირეთ „Add Ingredient"-ს.</p>';
     } else {
       container.innerHTML = currentDishRecipeRows.map((row, idx) => {
         const options = inventoryItems.map(i =>
@@ -674,21 +674,21 @@
       return;
     }
 
-    let html = `Food cost: ${foodCost.toFixed(2)} ₾`;
+    let html = `თვითღირებულება: ${foodCost.toFixed(2)} ₾`;
     if (priceAmt > 0) {
       const margin = priceAmt - foodCost;
       const marginPct = margin / priceAmt * 100;
       const cls = margin >= 0 ? 'margin-positive' : 'margin-negative';
-      html += ` · Price: ${priceAmt.toFixed(2)} ₾ · Margin: <span class="${cls}">${margin.toFixed(2)} ₾ (${marginPct.toFixed(0)}%)</span>`;
+      html += ` · ფასი: ${priceAmt.toFixed(2)} ₾ · მარჟა: <span class="${cls}">${margin.toFixed(2)} ₾ (${marginPct.toFixed(0)}%)</span>`;
     } else {
-      html += ' · Enter a numeric price above to see margin.';
+      html += ' · მარჟის სანახავად შეიყვანეთ რიცხვითი ფასი ზემოთ.';
     }
     summaryEl.innerHTML = html;
   }
 
   document.getElementById('dAddIngredientBtn').addEventListener('click', () => {
     if (!inventoryItems.length) {
-      showToast('Add inventory items first, on the Inventory tab.', true);
+      showToast('Add inventory items first, on the Inventory tab. — ჯერ დაამატეთ მარაგის ნივთები Inventory ტაბში.', true);
       return;
     }
     currentDishRecipeRows.push({ inventory_item_id: inventoryItems[0].id, quantity: 0 });
@@ -739,13 +739,13 @@
     const fileInput = document.getElementById('dPhotoFile');
     const file = fileInput.files[0];
     if (!file) {
-      showToast('Choose a photo first.', true);
+      showToast('Choose a photo first. — ჯერ აირჩიეთ ფოტო.', true);
       return;
     }
 
     const btn = document.getElementById('dPhotoUploadBtn');
     btn.disabled = true;
-    btn.textContent = 'Uploading…';
+    btn.textContent = 'Uploading… — იტვირთება...';
 
     const ext = file.name.split('.').pop();
     const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
@@ -753,10 +753,10 @@
     const { error: uploadError } = await supabaseClient.storage.from('menu-photos').upload(path, file);
 
     btn.disabled = false;
-    btn.textContent = 'Upload Photo';
+    btn.textContent = 'Upload Photo — ატვირთვა';
 
     if (uploadError) {
-      showToast(`Upload failed: ${uploadError.message}`, true);
+      showToast(`Upload failed: ${uploadError.message} — ატვირთვა ვერ მოხერხდა`, true);
       return;
     }
 
@@ -777,13 +777,13 @@
 
     const nameEn = document.getElementById('dName_en').value.trim();
     if (!nameEn) {
-      errorEl.textContent = 'An English name is required.';
+      errorEl.textContent = 'An English name is required. — ინგლისური სახელი სავალდებულოა.';
       switchDishLangTab('en');
       return;
     }
     const price = document.getElementById('dPrice').value.trim();
     if (!price) {
-      errorEl.textContent = 'Price is required.';
+      errorEl.textContent = 'Price is required. — ფასი სავალდებულოა.';
       return;
     }
 
@@ -808,7 +808,7 @@
 
     const saveBtn = document.getElementById('saveDishBtn');
     saveBtn.disabled = true;
-    saveBtn.textContent = 'Saving…';
+    saveBtn.textContent = 'Saving… — ინახება...';
 
     let result;
     if (editingDishId) {
@@ -819,7 +819,7 @@
 
     if (result.error) {
       saveBtn.disabled = false;
-      saveBtn.textContent = 'Save Dish';
+      saveBtn.textContent = 'Save Dish — შენახვა';
       errorEl.textContent = result.error.message;
       return;
     }
@@ -834,24 +834,24 @@
       );
       if (recipeError) {
         saveBtn.disabled = false;
-        saveBtn.textContent = 'Save Dish';
-        errorEl.textContent = `Dish saved, but the recipe couldn't be saved: ${recipeError.message}`;
+        saveBtn.textContent = 'Save Dish — შენახვა';
+        errorEl.textContent = `Dish saved, but the recipe couldn't be saved: ${recipeError.message} — კერძი შენახულია, მაგრამ რეცეპტი ვერ შეინახა`;
         return;
       }
     }
 
     saveBtn.disabled = false;
-    saveBtn.textContent = 'Save Dish';
+    saveBtn.textContent = 'Save Dish — შენახვა';
 
     dishOverlay.hidden = true;
-    showToast(editingDishId ? 'Dish updated.' : 'Dish added.');
+    showToast(editingDishId ? 'Dish updated. — კერძი განახლდა.' : 'Dish added. — კერძი დაემატა.');
     await loadDishRecipeCosts();
     await loadDishes();
   });
 
   document.getElementById('deleteDishBtn').addEventListener('click', async () => {
     if (!editingDishId) return;
-    if (!window.confirm('Delete this dish? This cannot be undone.')) return;
+    if (!window.confirm('Delete this dish? This cannot be undone. — წავშალო კერძი? დაბრუნება შეუძლებელია.')) return;
     await deleteDish(editingDishId);
     dishOverlay.hidden = true;
   });
@@ -859,10 +859,10 @@
   async function deleteDish(id) {
     const { error } = await supabaseClient.from('menu_items').delete().eq('id', id);
     if (error) {
-      showToast(`Couldn't delete: ${error.message}`, true);
+      showToast(`Couldn't delete: ${error.message} — ვერ წაიშალა`, true);
       return;
     }
-    showToast('Dish deleted.');
+    showToast('Dish deleted. — კერძი წაიშალა.');
     await loadDishes();
   }
 
@@ -870,11 +870,11 @@
      Inventory: load + render items, item editor, stock movements
   --------------------------------------------------------- */
   const INV_CATEGORY_LABELS = {
-    seafood: 'Seafood', produce: 'Produce', rice_noodles: 'Rice & Noodles',
-    sauces_condiments: 'Sauces & Condiments', dairy: 'Dairy', dry_goods: 'Dry Goods',
-    beverages: 'Beverages', packaging: 'Packaging', other: 'Other',
+    seafood: 'თევზი/ზღვის პროდ.', produce: 'ბოსტნეული/ხილი', rice_noodles: 'ბრინჯი/ნუდლი',
+    sauces_condiments: 'სოუსები', dairy: 'რძის პროდ.', dry_goods: 'საშრობი',
+    beverages: 'სასმელები', packaging: 'შეფუთვა', other: 'სხვა',
   };
-  const INV_MOVEMENT_LABELS = { restock: 'Restock', usage: 'Usage', waste: 'Waste', adjustment: 'Adjustment' };
+  const INV_MOVEMENT_LABELS = { restock: 'შემოსავალი', usage: 'მოხმარება', waste: 'დანაკარგი', adjustment: 'კორექტირება' };
 
   const inventoryListEl = document.getElementById('inventoryList');
   const itemOverlay = document.getElementById('itemEditorOverlay');
@@ -893,14 +893,14 @@
   }
 
   async function loadInventory() {
-    inventoryListEl.innerHTML = '<p class="admin-loading">Loading inventory…</p>';
+    inventoryListEl.innerHTML = '<p class="admin-loading">Loading inventory… — იტვირთება...</p>';
     const { data, error } = await supabaseClient
       .from('inventory_items')
       .select('*')
       .order('name', { ascending: true });
 
     if (error) {
-      inventoryListEl.innerHTML = `<p class="admin-empty">Couldn't load inventory: ${escapeHtml(error.message)}</p>`;
+      inventoryListEl.innerHTML = `<p class="admin-empty">Couldn't load inventory: ${escapeHtml(error.message)} — ვერ ჩაიტვირთა მარაგი</p>`;
       return;
     }
 
@@ -930,7 +930,7 @@
     });
 
     if (!filtered.length) {
-      inventoryListEl.innerHTML = '<p class="admin-empty">No items match — click "New Item" to add stock to track.</p>';
+      inventoryListEl.innerHTML = '<p class="admin-empty">No items match — click "New Item" to add stock to track. — შესატყვისი ნივთი არ არის, დააჭირეთ „New Item"-ს.</p>';
       return;
     }
 
@@ -939,15 +939,15 @@
         <div class="post-row-icon">📦</div>
         <div class="post-row-main">
           <p class="post-row-title">${escapeHtml(i.name)}</p>
-          <p class="post-row-qty">${formatQty(i.quantity)} ${escapeHtml(i.unit)} on hand · min ${formatQty(i.min_quantity)} ${escapeHtml(i.unit)}${i.supplier ? ` · ${escapeHtml(i.supplier)}` : ''}${Number(i.yield_pct) < 100 ? ` · Yield ${formatQty(i.yield_pct)}% (effective ${effectiveCostPerUnit(i).toFixed(2)} ₾/${escapeHtml(i.unit)})` : ''}</p>
+          <p class="post-row-qty">${formatQty(i.quantity)} ${escapeHtml(i.unit)} მარაგშია · მინ. ${formatQty(i.min_quantity)} ${escapeHtml(i.unit)}${i.supplier ? ` · ${escapeHtml(i.supplier)}` : ''}${Number(i.yield_pct) < 100 ? ` · გამოსავლიანობა ${formatQty(i.yield_pct)}% (ეფექტური ${effectiveCostPerUnit(i).toFixed(2)} ₾/${escapeHtml(i.unit)})` : ''}</p>
         </div>
         <span class="post-row-category">${escapeHtml(INV_CATEGORY_LABELS[i.category] || i.category)}</span>
-        <span class="post-row-badge ${isLowStock(i) ? 'is-low-stock' : 'is-published'}">${isLowStock(i) ? 'Low stock' : 'OK'}</span>
+        <span class="post-row-badge ${isLowStock(i) ? 'is-low-stock' : 'is-published'}">${isLowStock(i) ? 'დაბალი მარაგი' : 'წესრიგშია'}</span>
         <div class="post-row-actions">
-          <button class="admin-btn-secondary" data-move="${i.id}">Move</button>
-          <button class="admin-btn-secondary" data-history="${i.id}">History</button>
-          <button class="admin-btn-secondary" data-edit-item="${i.id}">Edit</button>
-          <button class="admin-btn-danger" data-delete-item="${i.id}">Delete</button>
+          <button class="admin-btn-secondary" data-move="${i.id}">Move — მოძრაობა</button>
+          <button class="admin-btn-secondary" data-history="${i.id}">History — ისტორია</button>
+          <button class="admin-btn-secondary" data-edit-item="${i.id}">Edit — რედაქტირება</button>
+          <button class="admin-btn-danger" data-delete-item="${i.id}">Delete — წაშლა</button>
         </div>
       </div>
     `).join('');
@@ -979,7 +979,7 @@
   /* --- Item editor --- */
   function openItemEditor(item) {
     editingItemId = item ? item.id : null;
-    document.getElementById('itemEditorHeading').textContent = item ? 'Edit Item' : 'New Item';
+    document.getElementById('itemEditorHeading').textContent = item ? 'Edit Item — ნივთის რედაქტირება' : 'New Item — ახალი ნივთი';
     document.getElementById('deleteItemBtn').hidden = !item;
     document.getElementById('itemEditorError').textContent = '';
 
@@ -1007,12 +1007,12 @@
 
     const name = document.getElementById('iName').value.trim();
     if (!name) {
-      errorEl.textContent = 'Name is required.';
+      errorEl.textContent = 'Name is required. — სახელი სავალდებულოა.';
       return;
     }
     const yieldPct = Number(document.getElementById('iYieldPct').value) || 100;
     if (yieldPct <= 0 || yieldPct > 100) {
-      errorEl.textContent = 'Yield % must be between 1 and 100.';
+      errorEl.textContent = 'Yield % must be between 1 and 100. — გამოსავლიანობა უნდა იყოს 1-დან 100-მდე.';
       return;
     }
 
@@ -1032,7 +1032,7 @@
 
     const saveBtn = document.getElementById('saveItemBtn');
     saveBtn.disabled = true;
-    saveBtn.textContent = 'Saving…';
+    saveBtn.textContent = 'Saving… — ინახება...';
 
     let result;
     if (editingItemId) {
@@ -1042,7 +1042,7 @@
     }
 
     saveBtn.disabled = false;
-    saveBtn.textContent = 'Save Item';
+    saveBtn.textContent = 'Save Item — შენახვა';
 
     if (result.error) {
       errorEl.textContent = result.error.message;
@@ -1050,13 +1050,13 @@
     }
 
     itemOverlay.hidden = true;
-    showToast(editingItemId ? 'Item updated.' : 'Item added.');
+    showToast(editingItemId ? 'Item updated. — ნივთი განახლდა.' : 'Item added. — ნივთი დაემატა.');
     await loadInventory();
   });
 
   document.getElementById('deleteItemBtn').addEventListener('click', async () => {
     if (!editingItemId) return;
-    if (!window.confirm('Delete this item and its movement history? This cannot be undone.')) return;
+    if (!window.confirm('Delete this item and its movement history? This cannot be undone. — წავშალო ნივთი და მისი ისტორია? დაბრუნება შეუძლებელია.')) return;
     await deleteItem(editingItemId);
     itemOverlay.hidden = true;
   });
@@ -1064,10 +1064,10 @@
   async function deleteItem(id) {
     const { error } = await supabaseClient.from('inventory_items').delete().eq('id', id);
     if (error) {
-      showToast(`Couldn't delete: ${error.message}`, true);
+      showToast(`Couldn't delete: ${error.message} — ვერ წაიშალა`, true);
       return;
     }
-    showToast('Item deleted.');
+    showToast('Item deleted. — ნივთი წაიშალა.');
     await loadInventory();
   }
 
@@ -1077,7 +1077,7 @@
     if (!item) return;
     movementItemId = itemId;
     document.getElementById('movementItemLabel').textContent =
-      `${item.name} — ${formatQty(item.quantity)} ${item.unit} currently on hand.`;
+      `${item.name} — ${formatQty(item.quantity)} ${item.unit} currently on hand. — ამჟამად მარაგშია.`;
     document.getElementById('mType').value = 'restock';
     document.getElementById('mQuantity').value = '';
     document.getElementById('mNote').value = '';
@@ -1089,7 +1089,7 @@
   function updateMovementLabel() {
     const type = document.getElementById('mType').value;
     document.getElementById('mQuantityLabel').textContent =
-      type === 'adjustment' ? 'Amount (use a negative number to subtract)' : 'Amount';
+      type === 'adjustment' ? 'Amount (use a negative number to subtract) — რაოდენობა (გამოსაკლებად გამოიყენეთ მინუსი)' : 'Amount — რაოდენობა';
   }
   document.getElementById('mType').addEventListener('change', updateMovementLabel);
 
@@ -1105,7 +1105,7 @@
     const type = document.getElementById('mType').value;
     const rawAmount = Number(document.getElementById('mQuantity').value);
     if (!rawAmount) {
-      errorEl.textContent = 'Enter a non-zero amount.';
+      errorEl.textContent = 'Enter a non-zero amount. — შეიყვანეთ ნულისგან განსხვავებული რაოდენობა.';
       return;
     }
 
@@ -1114,14 +1114,14 @@
 
     const newQuantity = Number(item.quantity) + delta;
     if (newQuantity < 0) {
-      errorEl.textContent = `That would leave stock at ${formatQty(newQuantity)} ${item.unit}. Check the amount.`;
+      errorEl.textContent = `That would leave stock at ${formatQty(newQuantity)} ${item.unit}. Check the amount. — ამის შემდეგ მარაგი უარყოფითი გახდება, გადაამოწმეთ რაოდენობა.`;
       return;
     }
 
     const note = document.getElementById('mNote').value.trim();
     const saveBtn = document.getElementById('saveMovementBtn');
     saveBtn.disabled = true;
-    saveBtn.textContent = 'Saving…';
+    saveBtn.textContent = 'Saving… — ინახება...';
 
     const { error: updateError } = await supabaseClient
       .from('inventory_items')
@@ -1138,14 +1138,14 @@
       });
       if (txError) {
         saveBtn.disabled = false;
-        saveBtn.textContent = 'Save';
+        saveBtn.textContent = 'Save — შენახვა';
         errorEl.textContent = txError.message;
         return;
       }
     }
 
     saveBtn.disabled = false;
-    saveBtn.textContent = 'Save';
+    saveBtn.textContent = 'Save — შენახვა';
 
     if (updateError) {
       errorEl.textContent = updateError.message;
@@ -1153,7 +1153,7 @@
     }
 
     movementOverlay.hidden = true;
-    showToast('Stock updated.');
+    showToast('Stock updated. — მარაგი განახლდა.');
     await loadInventory();
   });
 
@@ -1161,9 +1161,9 @@
   async function openHistory(itemId) {
     const item = inventoryItems.find(i => i.id === itemId);
     if (!item) return;
-    document.getElementById('historyHeading').textContent = `History — ${item.name}`;
+    document.getElementById('historyHeading').textContent = `History — ისტორია: ${item.name}`;
     const listEl = document.getElementById('historyList');
-    listEl.innerHTML = '<p class="admin-loading">Loading…</p>';
+    listEl.innerHTML = '<p class="admin-loading">Loading… — იტვირთება...</p>';
     historyOverlay.hidden = false;
 
     const { data, error } = await supabaseClient
@@ -1174,11 +1174,11 @@
       .limit(50);
 
     if (error) {
-      listEl.innerHTML = `<p class="admin-empty">Couldn't load history: ${escapeHtml(error.message)}</p>`;
+      listEl.innerHTML = `<p class="admin-empty">Couldn't load history: ${escapeHtml(error.message)} — ვერ ჩაიტვირთა ისტორია</p>`;
       return;
     }
     if (!data || !data.length) {
-      listEl.innerHTML = '<p class="admin-empty">No movements recorded yet.</p>';
+      listEl.innerHTML = '<p class="admin-empty">No movements recorded yet. — ჯერ არცერთი მოძრაობა არ არის ჩაწერილი.</p>';
       return;
     }
 
@@ -1228,7 +1228,7 @@
 
     if (settingsErr || contentErr) {
       document.getElementById('settingsLoading').textContent =
-        `Couldn't load settings: ${(settingsErr || contentErr).message}`;
+        `Couldn't load settings: ${(settingsErr || contentErr).message} — ვერ ჩაიტვირთა პარამეტრები`;
       return;
     }
 
@@ -1260,7 +1260,7 @@
     errorEl.textContent = '';
     const btn = document.getElementById('saveSettingsBtn');
     btn.disabled = true;
-    btn.textContent = 'Saving…';
+    btn.textContent = 'Saving… — ინახება...';
 
     const settingsPayload = {
       id: 1,
@@ -1283,14 +1283,14 @@
     ]);
 
     btn.disabled = false;
-    btn.textContent = 'Save Settings';
+    btn.textContent = 'Save Settings — შენახვა';
 
     if (settingsResult.error || contentResult.error) {
       errorEl.textContent = (settingsResult.error || contentResult.error).message;
       return;
     }
 
-    showToast('Settings saved.');
+    showToast('Settings saved. — პარამეტრები შენახულია.');
   });
 
   /* ---------------------------------------------------------
