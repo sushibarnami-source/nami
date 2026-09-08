@@ -54,13 +54,15 @@
       form_error: "Something went wrong sending your message — please try again, or call us directly.",
       nav_account: 'Account', account_title: 'My Account',
       tab_login: 'Log In', tab_signup: 'Sign Up',
+      label_surname: 'Surname',
       label_email_req: 'Email', label_password: 'Password', label_password_confirm: 'Confirm Password',
+      show_password: 'Show password', hide_password: 'Hide password',
       label_marketing_optin: "I'd like to receive news and discounts by email.",
       btn_login: 'Log In', btn_signup: 'Sign Up', btn_logout: 'Log Out',
       account_greeting: 'Hello, {name}',
       account_err_offline: "Couldn't reach the account service. Check your connection and try again.",
       account_err_login: 'Incorrect email or password.',
-      account_err_required: 'Please fill in your name, phone and email.',
+      account_err_required: 'Please fill in your name, surname, phone and email.',
       account_err_password_short: 'Password should be at least 6 characters.',
       account_err_password_match: "Passwords don't match.",
       account_err_signup: "Something went wrong creating your account — please try again.",
@@ -113,13 +115,15 @@
       form_error: 'შეტყობინების გაგზავნა ვერ მოხერხდა — გთხოვთ, სცადოთ ხელახლა, ან დაგვირეკეთ პირდაპირ.',
       nav_account: 'ანგარიში', account_title: 'ჩემი ანგარიში',
       tab_login: 'შესვლა', tab_signup: 'რეგისტრაცია',
+      label_surname: 'გვარი',
       label_email_req: 'ელფოსტა', label_password: 'პაროლი', label_password_confirm: 'გაიმეორეთ პაროლი',
+      show_password: 'პაროლის ჩვენება', hide_password: 'პაროლის დამალვა',
       label_marketing_optin: 'მინდა მივიღო სიახლეები და ფასდაკლებები ელფოსტით.',
       btn_login: 'შესვლა', btn_signup: 'რეგისტრაცია', btn_logout: 'გასვლა',
       account_greeting: 'გამარჯობა, {name}',
       account_err_offline: 'ანგარიშის სერვისთან დაკავშირება ვერ მოხერხდა — შეამოწმეთ ინტერნეტ-კავშირი და სცადეთ ხელახლა.',
       account_err_login: 'არასწორი ელფოსტა ან პაროლი.',
-      account_err_required: 'გთხოვთ, შეავსოთ სახელი, ტელეფონი და ელფოსტა.',
+      account_err_required: 'გთხოვთ, შეავსოთ სახელი, გვარი, ტელეფონი და ელფოსტა.',
       account_err_password_short: 'პაროლი უნდა შეიცავდეს მინიმუმ 6 სიმბოლოს.',
       account_err_password_match: 'პაროლები არ ემთხვევა.',
       account_err_signup: 'რეგისტრაცია ვერ მოხერხდა — გთხოვთ, სცადოთ ხელახლა.',
@@ -172,13 +176,15 @@
       form_error: 'Не удалось отправить сообщение — попробуйте ещё раз или позвоните нам напрямую.',
       nav_account: 'Аккаунт', account_title: 'Мой аккаунт',
       tab_login: 'Вход', tab_signup: 'Регистрация',
+      label_surname: 'Фамилия',
       label_email_req: 'Эл. почта', label_password: 'Пароль', label_password_confirm: 'Повторите пароль',
+      show_password: 'Показать пароль', hide_password: 'Скрыть пароль',
       label_marketing_optin: 'Хочу получать новости и скидки на email.',
       btn_login: 'Войти', btn_signup: 'Зарегистрироваться', btn_logout: 'Выйти',
       account_greeting: 'Здравствуйте, {name}',
       account_err_offline: 'Не удалось связаться с сервисом аккаунтов — проверьте соединение и попробуйте снова.',
       account_err_login: 'Неверный email или пароль.',
-      account_err_required: 'Пожалуйста, заполните имя, телефон и email.',
+      account_err_required: 'Пожалуйста, заполните имя, фамилию, телефон и email.',
       account_err_password_short: 'Пароль должен содержать не менее 6 символов.',
       account_err_password_match: 'Пароли не совпадают.',
       account_err_signup: 'Не удалось создать аккаунт — попробуйте ещё раз.',
@@ -768,6 +774,11 @@
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
       el.setAttribute('placeholder', t(el.dataset.i18nPlaceholder));
     });
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+      const label = t(el.dataset.i18nTitle);
+      el.setAttribute('title', label);
+      el.setAttribute('aria-label', label);
+    });
   }
 
   function setLanguage(lang) {
@@ -996,7 +1007,6 @@
   const accountModalBackdrop = document.getElementById('accountModalBackdrop');
   const accountModalClose = document.getElementById('accountModalClose');
   const accountOpenBtn = document.getElementById('accountOpenBtn');
-  const accountOpenBtnMobile = document.getElementById('accountOpenBtnMobile');
   const accountLoggedIn = document.getElementById('accountLoggedIn');
   const accountGreeting = document.getElementById('accountGreeting');
   const accountLogoutBtn = document.getElementById('accountLogoutBtn');
@@ -1021,7 +1031,6 @@
     document.body.style.overflow = '';
   }
   if (accountOpenBtn) accountOpenBtn.addEventListener('click', openAccountModal);
-  if (accountOpenBtnMobile) accountOpenBtnMobile.addEventListener('click', openAccountModal);
   if (accountModalClose) accountModalClose.addEventListener('click', closeAccountModal);
   if (accountModalBackdrop) accountModalBackdrop.addEventListener('click', closeAccountModal);
 
@@ -1034,6 +1043,18 @@
   }
   document.querySelectorAll('.account-tab-btn').forEach(btn => {
     btn.addEventListener('click', () => switchAccountTab(btn.dataset.accountTab));
+  });
+
+  document.querySelectorAll('.password-toggle-btn').forEach(btn => {
+    const input = document.getElementById(btn.dataset.togglePassword);
+    if (!input) return;
+    btn.addEventListener('click', () => {
+      const showing = input.type === 'text';
+      input.type = showing ? 'password' : 'text';
+      const label = t(showing ? 'show_password' : 'hide_password');
+      btn.setAttribute('title', label);
+      btn.setAttribute('aria-label', label);
+    });
   });
 
   function prefillContactForm(profile) {
@@ -1111,14 +1132,16 @@
         signupAccountError.textContent = t('account_err_offline');
         return;
       }
-      const name = document.getElementById('signupName').value.trim();
+      const firstName = document.getElementById('signupName').value.trim();
+      const surname = document.getElementById('signupSurname').value.trim();
       const phone = document.getElementById('signupPhone').value.trim();
       const email = document.getElementById('signupEmail').value.trim();
       const password = document.getElementById('signupPassword').value;
       const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
       const marketingOptIn = document.getElementById('signupMarketingOptIn').checked;
+      const fullName = [firstName, surname].filter(Boolean).join(' ');
 
-      if (!name || !phone || !email) { signupAccountError.textContent = t('account_err_required'); return; }
+      if (!firstName || !surname || !phone || !email) { signupAccountError.textContent = t('account_err_required'); return; }
       if (password.length < 6) { signupAccountError.textContent = t('account_err_password_short'); return; }
       if (password !== passwordConfirm) { signupAccountError.textContent = t('account_err_password_match'); return; }
 
@@ -1126,7 +1149,7 @@
       btn.disabled = true;
       const { data, error } = await supabaseClient.auth.signUp({
         email, password,
-        options: { data: { name, phone, marketing_opt_in: marketingOptIn } },
+        options: { data: { name: fullName, phone, marketing_opt_in: marketingOptIn } },
       });
       btn.disabled = false;
 

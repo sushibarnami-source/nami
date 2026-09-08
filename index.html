@@ -40,7 +40,9 @@
     </div>
 
     <div class="account-area" id="accountArea">
-      <button type="button" class="btn btn-ghost account-btn" id="accountOpenBtn" data-i18n="nav_account">Account</button>
+      <button type="button" class="account-btn" id="accountOpenBtn" data-i18n-title="nav_account" title="Account" aria-label="Account">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      </button>
       <div class="account-loggedin" id="accountLoggedIn" hidden>
         <span id="accountGreeting"></span>
         <button type="button" class="account-logout-btn" id="accountLogoutBtn" data-i18n="btn_logout">Log Out</button>
@@ -316,7 +318,12 @@
       </div>
       <div class="form-row">
         <label for="loginPassword" data-i18n="label_password">Password</label>
-        <input type="password" id="loginPassword" required>
+        <div class="password-field">
+          <input type="password" id="loginPassword" required>
+          <button type="button" class="password-toggle-btn" data-toggle-password="loginPassword" data-i18n-title="show_password" title="Show password" aria-label="Show password">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </button>
+        </div>
       </div>
       <p class="account-form-error" id="loginAccountError"></p>
       <button type="submit" class="btn btn-primary form-submit" data-i18n="btn_login">Log In</button>
@@ -328,20 +335,10 @@
         <input type="text" id="signupName" required>
       </div>
       <div class="form-row">
-        <label for="signupPhone" data-i18n="label_phone">Phone</label>
-        <input type="tel" id="signupPhone" required>
+        <label for="signupSurname" data-i18n="label_surname">Surname</label>
+        <input type="text" id="signupSurname" required>
       </div>
       <div class="form-row">
-        <label for="signupEmail" data-i18n="label_email_req">Email</label>
-        <input type="email" id="signupEmail" required>
-      </div>
-      <div class="form-row">
-        <label for="signupPassword" data-i18n="label_password">Password</label>
-        <input type="password" id="signupPassword" required minlength="6">
-      </div>
-      <div class="form-row">
-        <label for="signupPasswordConfirm" data-i18n="label_password_confirm">Confirm Password</label>
-        <input type="password" id="signupPasswordConfirm" required minlength="6">
       </div>
       <label class="account-checkbox">
         <input type="checkbox" id="signupMarketingOptIn" checked>
