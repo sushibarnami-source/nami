@@ -428,8 +428,12 @@
         </select>
       </div>
       <div class="editor-field">
-        <label for="dPrice">Price</label>
+        <label for="dPrice">Price (shown on site)</label>
         <input type="text" id="dPrice" placeholder="19.00 ₾">
+      </div>
+      <div class="editor-field">
+        <label for="dPriceAmount">Price (number, ₾)</label>
+        <input type="number" id="dPriceAmount" step="0.01" placeholder="19.00">
       </div>
       <div class="editor-field">
         <label for="dSortOrder">Sort order</label>
@@ -454,6 +458,14 @@
         <input type="checkbox" id="dTagNew">
         <label for="dTagNew">New</label>
       </div>
+    </div>
+
+    <div class="editor-field" style="margin-bottom:18px;">
+      <label>Recipe (ingredients used per serving)</label>
+      <p class="content-help">Pulls from Inventory items and their cost — used to compute food cost and margin below.</p>
+      <div id="dRecipeRows"></div>
+      <button type="button" class="admin-btn-secondary" id="dAddIngredientBtn">+ Add Ingredient</button>
+      <p class="recipe-summary" id="dRecipeCostSummary"></p>
     </div>
 
     <div class="editor-field" style="margin-bottom:18px;">
