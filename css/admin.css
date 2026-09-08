@@ -51,6 +51,20 @@ body.admin-body {
 .admin-main-tab-btn.active { color: var(--green-deep); border-bottom-color: var(--green-deep); }
 .admin-tab-pane[hidden] { display: none; }
 
+.admin-tab-badge {
+  display: inline-block;
+  min-width: 18px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--red);
+  color: #fff;
+  font-size: .68rem;
+  font-weight: 700;
+  text-align: center;
+  vertical-align: middle;
+  margin-left: 2px;
+}
+
 .settings-group-title {
   font-size: 1.05rem;
   margin: 28px 0 14px;
@@ -145,6 +159,12 @@ body.admin-body {
 }
 .post-row-badge.is-published { background: var(--green-light); color: var(--green-deep); }
 .post-row-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+.post-row.is-unread { border-color: var(--green-deep); background: var(--green-light); background: color-mix(in srgb, var(--green-light) 18%, var(--cream)); }
+.message-row { align-items: flex-start; }
+.message-row-text { font-size: .88rem; color: var(--ink-soft); margin: 6px 0 0; white-space: pre-wrap; }
+.message-row-contact { font-size: .8rem; color: var(--muted); }
+.message-row-contact a { color: var(--green-deep); }
 
 .admin-empty { text-align: center; color: var(--muted); padding: 50px 0; }
 

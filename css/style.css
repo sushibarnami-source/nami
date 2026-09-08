@@ -749,6 +749,7 @@ section { padding: 110px 0; }
   text-align: center;
   min-height: 1.2em;
 }
+.form-success.is-error { color: var(--red); }
 
 /* ---------- Footer ---------- */
 .site-footer { background: var(--ink); padding: 50px 0; }
