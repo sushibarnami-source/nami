@@ -580,6 +580,11 @@
         <input type="number" id="iCostPerUnit" step="any" value="0">
       </div>
       <div class="editor-field">
+        <label for="iYieldPct">Yield % (usable after trim/waste)</label>
+        <input type="number" id="iYieldPct" step="any" min="1" max="100" value="100">
+        <p class="content-help">E.g. 80 if 20% of the as-purchased weight is trimmed away (skin, bones…). Raises the effective cost used in recipe math below.</p>
+      </div>
+      <div class="editor-field">
         <label for="iSupplier">Supplier</label>
         <input type="text" id="iSupplier">
       </div>
