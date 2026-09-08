@@ -253,15 +253,11 @@ body.admin-body {
 .rte-editor p { margin: 0 0 12px; }
 .rte-editor p:last-child { margin-bottom: 0; }
 .rte-editor .post-figure {
-  margin: 2px 0 12px;
+  margin: 8px 0 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  background: var(--paper-dim);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px;
 }
 .rte-editor .post-figure img { max-width: 220px; height: auto; border-radius: var(--radius-sm); }
 .rte-editor .post-figure figcaption { font-size: .74rem; color: var(--muted); }

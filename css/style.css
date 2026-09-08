@@ -588,22 +588,18 @@ section { padding: 110px 0; }
 .dish-modal-desc { color: var(--ink-soft); font-size: .96rem; line-height: 1.6; margin: 0; }
 
 .post-figure {
-  margin: 2px 0;
+  margin: 14px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  background: var(--paper-dim);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  padding: 0 0 14px;
 }
 .post-figure img {
   width: 100%;
-  max-width: 320px;
+  max-width: 460px;
   height: auto;
   display: block;
+  border-radius: var(--radius-sm);
 }
 .post-figure figcaption {
   margin-top: 4px;
