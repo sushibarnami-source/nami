@@ -21,6 +21,7 @@
       const msg = '<p class="admin-empty">Couldn\'t reach the login service. Check your connection and reload.</p>';
       document.getElementById('postList').innerHTML = msg;
       document.getElementById('dishList').innerHTML = msg;
+      document.getElementById('inventoryList').innerHTML = msg;
       document.getElementById('messageList').innerHTML = msg;
       document.getElementById('settingsLoading').textContent = "Couldn't reach the login service. Check your connection and reload.";
       return false;
@@ -367,6 +368,7 @@
   const mainTabPanes = {
     blog: document.getElementById('tabBlog'),
     menu: document.getElementById('tabMenu'),
+    inventory: document.getElementById('tabInventory'),
     messages: document.getElementById('tabMessages'),
     settings: document.getElementById('tabSettings'),
   };
@@ -479,6 +481,8 @@
   let dishes = [];
   let editingDishId = null;
   let currentDishPhotoUrl = null;
+  let currentDishRecipeRows = []; // [{ inventory_item_id, quantity }] for the dish open in the editor
+  let dishRecipeCosts = {}; // menu_item_id -> total food cost, from recipe_items x inventory cost
 
   async function loadDishes() {
     dishListEl.innerHTML = '<p class="admin-loading">Loading menu…</p>';
@@ -495,6 +499,27 @@
 
     dishes = data || [];
     renderDishList();
+  }
+
+  async function loadDishRecipeCosts() {
+    const { data, error } = await supabaseClient
+      .from('recipe_items')
+      .select('menu_item_id, inventory_item_id, quantity');
+
+    if (error) {
+      dishRecipeCosts = {};
+      return;
+    }
+
+    const costByInvId = {};
+    inventoryItems.forEach(i => { costByInvId[i.id] = Number(i.cost_per_unit) || 0; });
+
+    const totals = {};
+    (data || []).forEach(r => {
+      const lineCost = (costByInvId[r.inventory_item_id] || 0) * Number(r.quantity);
+      totals[r.menu_item_id] = (totals[r.menu_item_id] || 0) + lineCost;
+    });
+    dishRecipeCosts = totals;
   }
 
   function renderDishList() {
@@ -514,6 +539,7 @@
         <div class="post-row-main">
           <p class="post-row-title">${escapeHtml(d.name_en)}</p>
           <p class="post-row-meta">${escapeHtml(d.price)}</p>
+          ${dishCostLine(d)}
         </div>
         <span class="post-row-category">${escapeHtml(CATEGORY_LABELS[d.category] || d.category)}</span>
         <span class="post-row-badge ${d.published ? 'is-published' : ''}">${d.published ? 'Published' : 'Draft'}</span>
@@ -523,6 +549,20 @@
         </div>
       </div>
     `).join('');
+  }
+
+  function dishCostLine(dish) {
+    const cost = dishRecipeCosts[dish.id];
+    if (cost === undefined) return '';
+    const priceAmt = Number(dish.price_amount) || 0;
+    let line = `Cost: ${cost.toFixed(2)} ₾`;
+    if (priceAmt > 0) {
+      const margin = priceAmt - cost;
+      const marginPct = margin / priceAmt * 100;
+      const cls = margin >= 0 ? 'margin-positive' : 'margin-negative';
+      line += ` · Margin: <span class="${cls}">${margin.toFixed(2)} ₾ (${marginPct.toFixed(0)}%)</span>`;
+    }
+    return `<p class="post-row-cost">${line}</p>`;
   }
 
   categoryFilter.addEventListener('change', renderDishList);
@@ -549,7 +589,7 @@
     btn.addEventListener('click', () => switchDishLangTab(btn.dataset.lang));
   });
 
-  function openDishEditor(dish) {
+  async function openDishEditor(dish) {
     editingDishId = dish ? dish.id : null;
     currentDishPhotoUrl = dish ? (dish.photo_url || null) : null;
     document.getElementById('dishEditorHeading').textContent = dish ? 'Edit Dish' : 'New Dish';
@@ -558,6 +598,7 @@
 
     document.getElementById('dCategory').value = dish ? dish.category : (categoryFilter.value || 'rolls');
     document.getElementById('dPrice').value = dish ? dish.price : '';
+    document.getElementById('dPriceAmount').value = dish && dish.price_amount ? dish.price_amount : '';
     document.getElementById('dSortOrder').value = dish ? dish.sort_order : 0;
     document.getElementById('dPublished').checked = dish ? dish.published : true;
 
@@ -571,10 +612,104 @@
       document.getElementById(`dDesc_${lang}`).value = dish ? dish[`desc_${lang}`] : '';
     });
 
+    currentDishRecipeRows = [];
+    renderRecipeRows();
+
     updateDishPhotoPreview();
     switchDishLangTab('en');
     dishOverlay.hidden = false;
+
+    if (dish) {
+      const { data: recipeRows } = await supabaseClient
+        .from('recipe_items')
+        .select('inventory_item_id, quantity')
+        .eq('menu_item_id', dish.id);
+      currentDishRecipeRows = (recipeRows || []).map(r => ({ inventory_item_id: r.inventory_item_id, quantity: Number(r.quantity) }));
+      renderRecipeRows();
+    }
   }
+
+  /* --- Recipe (dish ingredients) editor --- */
+  function renderRecipeRows() {
+    const container = document.getElementById('dRecipeRows');
+    if (!currentDishRecipeRows.length) {
+      container.innerHTML = '<p class="content-help">No ingredients yet — click "Add Ingredient".</p>';
+    } else {
+      container.innerHTML = currentDishRecipeRows.map((row, idx) => {
+        const options = inventoryItems.map(i =>
+          `<option value="${i.id}" ${i.id === row.inventory_item_id ? 'selected' : ''}>${escapeHtml(i.name)}</option>`
+        ).join('');
+        const selected = inventoryItems.find(i => i.id === row.inventory_item_id);
+        return `
+          <div class="recipe-row" data-row-index="${idx}">
+            <select data-recipe-item>${options}</select>
+            <input type="number" step="any" min="0" value="${row.quantity || ''}" data-recipe-qty placeholder="0">
+            <span class="recipe-row-unit">${escapeHtml(selected ? selected.unit : '')}</span>
+            <button type="button" class="recipe-row-remove" data-recipe-remove title="Remove ingredient">✕</button>
+          </div>
+        `;
+      }).join('');
+    }
+    updateRecipeCostSummary();
+  }
+
+  function updateRecipeCostSummary() {
+    const costByInvId = {};
+    inventoryItems.forEach(i => { costByInvId[i.id] = Number(i.cost_per_unit) || 0; });
+    const foodCost = currentDishRecipeRows.reduce(
+      (sum, r) => sum + (costByInvId[r.inventory_item_id] || 0) * (Number(r.quantity) || 0), 0
+    );
+    const priceAmt = Number(document.getElementById('dPriceAmount').value) || 0;
+    const summaryEl = document.getElementById('dRecipeCostSummary');
+
+    if (!currentDishRecipeRows.length && !priceAmt) {
+      summaryEl.textContent = '';
+      return;
+    }
+
+    let html = `Food cost: ${foodCost.toFixed(2)} ₾`;
+    if (priceAmt > 0) {
+      const margin = priceAmt - foodCost;
+      const marginPct = margin / priceAmt * 100;
+      const cls = margin >= 0 ? 'margin-positive' : 'margin-negative';
+      html += ` · Price: ${priceAmt.toFixed(2)} ₾ · Margin: <span class="${cls}">${margin.toFixed(2)} ₾ (${marginPct.toFixed(0)}%)</span>`;
+    } else {
+      html += ' · Enter a numeric price above to see margin.';
+    }
+    summaryEl.innerHTML = html;
+  }
+
+  document.getElementById('dAddIngredientBtn').addEventListener('click', () => {
+    if (!inventoryItems.length) {
+      showToast('Add inventory items first, on the Inventory tab.', true);
+      return;
+    }
+    currentDishRecipeRows.push({ inventory_item_id: inventoryItems[0].id, quantity: 0 });
+    renderRecipeRows();
+  });
+
+  document.getElementById('dRecipeRows').addEventListener('change', (e) => {
+    const row = e.target.closest('[data-row-index]');
+    if (!row) return;
+    const idx = Number(row.dataset.rowIndex);
+    if (e.target.matches('[data-recipe-item]')) {
+      currentDishRecipeRows[idx].inventory_item_id = e.target.value;
+      renderRecipeRows();
+    } else if (e.target.matches('[data-recipe-qty]')) {
+      currentDishRecipeRows[idx].quantity = Number(e.target.value) || 0;
+      updateRecipeCostSummary();
+    }
+  });
+
+  document.getElementById('dRecipeRows').addEventListener('click', (e) => {
+    const removeBtn = e.target.closest('[data-recipe-remove]');
+    if (!removeBtn) return;
+    const row = removeBtn.closest('[data-row-index]');
+    currentDishRecipeRows.splice(Number(row.dataset.rowIndex), 1);
+    renderRecipeRows();
+  });
+
+  document.getElementById('dPriceAmount').addEventListener('input', updateRecipeCostSummary);
 
   function updateDishPhotoPreview() {
     const img = document.getElementById('dPhotoPreview');
@@ -653,6 +788,7 @@
     const payload = {
       category: document.getElementById('dCategory').value,
       price,
+      price_amount: Number(document.getElementById('dPriceAmount').value) || 0,
       tags,
       photo_url: currentDishPhotoUrl,
       published: document.getElementById('dPublished').checked,
@@ -669,21 +805,40 @@
 
     let result;
     if (editingDishId) {
-      result = await supabaseClient.from('menu_items').update(payload).eq('id', editingDishId);
+      result = await supabaseClient.from('menu_items').update(payload).eq('id', editingDishId).select().single();
     } else {
-      result = await supabaseClient.from('menu_items').insert(payload);
+      result = await supabaseClient.from('menu_items').insert(payload).select().single();
+    }
+
+    if (result.error) {
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Save Dish';
+      errorEl.textContent = result.error.message;
+      return;
+    }
+
+    const dishId = editingDishId || result.data.id;
+    const validRecipeRows = currentDishRecipeRows.filter(r => r.inventory_item_id && Number(r.quantity) > 0);
+
+    await supabaseClient.from('recipe_items').delete().eq('menu_item_id', dishId);
+    if (validRecipeRows.length) {
+      const { error: recipeError } = await supabaseClient.from('recipe_items').insert(
+        validRecipeRows.map(r => ({ menu_item_id: dishId, inventory_item_id: r.inventory_item_id, quantity: Number(r.quantity) }))
+      );
+      if (recipeError) {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Dish';
+        errorEl.textContent = `Dish saved, but the recipe couldn't be saved: ${recipeError.message}`;
+        return;
+      }
     }
 
     saveBtn.disabled = false;
     saveBtn.textContent = 'Save Dish';
 
-    if (result.error) {
-      errorEl.textContent = result.error.message;
-      return;
-    }
-
     dishOverlay.hidden = true;
     showToast(editingDishId ? 'Dish updated.' : 'Dish added.');
+    await loadDishRecipeCosts();
     await loadDishes();
   });
 
@@ -703,6 +858,327 @@
     showToast('Dish deleted.');
     await loadDishes();
   }
+
+  /* ---------------------------------------------------------
+     Inventory: load + render items, item editor, stock movements
+  --------------------------------------------------------- */
+  const INV_CATEGORY_LABELS = {
+    seafood: 'Seafood', produce: 'Produce', rice_noodles: 'Rice & Noodles',
+    sauces_condiments: 'Sauces & Condiments', dairy: 'Dairy', dry_goods: 'Dry Goods',
+    beverages: 'Beverages', packaging: 'Packaging', other: 'Other',
+  };
+  const INV_MOVEMENT_LABELS = { restock: 'Restock', usage: 'Usage', waste: 'Waste', adjustment: 'Adjustment' };
+
+  const inventoryListEl = document.getElementById('inventoryList');
+  const itemOverlay = document.getElementById('itemEditorOverlay');
+  const movementOverlay = document.getElementById('movementOverlay');
+  const historyOverlay = document.getElementById('historyOverlay');
+  const invCategoryFilter = document.getElementById('invCategoryFilter');
+  const invSearch = document.getElementById('invSearch');
+  const invLowStockOnly = document.getElementById('invLowStockOnly');
+
+  let inventoryItems = [];
+  let editingItemId = null;
+  let movementItemId = null;
+
+  function isLowStock(item) {
+    return Number(item.quantity) <= Number(item.min_quantity);
+  }
+
+  async function loadInventory() {
+    inventoryListEl.innerHTML = '<p class="admin-loading">Loading inventory…</p>';
+    const { data, error } = await supabaseClient
+      .from('inventory_items')
+      .select('*')
+      .order('name', { ascending: true });
+
+    if (error) {
+      inventoryListEl.innerHTML = `<p class="admin-empty">Couldn't load inventory: ${escapeHtml(error.message)}</p>`;
+      return;
+    }
+
+    inventoryItems = data || [];
+    renderInventoryStats();
+    renderInventoryList();
+  }
+
+  function renderInventoryStats() {
+    const lowStockCount = inventoryItems.filter(isLowStock).length;
+    const totalValue = inventoryItems.reduce((sum, i) => sum + Number(i.quantity) * Number(i.cost_per_unit), 0);
+    document.getElementById('statTotalItems').textContent = String(inventoryItems.length);
+    document.getElementById('statLowStock').textContent = String(lowStockCount);
+    document.getElementById('statTotalValue').textContent = `${totalValue.toFixed(2)} ₾`;
+  }
+
+  function renderInventoryList() {
+    const category = invCategoryFilter.value;
+    const search = invSearch.value.trim().toLowerCase();
+    const lowOnly = invLowStockOnly.checked;
+
+    const filtered = inventoryItems.filter(i => {
+      if (category && i.category !== category) return false;
+      if (search && !i.name.toLowerCase().includes(search)) return false;
+      if (lowOnly && !isLowStock(i)) return false;
+      return true;
+    });
+
+    if (!filtered.length) {
+      inventoryListEl.innerHTML = '<p class="admin-empty">No items match — click "New Item" to add stock to track.</p>';
+      return;
+    }
+
+    inventoryListEl.innerHTML = filtered.map(i => `
+      <div class="post-row">
+        <div class="post-row-icon">📦</div>
+        <div class="post-row-main">
+          <p class="post-row-title">${escapeHtml(i.name)}</p>
+          <p class="post-row-qty">${formatQty(i.quantity)} ${escapeHtml(i.unit)} on hand · min ${formatQty(i.min_quantity)} ${escapeHtml(i.unit)}${i.supplier ? ` · ${escapeHtml(i.supplier)}` : ''}</p>
+        </div>
+        <span class="post-row-category">${escapeHtml(INV_CATEGORY_LABELS[i.category] || i.category)}</span>
+        <span class="post-row-badge ${isLowStock(i) ? 'is-low-stock' : 'is-published'}">${isLowStock(i) ? 'Low stock' : 'OK'}</span>
+        <div class="post-row-actions">
+          <button class="admin-btn-secondary" data-move="${i.id}">Move</button>
+          <button class="admin-btn-secondary" data-history="${i.id}">History</button>
+          <button class="admin-btn-secondary" data-edit-item="${i.id}">Edit</button>
+          <button class="admin-btn-danger" data-delete-item="${i.id}">Delete</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function formatQty(n) {
+    const num = Number(n);
+    return Number.isInteger(num) ? String(num) : num.toFixed(2);
+  }
+
+  invCategoryFilter.addEventListener('change', renderInventoryList);
+  invSearch.addEventListener('input', renderInventoryList);
+  invLowStockOnly.addEventListener('change', renderInventoryList);
+
+  inventoryListEl.addEventListener('click', (e) => {
+    const editBtn = e.target.closest('[data-edit-item]');
+    if (editBtn) {
+      openItemEditor(inventoryItems.find(i => i.id === editBtn.dataset.editItem));
+      return;
+    }
+    const delBtn = e.target.closest('[data-delete-item]');
+    if (delBtn) { deleteItem(delBtn.dataset.deleteItem); return; }
+    const moveBtn = e.target.closest('[data-move]');
+    if (moveBtn) { openMovement(moveBtn.dataset.move); return; }
+    const histBtn = e.target.closest('[data-history]');
+    if (histBtn) { openHistory(histBtn.dataset.history); }
+  });
+
+  /* --- Item editor --- */
+  function openItemEditor(item) {
+    editingItemId = item ? item.id : null;
+    document.getElementById('itemEditorHeading').textContent = item ? 'Edit Item' : 'New Item';
+    document.getElementById('deleteItemBtn').hidden = !item;
+    document.getElementById('itemEditorError').textContent = '';
+
+    document.getElementById('iName').value = item ? item.name : '';
+    document.getElementById('iCategory').value = item ? item.category : 'other';
+    document.getElementById('iUnit').value = item ? item.unit : 'pcs';
+    document.getElementById('iQuantity').value = item ? item.quantity : 0;
+    document.getElementById('iQuantity').disabled = !!item;
+    document.getElementById('iQuantityHelp').hidden = !item;
+    document.getElementById('iMinQuantity').value = item ? item.min_quantity : 0;
+    document.getElementById('iCostPerUnit').value = item ? item.cost_per_unit : 0;
+    document.getElementById('iSupplier').value = item ? item.supplier : '';
+    document.getElementById('iNotes').value = item ? item.notes : '';
+
+    itemOverlay.hidden = false;
+  }
+
+  document.getElementById('newItemBtn').addEventListener('click', () => openItemEditor(null));
+  document.getElementById('cancelItemEditBtn').addEventListener('click', () => { itemOverlay.hidden = true; });
+
+  document.getElementById('saveItemBtn').addEventListener('click', async () => {
+    const errorEl = document.getElementById('itemEditorError');
+    errorEl.textContent = '';
+
+    const name = document.getElementById('iName').value.trim();
+    if (!name) {
+      errorEl.textContent = 'Name is required.';
+      return;
+    }
+
+    const payload = {
+      name,
+      category: document.getElementById('iCategory').value,
+      unit: document.getElementById('iUnit').value,
+      min_quantity: Number(document.getElementById('iMinQuantity').value) || 0,
+      cost_per_unit: Number(document.getElementById('iCostPerUnit').value) || 0,
+      supplier: document.getElementById('iSupplier').value.trim(),
+      notes: document.getElementById('iNotes').value.trim(),
+    };
+    if (!editingItemId) {
+      payload.quantity = Number(document.getElementById('iQuantity').value) || 0;
+    }
+
+    const saveBtn = document.getElementById('saveItemBtn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving…';
+
+    let result;
+    if (editingItemId) {
+      result = await supabaseClient.from('inventory_items').update(payload).eq('id', editingItemId);
+    } else {
+      result = await supabaseClient.from('inventory_items').insert(payload);
+    }
+
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save Item';
+
+    if (result.error) {
+      errorEl.textContent = result.error.message;
+      return;
+    }
+
+    itemOverlay.hidden = true;
+    showToast(editingItemId ? 'Item updated.' : 'Item added.');
+    await loadInventory();
+  });
+
+  document.getElementById('deleteItemBtn').addEventListener('click', async () => {
+    if (!editingItemId) return;
+    if (!window.confirm('Delete this item and its movement history? This cannot be undone.')) return;
+    await deleteItem(editingItemId);
+    itemOverlay.hidden = true;
+  });
+
+  async function deleteItem(id) {
+    const { error } = await supabaseClient.from('inventory_items').delete().eq('id', id);
+    if (error) {
+      showToast(`Couldn't delete: ${error.message}`, true);
+      return;
+    }
+    showToast('Item deleted.');
+    await loadInventory();
+  }
+
+  /* --- Stock movement --- */
+  function openMovement(itemId) {
+    const item = inventoryItems.find(i => i.id === itemId);
+    if (!item) return;
+    movementItemId = itemId;
+    document.getElementById('movementItemLabel').textContent =
+      `${item.name} — ${formatQty(item.quantity)} ${item.unit} currently on hand.`;
+    document.getElementById('mType').value = 'restock';
+    document.getElementById('mQuantity').value = '';
+    document.getElementById('mNote').value = '';
+    document.getElementById('movementError').textContent = '';
+    updateMovementLabel();
+    movementOverlay.hidden = false;
+  }
+
+  function updateMovementLabel() {
+    const type = document.getElementById('mType').value;
+    document.getElementById('mQuantityLabel').textContent =
+      type === 'adjustment' ? 'Amount (use a negative number to subtract)' : 'Amount';
+  }
+  document.getElementById('mType').addEventListener('change', updateMovementLabel);
+
+  document.getElementById('cancelMovementBtn').addEventListener('click', () => { movementOverlay.hidden = true; });
+
+  document.getElementById('saveMovementBtn').addEventListener('click', async () => {
+    const errorEl = document.getElementById('movementError');
+    errorEl.textContent = '';
+
+    const item = inventoryItems.find(i => i.id === movementItemId);
+    if (!item) return;
+
+    const type = document.getElementById('mType').value;
+    const rawAmount = Number(document.getElementById('mQuantity').value);
+    if (!rawAmount) {
+      errorEl.textContent = 'Enter a non-zero amount.';
+      return;
+    }
+
+    const delta = type === 'adjustment' ? rawAmount
+      : (type === 'restock' ? Math.abs(rawAmount) : -Math.abs(rawAmount));
+
+    const newQuantity = Number(item.quantity) + delta;
+    if (newQuantity < 0) {
+      errorEl.textContent = `That would leave stock at ${formatQty(newQuantity)} ${item.unit}. Check the amount.`;
+      return;
+    }
+
+    const note = document.getElementById('mNote').value.trim();
+    const saveBtn = document.getElementById('saveMovementBtn');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving…';
+
+    const { error: updateError } = await supabaseClient
+      .from('inventory_items')
+      .update({ quantity: newQuantity })
+      .eq('id', item.id);
+
+    if (!updateError) {
+      const { error: txError } = await supabaseClient.from('inventory_transactions').insert({
+        item_id: item.id,
+        type,
+        delta,
+        note,
+        created_by: (currentUser && currentUser.email) || '',
+      });
+      if (txError) {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save';
+        errorEl.textContent = txError.message;
+        return;
+      }
+    }
+
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save';
+
+    if (updateError) {
+      errorEl.textContent = updateError.message;
+      return;
+    }
+
+    movementOverlay.hidden = true;
+    showToast('Stock updated.');
+    await loadInventory();
+  });
+
+  /* --- Movement history --- */
+  async function openHistory(itemId) {
+    const item = inventoryItems.find(i => i.id === itemId);
+    if (!item) return;
+    document.getElementById('historyHeading').textContent = `History — ${item.name}`;
+    const listEl = document.getElementById('historyList');
+    listEl.innerHTML = '<p class="admin-loading">Loading…</p>';
+    historyOverlay.hidden = false;
+
+    const { data, error } = await supabaseClient
+      .from('inventory_transactions')
+      .select('*')
+      .eq('item_id', itemId)
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (error) {
+      listEl.innerHTML = `<p class="admin-empty">Couldn't load history: ${escapeHtml(error.message)}</p>`;
+      return;
+    }
+    if (!data || !data.length) {
+      listEl.innerHTML = '<p class="admin-empty">No movements recorded yet.</p>';
+      return;
+    }
+
+    listEl.innerHTML = data.map(t => `
+      <div class="post-row">
+        <div class="post-row-main">
+          <p class="post-row-title">${INV_MOVEMENT_LABELS[t.type] || t.type} · ${t.delta > 0 ? '+' : ''}${formatQty(t.delta)} ${escapeHtml(item.unit)}</p>
+          <p class="post-row-meta">${new Date(t.created_at).toLocaleString()}${t.created_by ? ` · ${escapeHtml(t.created_by)}` : ''}${t.note ? ` · ${escapeHtml(t.note)}` : ''}</p>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('closeHistoryBtn').addEventListener('click', () => { historyOverlay.hidden = true; });
 
   /* ---------------------------------------------------------
      Site Settings: homepage text + contact/hours
@@ -810,6 +1286,8 @@
     const ok = await requireAuth();
     if (!ok) return;
     await loadPosts();
+    await loadInventory();
+    await loadDishRecipeCosts();
     await loadDishes();
     await loadMessages();
     await loadSettings();

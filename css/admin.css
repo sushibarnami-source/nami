@@ -285,6 +285,34 @@ body.admin-body {
 .editor-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--border); }
 .editor-actions-right { display: flex; gap: 10px; }
 
+/* ---------- Inventory ---------- */
+.stat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px 18px;
+}
+.stat-card-value { font-size: 1.6rem; font-weight: 700; margin: 0 0 2px; color: var(--green-deep); }
+.stat-card-label { font-size: .78rem; color: var(--muted); margin: 0; }
+.stat-card.is-warning .stat-card-value { color: var(--red); }
+
+.inventory-filters { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; margin-bottom: 18px; }
+
+.post-row-qty { font-size: .78rem; color: var(--muted); }
+.post-row-badge.is-low-stock { background: rgba(184, 58, 46, .12); color: var(--red); }
+
+/* ---------- Recipe (dish ingredients) ---------- */
+.recipe-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+.recipe-row select { flex: 1; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-family: var(--font-body); font-size: .85rem; background: var(--paper); }
+.recipe-row input[type="number"] { width: 90px; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-family: var(--font-body); font-size: .85rem; background: var(--paper); }
+.recipe-row-unit { font-size: .78rem; color: var(--muted); width: 32px; }
+.recipe-row-remove { background: none; border: none; color: var(--red); cursor: pointer; font-size: 1.1rem; padding: 4px 8px; line-height: 1; }
+.recipe-summary { font-size: .82rem; color: var(--muted); margin: 10px 0 0; }
+.recipe-summary .margin-positive { color: var(--green-deep); font-weight: 600; }
+.recipe-summary .margin-negative { color: var(--red); font-weight: 600; }
+.post-row-cost { font-size: .78rem; color: var(--muted); }
+
 .admin-toast {
   position: fixed;
   bottom: 24px;
