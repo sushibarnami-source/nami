@@ -420,8 +420,8 @@
         <div class="post-row-main">
           <p class="post-row-title">${escapeHtml(m.name)}</p>
           <p class="message-row-contact">
-            <a href="tel:${escapeHtml(m.phone)}">${escapeHtml(m.phone)}</a> ·
-            <a href="mailto:${escapeHtml(m.email)}">${escapeHtml(m.email)}</a> ·
+            <a href="tel:${escapeHtml(m.phone)}">${escapeHtml(m.phone)}</a>
+            ${m.email ? ` · <a href="mailto:${escapeHtml(m.email)}">${escapeHtml(m.email)}</a>` : ''} ·
             ${formatMessageDate(m.created_at)}
           </p>
           <p class="message-row-text">${escapeHtml(m.message)}</p>

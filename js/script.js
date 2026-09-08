@@ -42,7 +42,7 @@
       info_hours_label: 'Hours', info_hours_value: 'Mon–Sat 13:30–23:30 · Sunday: Closed',
       form_title: 'Send a Message',
       label_name: 'Name', placeholder_name: 'Your name',
-      label_email: 'Email',
+      label_email: 'Email (optional)',
       label_phone: 'Phone', placeholder_phone: '+995 5xx xx xx xx',
       label_message: 'Message', placeholder_message: 'Tell us about your reservation or question…',
       btn_send: 'Send Message',
@@ -88,7 +88,7 @@
       info_hours_label: 'სამუშაო საათები', info_hours_value: 'ორშ–შაბ 13:30–23:30 · კვირა: დასვენების დღე',
       form_title: 'მოგვწერეთ შეტყობინება',
       label_name: 'სახელი', placeholder_name: 'თქვენი სახელი',
-      label_email: 'ელფოსტა',
+      label_email: 'ელფოსტა (არასავალდებულო)',
       label_phone: 'ტელეფონი', placeholder_phone: '+995 5xx xx xx xx',
       label_message: 'შეტყობინება', placeholder_message: 'გვიამბეთ თქვენი ჯავშნის ან შეკითხვის შესახებ…',
       btn_send: 'გაგზავნა',
@@ -134,7 +134,7 @@
       info_hours_label: 'Часы работы', info_hours_value: 'Пн–Сб 13:30–23:30 · Вс: выходной',
       form_title: 'Отправить сообщение',
       label_name: 'Имя', placeholder_name: 'Ваше имя',
-      label_email: 'Эл. почта',
+      label_email: 'Эл. почта (необязательно)',
       label_phone: 'Телефон', placeholder_phone: '+995 5xx xx xx xx',
       label_message: 'Сообщение', placeholder_message: 'Расскажите о брони или вашем вопросе…',
       btn_send: 'Отправить',
@@ -893,7 +893,7 @@
     else setError('name', '');
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(data.email.trim())) { setError('email', t('err_email')); valid = false; }
+    if (data.email.trim() && !emailPattern.test(data.email.trim())) { setError('email', t('err_email')); valid = false; }
     else setError('email', '');
 
     if (!data.phone.trim()) { setError('phone', t('err_phone')); valid = false; }
@@ -931,7 +931,7 @@
       if (typeof supabaseClient === 'undefined' || !supabaseClient) throw new Error('no client');
       const { error } = await supabaseClient.from('contact_messages').insert({
         name: data.name.trim(),
-        email: data.email.trim(),
+        email: data.email.trim() || null,
         phone: data.phone.trim(),
         message: data.message.trim(),
       });
