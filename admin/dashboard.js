@@ -475,6 +475,8 @@
   let dishes = [];
   let editingDishId = null;
   let currentDishPhotoUrl = null;
+  let currentDishRecipeRows = []; // [{ inventory_item_id, quantity }] for the dish open in the editor
+  let dishRecipeCosts = {}; // menu_item_id -> total food cost, from recipe_items x inventory cost
 
   async function loadDishes() {
     dishListEl.innerHTML = '<p class="admin-loading">Loading menu…</p>';
@@ -491,6 +493,27 @@
 
     dishes = data || [];
     renderDishList();
+  }
+
+  async function loadDishRecipeCosts() {
+    const { data, error } = await supabaseClient
+      .from('recipe_items')
+      .select('menu_item_id, inventory_item_id, quantity');
+
+    if (error) {
+      dishRecipeCosts = {};
+      return;
+    }
+
+    const costByInvId = {};
+    inventoryItems.forEach(i => { costByInvId[i.id] = Number(i.cost_per_unit) || 0; });
+
+    const totals = {};
+    (data || []).forEach(r => {
+      const lineCost = (costByInvId[r.inventory_item_id] || 0) * Number(r.quantity);
+      totals[r.menu_item_id] = (totals[r.menu_item_id] || 0) + lineCost;
+    });
+    dishRecipeCosts = totals;
   }
 
   function renderDishList() {
@@ -510,6 +533,7 @@
         <div class="post-row-main">
           <p class="post-row-title">${escapeHtml(d.name_en)}</p>
           <p class="post-row-meta">${escapeHtml(d.price)}</p>
+          ${dishCostLine(d)}
         </div>
         <span class="post-row-category">${escapeHtml(CATEGORY_LABELS[d.category] || d.category)}</span>
         <span class="post-row-badge ${d.published ? 'is-published' : ''}">${d.published ? 'Published' : 'Draft'}</span>
@@ -519,6 +543,20 @@
         </div>
       </div>
     `).join('');
+  }
+
+  function dishCostLine(dish) {
+    const cost = dishRecipeCosts[dish.id];
+    if (cost === undefined) return '';
+    const priceAmt = Number(dish.price_amount) || 0;
+    let line = `Cost: ${cost.toFixed(2)} ₾`;
+    if (priceAmt > 0) {
+      const margin = priceAmt - cost;
+      const marginPct = margin / priceAmt * 100;
+      const cls = margin >= 0 ? 'margin-positive' : 'margin-negative';
+      line += ` · Margin: <span class="${cls}">${margin.toFixed(2)} ₾ (${marginPct.toFixed(0)}%)</span>`;
+    }
+    return `<p class="post-row-cost">${line}</p>`;
   }
 
   categoryFilter.addEventListener('change', renderDishList);
@@ -545,7 +583,7 @@
     btn.addEventListener('click', () => switchDishLangTab(btn.dataset.lang));
   });
 
-  function openDishEditor(dish) {
+  async function openDishEditor(dish) {
     editingDishId = dish ? dish.id : null;
     currentDishPhotoUrl = dish ? (dish.photo_url || null) : null;
     document.getElementById('dishEditorHeading').textContent = dish ? 'Edit Dish' : 'New Dish';
@@ -554,6 +592,7 @@
 
     document.getElementById('dCategory').value = dish ? dish.category : (categoryFilter.value || 'rolls');
     document.getElementById('dPrice').value = dish ? dish.price : '';
+    document.getElementById('dPriceAmount').value = dish && dish.price_amount ? dish.price_amount : '';
     document.getElementById('dSortOrder').value = dish ? dish.sort_order : 0;
     document.getElementById('dPublished').checked = dish ? dish.published : true;
 
@@ -567,10 +606,104 @@
       document.getElementById(`dDesc_${lang}`).value = dish ? dish[`desc_${lang}`] : '';
     });
 
+    currentDishRecipeRows = [];
+    renderRecipeRows();
+
     updateDishPhotoPreview();
     switchDishLangTab('en');
     dishOverlay.hidden = false;
+
+    if (dish) {
+      const { data: recipeRows } = await supabaseClient
+        .from('recipe_items')
+        .select('inventory_item_id, quantity')
+        .eq('menu_item_id', dish.id);
+      currentDishRecipeRows = (recipeRows || []).map(r => ({ inventory_item_id: r.inventory_item_id, quantity: Number(r.quantity) }));
+      renderRecipeRows();
+    }
   }
+
+  /* --- Recipe (dish ingredients) editor --- */
+  function renderRecipeRows() {
+    const container = document.getElementById('dRecipeRows');
+    if (!currentDishRecipeRows.length) {
+      container.innerHTML = '<p class="content-help">No ingredients yet — click "Add Ingredient".</p>';
+    } else {
+      container.innerHTML = currentDishRecipeRows.map((row, idx) => {
+        const options = inventoryItems.map(i =>
+          `<option value="${i.id}" ${i.id === row.inventory_item_id ? 'selected' : ''}>${escapeHtml(i.name)}</option>`
+        ).join('');
+        const selected = inventoryItems.find(i => i.id === row.inventory_item_id);
+        return `
+          <div class="recipe-row" data-row-index="${idx}">
+            <select data-recipe-item>${options}</select>
+            <input type="number" step="any" min="0" value="${row.quantity || ''}" data-recipe-qty placeholder="0">
+            <span class="recipe-row-unit">${escapeHtml(selected ? selected.unit : '')}</span>
+            <button type="button" class="recipe-row-remove" data-recipe-remove title="Remove ingredient">✕</button>
+          </div>
+        `;
+      }).join('');
+    }
+    updateRecipeCostSummary();
+  }
+
+  function updateRecipeCostSummary() {
+    const costByInvId = {};
+    inventoryItems.forEach(i => { costByInvId[i.id] = Number(i.cost_per_unit) || 0; });
+    const foodCost = currentDishRecipeRows.reduce(
+      (sum, r) => sum + (costByInvId[r.inventory_item_id] || 0) * (Number(r.quantity) || 0), 0
+    );
+    const priceAmt = Number(document.getElementById('dPriceAmount').value) || 0;
+    const summaryEl = document.getElementById('dRecipeCostSummary');
+
+    if (!currentDishRecipeRows.length && !priceAmt) {
+      summaryEl.textContent = '';
+      return;
+    }
+
+    let html = `Food cost: ${foodCost.toFixed(2)} ₾`;
+    if (priceAmt > 0) {
+      const margin = priceAmt - foodCost;
+      const marginPct = margin / priceAmt * 100;
+      const cls = margin >= 0 ? 'margin-positive' : 'margin-negative';
+      html += ` · Price: ${priceAmt.toFixed(2)} ₾ · Margin: <span class="${cls}">${margin.toFixed(2)} ₾ (${marginPct.toFixed(0)}%)</span>`;
+    } else {
+      html += ' · Enter a numeric price above to see margin.';
+    }
+    summaryEl.innerHTML = html;
+  }
+
+  document.getElementById('dAddIngredientBtn').addEventListener('click', () => {
+    if (!inventoryItems.length) {
+      showToast('Add inventory items first, on the Inventory tab.', true);
+      return;
+    }
+    currentDishRecipeRows.push({ inventory_item_id: inventoryItems[0].id, quantity: 0 });
+    renderRecipeRows();
+  });
+
+  document.getElementById('dRecipeRows').addEventListener('change', (e) => {
+    const row = e.target.closest('[data-row-index]');
+    if (!row) return;
+    const idx = Number(row.dataset.rowIndex);
+    if (e.target.matches('[data-recipe-item]')) {
+      currentDishRecipeRows[idx].inventory_item_id = e.target.value;
+      renderRecipeRows();
+    } else if (e.target.matches('[data-recipe-qty]')) {
+      currentDishRecipeRows[idx].quantity = Number(e.target.value) || 0;
+      updateRecipeCostSummary();
+    }
+  });
+
+  document.getElementById('dRecipeRows').addEventListener('click', (e) => {
+    const removeBtn = e.target.closest('[data-recipe-remove]');
+    if (!removeBtn) return;
+    const row = removeBtn.closest('[data-row-index]');
+    currentDishRecipeRows.splice(Number(row.dataset.rowIndex), 1);
+    renderRecipeRows();
+  });
+
+  document.getElementById('dPriceAmount').addEventListener('input', updateRecipeCostSummary);
 
   function updateDishPhotoPreview() {
     const img = document.getElementById('dPhotoPreview');
@@ -649,6 +782,7 @@
     const payload = {
       category: document.getElementById('dCategory').value,
       price,
+      price_amount: Number(document.getElementById('dPriceAmount').value) || 0,
       tags,
       photo_url: currentDishPhotoUrl,
       published: document.getElementById('dPublished').checked,
@@ -665,21 +799,40 @@
 
     let result;
     if (editingDishId) {
-      result = await supabaseClient.from('menu_items').update(payload).eq('id', editingDishId);
+      result = await supabaseClient.from('menu_items').update(payload).eq('id', editingDishId).select().single();
     } else {
-      result = await supabaseClient.from('menu_items').insert(payload);
+      result = await supabaseClient.from('menu_items').insert(payload).select().single();
+    }
+
+    if (result.error) {
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Save Dish';
+      errorEl.textContent = result.error.message;
+      return;
+    }
+
+    const dishId = editingDishId || result.data.id;
+    const validRecipeRows = currentDishRecipeRows.filter(r => r.inventory_item_id && Number(r.quantity) > 0);
+
+    await supabaseClient.from('recipe_items').delete().eq('menu_item_id', dishId);
+    if (validRecipeRows.length) {
+      const { error: recipeError } = await supabaseClient.from('recipe_items').insert(
+        validRecipeRows.map(r => ({ menu_item_id: dishId, inventory_item_id: r.inventory_item_id, quantity: Number(r.quantity) }))
+      );
+      if (recipeError) {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Dish';
+        errorEl.textContent = `Dish saved, but the recipe couldn't be saved: ${recipeError.message}`;
+        return;
+      }
     }
 
     saveBtn.disabled = false;
     saveBtn.textContent = 'Save Dish';
 
-    if (result.error) {
-      errorEl.textContent = result.error.message;
-      return;
-    }
-
     dishOverlay.hidden = true;
     showToast(editingDishId ? 'Dish updated.' : 'Dish added.');
+    await loadDishRecipeCosts();
     await loadDishes();
   });
 
@@ -1127,8 +1280,9 @@
     const ok = await requireAuth();
     if (!ok) return;
     await loadPosts();
-    await loadDishes();
     await loadInventory();
+    await loadDishRecipeCosts();
+    await loadDishes();
     await loadMessages();
     await loadSettings();
   })();
