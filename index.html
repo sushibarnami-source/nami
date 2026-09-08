@@ -29,6 +29,7 @@
         <li><a href="#blog" class="nav-link" data-i18n="nav_blog">Blog</a></li>
         <li><a href="#about" class="nav-link" data-i18n="nav_about">About Us</a></li>
         <li><a href="#contact" class="nav-link" data-i18n="nav_contact">Contact</a></li>
+        <li class="nav-account-item"><button type="button" class="nav-link nav-account-link" id="accountOpenBtnMobile" data-i18n="nav_account">Account</button></li>
       </ul>
     </nav>
 
@@ -36,6 +37,14 @@
       <button type="button" class="lang-btn active" data-lang="en">EN</button>
       <button type="button" class="lang-btn" data-lang="ka">GE</button>
       <button type="button" class="lang-btn" data-lang="ru">RU</button>
+    </div>
+
+    <div class="account-area" id="accountArea">
+      <button type="button" class="btn btn-ghost account-btn" id="accountOpenBtn" data-i18n="nav_account">Account</button>
+      <div class="account-loggedin" id="accountLoggedIn" hidden>
+        <span id="accountGreeting"></span>
+        <button type="button" class="account-logout-btn" id="accountLogoutBtn" data-i18n="btn_logout">Log Out</button>
+      </div>
     </div>
 
     <a href="#contact" class="btn btn-outline nav-reserve" data-i18n="nav_reserve">Reserve a Table</a>
@@ -281,6 +290,67 @@
       <div class="menu-item-tags" id="dishModalTags"></div>
       <p class="dish-modal-desc" id="dishModalDesc"></p>
     </div>
+  </div>
+</div>
+
+<div class="account-modal" id="accountModal" hidden>
+  <div class="account-modal-backdrop" id="accountModalBackdrop"></div>
+  <div class="account-modal-panel" role="dialog" aria-modal="true" aria-labelledby="accountModalTitle">
+    <button class="account-modal-close" id="accountModalClose" aria-label="Close">&times;</button>
+    <h3 class="account-modal-title" id="accountModalTitle" data-i18n="account_title">My Account</h3>
+
+    <div class="account-profile-section" id="accountProfileSection" hidden>
+      <p class="account-profile-greeting" id="accountProfileGreeting"></p>
+      <button type="button" class="btn btn-outline form-submit" id="accountModalLogoutBtn" data-i18n="btn_logout">Log Out</button>
+    </div>
+
+    <div class="account-tabs" id="accountTabsSection">
+      <button type="button" class="account-tab-btn active" data-account-tab="login" data-i18n="tab_login">Log In</button>
+      <button type="button" class="account-tab-btn" data-account-tab="signup" data-i18n="tab_signup">Sign Up</button>
+    </div>
+
+    <form id="loginAccountForm" class="account-form" novalidate>
+      <div class="form-row">
+        <label for="loginEmail" data-i18n="label_email_req">Email</label>
+        <input type="email" id="loginEmail" required>
+      </div>
+      <div class="form-row">
+        <label for="loginPassword" data-i18n="label_password">Password</label>
+        <input type="password" id="loginPassword" required>
+      </div>
+      <p class="account-form-error" id="loginAccountError"></p>
+      <button type="submit" class="btn btn-primary form-submit" data-i18n="btn_login">Log In</button>
+    </form>
+
+    <form id="signupAccountForm" class="account-form" novalidate hidden>
+      <div class="form-row">
+        <label for="signupName" data-i18n="label_name">Name</label>
+        <input type="text" id="signupName" required>
+      </div>
+      <div class="form-row">
+        <label for="signupPhone" data-i18n="label_phone">Phone</label>
+        <input type="tel" id="signupPhone" required>
+      </div>
+      <div class="form-row">
+        <label for="signupEmail" data-i18n="label_email_req">Email</label>
+        <input type="email" id="signupEmail" required>
+      </div>
+      <div class="form-row">
+        <label for="signupPassword" data-i18n="label_password">Password</label>
+        <input type="password" id="signupPassword" required minlength="6">
+      </div>
+      <div class="form-row">
+        <label for="signupPasswordConfirm" data-i18n="label_password_confirm">Confirm Password</label>
+        <input type="password" id="signupPasswordConfirm" required minlength="6">
+      </div>
+      <label class="account-checkbox">
+        <input type="checkbox" id="signupMarketingOptIn" checked>
+        <span data-i18n="label_marketing_optin">I'd like to receive news and discounts by email.</span>
+      </label>
+      <p class="account-form-error" id="signupAccountError"></p>
+      <p class="account-form-notice" id="signupAccountNotice"></p>
+      <button type="submit" class="btn btn-primary form-submit" data-i18n="btn_signup">Sign Up</button>
+    </form>
   </div>
 </div>
 

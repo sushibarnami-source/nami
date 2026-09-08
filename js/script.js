@@ -52,6 +52,19 @@
       err_message: 'Message should be at least 10 characters.',
       form_success: "Thanks, {name}! Your message has been received — we'll be in touch soon.",
       form_error: "Something went wrong sending your message — please try again, or call us directly.",
+      nav_account: 'Account', account_title: 'My Account',
+      tab_login: 'Log In', tab_signup: 'Sign Up',
+      label_email_req: 'Email', label_password: 'Password', label_password_confirm: 'Confirm Password',
+      label_marketing_optin: "I'd like to receive news and discounts by email.",
+      btn_login: 'Log In', btn_signup: 'Sign Up', btn_logout: 'Log Out',
+      account_greeting: 'Hello, {name}',
+      account_err_offline: "Couldn't reach the account service. Check your connection and try again.",
+      account_err_login: 'Incorrect email or password.',
+      account_err_required: 'Please fill in your name, phone and email.',
+      account_err_password_short: 'Password should be at least 6 characters.',
+      account_err_password_match: "Passwords don't match.",
+      account_err_signup: "Something went wrong creating your account — please try again.",
+      account_check_email: 'Almost done! Check your email to confirm your account, then log in.',
       footer_copy: '© {year} NAMI • ნამი Sushi Bar. All rights reserved.',
     },
     ka: {
@@ -98,6 +111,19 @@
       err_message: 'შეტყობინება უნდა შეიცავდეს მინიმუმ 10 სიმბოლოს.',
       form_success: 'მადლობა, {name}! თქვენი შეტყობინება მიღებულია — მალე დაგიკავშირდებით.',
       form_error: 'შეტყობინების გაგზავნა ვერ მოხერხდა — გთხოვთ, სცადოთ ხელახლა, ან დაგვირეკეთ პირდაპირ.',
+      nav_account: 'ანგარიში', account_title: 'ჩემი ანგარიში',
+      tab_login: 'შესვლა', tab_signup: 'რეგისტრაცია',
+      label_email_req: 'ელფოსტა', label_password: 'პაროლი', label_password_confirm: 'გაიმეორეთ პაროლი',
+      label_marketing_optin: 'მინდა მივიღო სიახლეები და ფასდაკლებები ელფოსტით.',
+      btn_login: 'შესვლა', btn_signup: 'რეგისტრაცია', btn_logout: 'გასვლა',
+      account_greeting: 'გამარჯობა, {name}',
+      account_err_offline: 'ანგარიშის სერვისთან დაკავშირება ვერ მოხერხდა — შეამოწმეთ ინტერნეტ-კავშირი და სცადეთ ხელახლა.',
+      account_err_login: 'არასწორი ელფოსტა ან პაროლი.',
+      account_err_required: 'გთხოვთ, შეავსოთ სახელი, ტელეფონი და ელფოსტა.',
+      account_err_password_short: 'პაროლი უნდა შეიცავდეს მინიმუმ 6 სიმბოლოს.',
+      account_err_password_match: 'პაროლები არ ემთხვევა.',
+      account_err_signup: 'რეგისტრაცია ვერ მოხერხდა — გთხოვთ, სცადოთ ხელახლა.',
+      account_check_email: 'თითქმის დასრულდა! შეამოწმეთ ელფოსტა ანგარიშის დასადასტურებლად და შემდეგ შედით.',
       footer_copy: '© {year} NAMI • ნამი სუში ბარი. ყველა უფლება დაცულია.',
     },
     ru: {
@@ -144,6 +170,19 @@
       err_message: 'Сообщение должно содержать не менее 10 символов.',
       form_success: 'Спасибо, {name}! Ваше сообщение получено — мы скоро с вами свяжемся.',
       form_error: 'Не удалось отправить сообщение — попробуйте ещё раз или позвоните нам напрямую.',
+      nav_account: 'Аккаунт', account_title: 'Мой аккаунт',
+      tab_login: 'Вход', tab_signup: 'Регистрация',
+      label_email_req: 'Эл. почта', label_password: 'Пароль', label_password_confirm: 'Повторите пароль',
+      label_marketing_optin: 'Хочу получать новости и скидки на email.',
+      btn_login: 'Войти', btn_signup: 'Зарегистрироваться', btn_logout: 'Выйти',
+      account_greeting: 'Здравствуйте, {name}',
+      account_err_offline: 'Не удалось связаться с сервисом аккаунтов — проверьте соединение и попробуйте снова.',
+      account_err_login: 'Неверный email или пароль.',
+      account_err_required: 'Пожалуйста, заполните имя, телефон и email.',
+      account_err_password_short: 'Пароль должен содержать не менее 6 символов.',
+      account_err_password_match: 'Пароли не совпадают.',
+      account_err_signup: 'Не удалось создать аккаунт — попробуйте ещё раз.',
+      account_check_email: 'Почти готово! Проверьте почту, чтобы подтвердить аккаунт, затем войдите.',
       footer_copy: '© {year} NAMI • ნამი Суши-бар. Все права защищены.',
     },
   };
@@ -748,6 +787,7 @@
     if (openPostIndex !== null) renderBlogModal(openPostIndex);
     updateHours();
     renderFooterCopy();
+    refreshAccountUI();
 
     // clear any stale validation messages from the previous language
     ['name', 'email', 'message'].forEach(field => setError(field, ''));
@@ -945,6 +985,175 @@
       submitBtn.disabled = false;
     }
   });
+
+  /* ---------------------------------------------------------
+     Customer accounts (sign up / log in) — separate from the
+     admin login; /admin only accepts accounts on the "admins"
+     allowlist (see supabase/schema_v4.sql), so any customer who
+     signs up here has no access there.
+  --------------------------------------------------------- */
+  const accountModal = document.getElementById('accountModal');
+  const accountModalBackdrop = document.getElementById('accountModalBackdrop');
+  const accountModalClose = document.getElementById('accountModalClose');
+  const accountOpenBtn = document.getElementById('accountOpenBtn');
+  const accountOpenBtnMobile = document.getElementById('accountOpenBtnMobile');
+  const accountLoggedIn = document.getElementById('accountLoggedIn');
+  const accountGreeting = document.getElementById('accountGreeting');
+  const accountLogoutBtn = document.getElementById('accountLogoutBtn');
+  const accountModalLogoutBtn = document.getElementById('accountModalLogoutBtn');
+  const accountProfileSection = document.getElementById('accountProfileSection');
+  const accountProfileGreeting = document.getElementById('accountProfileGreeting');
+  const accountTabsSection = document.getElementById('accountTabsSection');
+  const loginAccountForm = document.getElementById('loginAccountForm');
+  const signupAccountForm = document.getElementById('signupAccountForm');
+  const loginAccountError = document.getElementById('loginAccountError');
+  const signupAccountError = document.getElementById('signupAccountError');
+  const signupAccountNotice = document.getElementById('signupAccountNotice');
+
+  let currentCustomer = null;
+
+  function openAccountModal() {
+    accountModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+  function closeAccountModal() {
+    accountModal.hidden = true;
+    document.body.style.overflow = '';
+  }
+  if (accountOpenBtn) accountOpenBtn.addEventListener('click', openAccountModal);
+  if (accountOpenBtnMobile) accountOpenBtnMobile.addEventListener('click', openAccountModal);
+  if (accountModalClose) accountModalClose.addEventListener('click', closeAccountModal);
+  if (accountModalBackdrop) accountModalBackdrop.addEventListener('click', closeAccountModal);
+
+  function switchAccountTab(tab) {
+    document.querySelectorAll('.account-tab-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.accountTab === tab);
+    });
+    loginAccountForm.hidden = tab !== 'login';
+    signupAccountForm.hidden = tab !== 'signup';
+  }
+  document.querySelectorAll('.account-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchAccountTab(btn.dataset.accountTab));
+  });
+
+  function prefillContactForm(profile) {
+    if (!profile || !form) return;
+    if (profile.name) form.name.value = profile.name;
+    if (profile.phone) form.phone.value = profile.phone;
+    if (profile.email) form.email.value = profile.email;
+  }
+
+  function refreshAccountUI() {
+    const loggedIn = Boolean(currentCustomer);
+    if (accountOpenBtn) accountOpenBtn.hidden = loggedIn;
+    if (accountLoggedIn) accountLoggedIn.hidden = !loggedIn;
+    accountProfileSection.hidden = !loggedIn;
+    accountTabsSection.hidden = loggedIn;
+    if (loggedIn) {
+      loginAccountForm.hidden = true;
+      signupAccountForm.hidden = true;
+      const name = (currentCustomer.name || '').split(' ')[0] || currentCustomer.email || '';
+      const greeting = t('account_greeting').replace('{name}', name);
+      if (accountGreeting) accountGreeting.textContent = greeting;
+      accountProfileGreeting.textContent = greeting;
+      prefillContactForm(currentCustomer);
+    } else {
+      switchAccountTab('login');
+    }
+  }
+
+  async function fetchCustomerProfile(user) {
+    const { data, error } = await supabaseClient.from('customer_profiles').select('*').eq('id', user.id).single();
+    if (error || !data) return { id: user.id, name: '', phone: '', email: user.email || '', marketing_opt_in: true };
+    return data;
+  }
+
+  async function handleLogout() {
+    if (typeof supabaseClient !== 'undefined' && supabaseClient) await supabaseClient.auth.signOut();
+    currentCustomer = null;
+    refreshAccountUI();
+    closeAccountModal();
+  }
+  if (accountLogoutBtn) accountLogoutBtn.addEventListener('click', handleLogout);
+  if (accountModalLogoutBtn) accountModalLogoutBtn.addEventListener('click', handleLogout);
+
+  if (loginAccountForm) {
+    loginAccountForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      loginAccountError.textContent = '';
+      if (typeof supabaseClient === 'undefined' || !supabaseClient) {
+        loginAccountError.textContent = t('account_err_offline');
+        return;
+      }
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const btn = loginAccountForm.querySelector('.form-submit');
+      btn.disabled = true;
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      btn.disabled = false;
+      if (error) {
+        loginAccountError.textContent = t('account_err_login');
+        return;
+      }
+      currentCustomer = await fetchCustomerProfile(data.user);
+      refreshAccountUI();
+      loginAccountForm.reset();
+      closeAccountModal();
+    });
+  }
+
+  if (signupAccountForm) {
+    signupAccountForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      signupAccountError.textContent = '';
+      signupAccountNotice.textContent = '';
+      if (typeof supabaseClient === 'undefined' || !supabaseClient) {
+        signupAccountError.textContent = t('account_err_offline');
+        return;
+      }
+      const name = document.getElementById('signupName').value.trim();
+      const phone = document.getElementById('signupPhone').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPassword').value;
+      const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
+      const marketingOptIn = document.getElementById('signupMarketingOptIn').checked;
+
+      if (!name || !phone || !email) { signupAccountError.textContent = t('account_err_required'); return; }
+      if (password.length < 6) { signupAccountError.textContent = t('account_err_password_short'); return; }
+      if (password !== passwordConfirm) { signupAccountError.textContent = t('account_err_password_match'); return; }
+
+      const btn = signupAccountForm.querySelector('.form-submit');
+      btn.disabled = true;
+      const { data, error } = await supabaseClient.auth.signUp({
+        email, password,
+        options: { data: { name, phone, marketing_opt_in: marketingOptIn } },
+      });
+      btn.disabled = false;
+
+      if (error) {
+        signupAccountError.textContent = error.message || t('account_err_signup');
+        return;
+      }
+
+      if (data.session) {
+        currentCustomer = await fetchCustomerProfile(data.user);
+        refreshAccountUI();
+        signupAccountForm.reset();
+        closeAccountModal();
+      } else {
+        signupAccountNotice.textContent = t('account_check_email');
+        signupAccountForm.reset();
+        switchAccountTab('login');
+      }
+    });
+  }
+
+  (async () => {
+    if (typeof supabaseClient === 'undefined' || !supabaseClient) { refreshAccountUI(); return; }
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) currentCustomer = await fetchCustomerProfile(session.user);
+    refreshAccountUI();
+  })();
 
   /* ---------------------------------------------------------
      Scroll reveal
