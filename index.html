@@ -339,6 +339,30 @@
         <input type="text" id="signupSurname" required>
       </div>
       <div class="form-row">
+        <label for="signupPhone" data-i18n="label_phone">Phone</label>
+        <input type="tel" id="signupPhone" required>
+      </div>
+      <div class="form-row">
+        <label for="signupEmail" data-i18n="label_email_req">Email</label>
+        <input type="email" id="signupEmail" required>
+      </div>
+      <div class="form-row">
+        <label for="signupPassword" data-i18n="label_password">Password</label>
+        <div class="password-field">
+          <input type="password" id="signupPassword" required minlength="6">
+          <button type="button" class="password-toggle-btn" data-toggle-password="signupPassword" data-i18n-title="show_password" title="Show password" aria-label="Show password">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </button>
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="signupPasswordConfirm" data-i18n="label_password_confirm">Confirm Password</label>
+        <div class="password-field">
+          <input type="password" id="signupPasswordConfirm" required minlength="6">
+          <button type="button" class="password-toggle-btn" data-toggle-password="signupPasswordConfirm" data-i18n-title="show_password" title="Show password" aria-label="Show password">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </button>
+        </div>
       </div>
       <label class="account-checkbox">
         <input type="checkbox" id="signupMarketingOptIn" checked>
