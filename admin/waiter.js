@@ -257,6 +257,9 @@
     const count = entries.reduce((n, e) => n + e.qty, 0);
     cartBar.hidden = count === 0 || currentTable === null;
     cartCount.textContent = count;
+    document.getElementById('cartTitle').textContent = currentTable
+      ? `მაგიდა ${currentTable} — This round`
+      : 'ეს რაუნდი — This round';
     cartTotal.textContent = formatMoney(cartTotalValue());
     cartModalTotal.textContent = formatMoney(cartTotalValue());
 
