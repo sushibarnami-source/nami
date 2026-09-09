@@ -434,7 +434,7 @@
       <div class="receipt">
         <div class="receipt-header">
           <p class="receipt-logo">NAMI • ნამი</p>
-          <p>სუში ბარი</p>
+          <p>წინასწარი ჩეკი — PRE-BILL</p>
         </div>
         <p class="receipt-table">მაგიდა #${table}</p>
         <p class="receipt-meta">${new Date().toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
@@ -447,18 +447,27 @@
     `;
   }
 
-  printCheckoutBtn.addEventListener('click', async () => {
-    const { orders, items } = tableBillItems();
+  // Print-only: shows the customer the total, does not touch the order's
+  // status — the table stays open until closeTableBtn is used, once
+  // they've actually paid.
+  printCheckoutBtn.addEventListener('click', () => {
+    const { items } = tableBillItems();
     if (!items.length) return;
     const total = items.reduce((sum, it) => sum + parsePrice(it.price) * it.quantity, 0);
+    printHtml(buildCheckoutReceiptHtml(currentTable, items, total));
+  });
 
-    printCheckoutBtn.disabled = true;
+  document.getElementById('closeTableBtn').addEventListener('click', async () => {
+    const { orders, items } = tableBillItems();
+    if (!items.length) return;
+
+    const closeBtn = document.getElementById('closeTableBtn');
+    closeBtn.disabled = true;
     try {
       const orderIds = orders.map(o => o.id);
       const { error } = await supabaseClient.from('orders').update({ status: 'paid' }).in('id', orderIds);
       if (error) throw error;
 
-      printHtml(buildCheckoutReceiptHtml(currentTable, items, total));
       showToast(`მაგიდა ${currentTable} დაანგარიშდა — Table closed.`);
       checkoutModal.hidden = true;
       await loadOpenOrders();
@@ -467,7 +476,7 @@
       checkoutError.textContent = "ვერ დაიხურა მაგიდა, სცადეთ თავიდან. — Couldn't close the table.";
       checkoutError.hidden = false;
     } finally {
-      printCheckoutBtn.disabled = false;
+      closeBtn.disabled = false;
     }
   });
 
