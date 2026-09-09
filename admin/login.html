@@ -139,7 +139,11 @@
     const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
     if (error) {
-      errorEl.textContent = 'Incorrect email or password. — არასწორი ელფოსტა ან პაროლი.';
+      if (/email.*not.*confirm/i.test(error.message)) {
+        errorEl.textContent = 'Email not confirmed yet — recreate this user in Supabase with "Auto confirm user" checked. — ელფოსტა არ არის დადასტურებული, თავიდან შექმენით "Auto confirm user"-ით.';
+      } else {
+        errorEl.textContent = 'Incorrect email or password. — არასწორი ელფოსტა ან პაროლი.';
+      }
       btn.disabled = false;
       btn.textContent = 'Log In — შესვლა';
       return;
