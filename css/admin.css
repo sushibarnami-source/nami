@@ -92,7 +92,7 @@ body.admin-body {
   flex-shrink: 0;
 }
 
-.admin-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.admin-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
 .admin-toolbar h2 { margin: 0; font-size: 1.4rem; }
 
 .admin-btn-primary {
@@ -333,12 +333,14 @@ body.admin-body {
 .order-row { align-items: flex-start; border-left: 4px solid var(--border); }
 .order-row.status-new { border-left-color: var(--red); }
 .order-row.status-preparing { border-left-color: #c98a2c; }
+.order-row.status-ready { border-left-color: var(--green-deep); }
 .order-row.status-served { border-left-color: var(--green); }
 .order-row.status-paid { border-left-color: var(--muted); opacity: .75; }
 .order-row.status-cancelled { border-left-color: var(--muted); opacity: .55; }
 
 .post-row-badge.status-new { background: rgba(184, 58, 46, .14); color: var(--red); }
 .post-row-badge.status-preparing { background: rgba(201, 138, 44, .16); color: #8a5c17; }
+.post-row-badge.status-ready { background: var(--green-deep); color: var(--cream); }
 .post-row-badge.status-served { background: var(--green-light); color: var(--green-deep); }
 .post-row-badge.status-paid { background: var(--paper-dim); color: var(--ink-soft); }
 .post-row-badge.status-cancelled { background: var(--paper-dim); color: var(--muted); }
@@ -431,7 +433,50 @@ body.is-printing #printArea { display: block !important; }
 .waiter-table-btn:active { transform: translateY(0); }
 .waiter-table-num { font-size: 1.8rem; font-weight: 700; }
 .waiter-table-btn.has-open-order { border-color: var(--red); background: rgba(184, 58, 46, .06); }
+.waiter-table-btn.has-ready-order {
+  border-color: var(--green);
+  background: var(--green-light);
+  animation: readyPulse 1.4s ease-in-out infinite;
+}
 .waiter-table-badge { font-size: .72rem; font-weight: 600; color: var(--red); }
+.has-ready-order .waiter-table-badge { color: var(--green-deep); }
+
+@keyframes readyPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(79, 122, 92, .35); }
+  50% { box-shadow: 0 0 0 8px rgba(79, 122, 92, 0); }
+}
+
+.ready-banner {
+  position: sticky;
+  top: 0;
+  z-index: 700;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 24px;
+  background: var(--green-deep);
+}
+.ready-banner-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--green);
+  color: var(--cream);
+  font-weight: 600;
+  font-size: .88rem;
+  padding: 8px 12px;
+  border-radius: 999px;
+}
+.ready-banner-item button {
+  background: rgba(255,255,255,.2);
+  border: none;
+  color: var(--cream);
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  line-height: 1;
+  font-size: .75rem;
+}
 
 .waiter-open-orders-box {
   background: var(--paper);

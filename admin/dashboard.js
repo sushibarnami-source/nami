@@ -373,10 +373,11 @@
   /* ---------------------------------------------------------
      Orders: table orders + printing to a receipt printer
   --------------------------------------------------------- */
-  const ORDER_STATUSES = ['new', 'preparing', 'served', 'paid', 'cancelled'];
+  const ORDER_STATUSES = ['new', 'preparing', 'ready', 'served', 'paid', 'cancelled'];
   const ORDER_STATUS_LABELS = {
     new: 'New — ახალი',
     preparing: 'Preparing — მზადდება',
+    ready: 'Ready — მზადაა',
     served: 'Served — მიწოდებული',
     paid: 'Paid — გადახდილი',
     cancelled: 'Cancelled — გაუქმებული',

@@ -91,7 +91,7 @@
     const { data: orderRows } = await supabaseClient
       .from('orders')
       .select('*')
-      .in('status', ['new', 'preparing', 'served'])
+      .in('status', ['new', 'preparing', 'ready', 'served'])
       .order('created_at', { ascending: true });
 
     const orderIds = (orderRows || []).map(o => o.id);
@@ -115,10 +115,12 @@
     for (let n = 1; n <= tableCount; n++) {
       const open = openOrdersByTable[n] || [];
       const itemCount = open.reduce((sum, o) => sum + o.items.reduce((s, it) => s + it.quantity, 0), 0);
+      const isReady = open.some(o => o.status === 'ready');
+      const cls = isReady ? 'has-ready-order' : (open.length ? 'has-open-order' : '');
       html += `
-        <button type="button" class="waiter-table-btn ${open.length ? 'has-open-order' : ''}" data-table="${n}">
+        <button type="button" class="waiter-table-btn ${cls}" data-table="${n}">
           <span class="waiter-table-num">${n}</span>
-          ${open.length ? `<span class="waiter-table-badge">${itemCount} 🍣</span>` : ''}
+          ${open.length ? `<span class="waiter-table-badge">${isReady ? '🔔 მზადაა' : `${itemCount} 🍣`}</span>` : ''}
         </button>
       `;
     }
@@ -346,6 +348,7 @@
 
       const { error: orderErr } = await supabaseClient.from('orders').insert({
         id: orderId, table_number: currentTable, status: 'new', note, created_at: createdAt,
+        created_by: currentUser.email || '',
       });
       if (orderErr) throw orderErr;
 
@@ -384,6 +387,152 @@
   function printKitchenTicket(order) { printHtml(buildKitchenTicketHtml(order)); }
 
   /* ---------------------------------------------------------
+     Checkout: bill everything open for a table, print, close it
+  --------------------------------------------------------- */
+  const checkoutModal = document.getElementById('checkoutModal');
+  const checkoutItemsList = document.getElementById('checkoutItemsList');
+  const checkoutTotal = document.getElementById('checkoutTotal');
+  const checkoutError = document.getElementById('checkoutError');
+  const printCheckoutBtn = document.getElementById('printCheckoutBtn');
+
+  function tableBillItems() {
+    const open = (openOrdersByTable[currentTable] || []).filter(o => o.status !== 'cancelled');
+    const items = [];
+    open.forEach(o => o.items.forEach(it => items.push(it)));
+    return { orders: open, items };
+  }
+
+  document.getElementById('openCheckoutBtn').addEventListener('click', () => {
+    checkoutError.hidden = true;
+    const { items } = tableBillItems();
+    if (!items.length) {
+      checkoutError.textContent = 'ამ მაგიდას ჯერ არაფერი შეუკვეთავს. — Nothing on this table yet.';
+      checkoutError.hidden = false;
+    }
+    const total = items.reduce((sum, it) => sum + parsePrice(it.price) * it.quantity, 0);
+    checkoutItemsList.innerHTML = items.map(it => `
+      <div class="order-cart-row">
+        <span>${it.quantity}× ${escapeHtml(it.name_ka || it.name_en)}</span>
+        <span style="white-space:nowrap; font-weight:600;">${formatMoney(parsePrice(it.price) * it.quantity)}</span>
+      </div>
+    `).join('') || '<p class="admin-empty">—</p>';
+    checkoutTotal.textContent = formatMoney(total);
+    checkoutModal.hidden = false;
+  });
+  document.getElementById('checkoutCloseBtn').addEventListener('click', () => { checkoutModal.hidden = true; });
+  document.getElementById('checkoutBackdrop').addEventListener('click', () => { checkoutModal.hidden = true; });
+
+  function buildCheckoutReceiptHtml(table, items, total) {
+    const itemsHtml = items.map(it => `
+      <tr>
+        <td>${it.quantity}×</td>
+        <td>${escapeHtml(it.name_ka || it.name_en)}</td>
+        <td>${formatMoney(parsePrice(it.price) * it.quantity)}</td>
+      </tr>
+    `).join('');
+    return `
+      <div class="receipt">
+        <div class="receipt-header">
+          <p class="receipt-logo">NAMI • ნამი</p>
+          <p>სუში ბარი</p>
+        </div>
+        <p class="receipt-table">მაგიდა #${table}</p>
+        <p class="receipt-meta">${new Date().toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+        <hr>
+        <table class="receipt-items">${itemsHtml}</table>
+        <hr>
+        <p class="receipt-total">ჯამი: ${formatMoney(total)}</p>
+        <p class="receipt-footer">გმადლობთ! 🙏</p>
+      </div>
+    `;
+  }
+
+  printCheckoutBtn.addEventListener('click', async () => {
+    const { orders, items } = tableBillItems();
+    if (!items.length) return;
+    const total = items.reduce((sum, it) => sum + parsePrice(it.price) * it.quantity, 0);
+
+    printCheckoutBtn.disabled = true;
+    try {
+      const orderIds = orders.map(o => o.id);
+      const { error } = await supabaseClient.from('orders').update({ status: 'paid' }).in('id', orderIds);
+      if (error) throw error;
+
+      printHtml(buildCheckoutReceiptHtml(currentTable, items, total));
+      showToast(`მაგიდა ${currentTable} დაანგარიშდა — Table closed.`);
+      checkoutModal.hidden = true;
+      await loadOpenOrders();
+      goToTables();
+    } catch (e) {
+      checkoutError.textContent = "ვერ დაიხურა მაგიდა, სცადეთ თავიდან. — Couldn't close the table.";
+      checkoutError.hidden = false;
+    } finally {
+      printCheckoutBtn.disabled = false;
+    }
+  });
+
+  /* ---------------------------------------------------------
+     "Order ready" ping — from the kitchen back to this waiter
+  --------------------------------------------------------- */
+  const readyBannerEl = document.getElementById('readyBanner');
+  const readyTables = new Set();
+
+  function playReadyBeep() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.frequency.value = 660;
+      gain.gain.value = 0.18;
+      osc.connect(gain).connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.22);
+      osc.onended = () => ctx.close();
+    } catch (e) { /* audio unavailable */ }
+  }
+
+  function renderReadyBanner() {
+    if (!readyTables.size) { readyBannerEl.hidden = true; return; }
+    const tables = Array.from(readyTables).sort((a, b) => a - b);
+    readyBannerEl.innerHTML = tables.map(n => `
+      <span class="ready-banner-item">🔔 მაგიდა ${n} მზადაა <button type="button" data-dismiss-ready="${n}">✕</button></span>
+    `).join('');
+    readyBannerEl.hidden = false;
+  }
+
+  readyBannerEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-dismiss-ready]');
+    if (!btn) return;
+    readyTables.delete(parseInt(btn.dataset.dismissReady, 10));
+    renderReadyBanner();
+  });
+
+  function subscribeToReadyOrders() {
+    if (!supabaseClient || typeof supabaseClient.channel !== 'function') return;
+    supabaseClient.channel('waiter-ready-orders')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, (payload) => {
+        const o = payload.new;
+
+        // Keep the local open-orders cache in sync so the table grid and
+        // the "already sent" summary reflect the new status right away.
+        const list = openOrdersByTable[o.table_number];
+        if (list) {
+          const existing = list.find(x => x.id === o.id);
+          if (existing) Object.assign(existing, o);
+        }
+        if (!tablesScreen.hidden) renderTableGrid();
+        if (currentTable === o.table_number) renderOpenOrdersForTable();
+
+        if (o.created_by === currentUser.email && o.status === 'ready' && payload.old.status !== 'ready') {
+          readyTables.add(o.table_number);
+          renderReadyBanner();
+          playReadyBeep();
+        }
+      })
+      .subscribe();
+  }
+
+  /* ---------------------------------------------------------
      Init
   --------------------------------------------------------- */
   (async () => {
@@ -392,5 +541,6 @@
     await loadTableCount();
     await loadOpenOrders();
     renderTableGrid();
+    subscribeToReadyOrders();
   })();
 })();

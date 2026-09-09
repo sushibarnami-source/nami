@@ -19,6 +19,8 @@
   </div>
 </header>
 
+<div id="readyBanner" class="ready-banner" hidden></div>
+
 <div class="admin-container waiter-container">
 
   <!-- ================= TABLE PICKER ================= -->
@@ -37,6 +39,7 @@
     <div class="admin-toolbar">
       <button type="button" class="admin-btn-secondary" id="backToTablesBtn">← მაგიდები — Tables</button>
       <h2 id="waiterTableTitle">მაგიდა —</h2>
+      <button type="button" class="admin-btn-secondary" id="openCheckoutBtn">💳 ანგარიშსწორება — Checkout</button>
     </div>
 
     <div id="waiterOpenOrders"></div>
@@ -80,6 +83,22 @@
     <textarea id="orderNote" rows="2" placeholder="შენიშვნა სამზარეულოსთვის (არასავალდებულო)"></textarea>
     <p class="order-gate-error" id="cartError" hidden></p>
     <button type="button" class="btn btn-primary" id="submitOrderBtn" style="width:100%; margin-top:16px;">გაგზავნა სამზარეულოში — Send to kitchen</button>
+  </div>
+</div>
+
+<!-- ================= CHECKOUT MODAL ================= -->
+<div class="order-cart-modal" id="checkoutModal" hidden>
+  <div class="order-cart-backdrop" id="checkoutBackdrop"></div>
+  <div class="order-cart-panel" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+    <button class="blog-modal-close" id="checkoutCloseBtn" aria-label="Close">&times;</button>
+    <h3 id="checkoutTitle">ანგარიშსწორება — Checkout</h3>
+    <div id="checkoutItemsList"></div>
+    <div class="order-cart-total-row">
+      <span>ჯამი — Total</span>
+      <span id="checkoutTotal">0.00 ₾</span>
+    </div>
+    <p class="order-gate-error" id="checkoutError" hidden></p>
+    <button type="button" class="btn btn-primary" id="printCheckoutBtn" style="width:100%; margin-top:16px;">ბეჭდვა და დახურვა — Print &amp; close table</button>
   </div>
 </div>
 
