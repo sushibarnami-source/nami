@@ -101,16 +101,20 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase-client.js"></script>
 <script>
+  async function routeToRoleHome() {
+    const { data: isAdmin } = await supabaseClient.rpc('is_admin');
+    if (isAdmin) { window.location.href = 'dashboard.html'; return true; }
+    const { data: isStaff } = await supabaseClient.rpc('is_staff');
+    if (isStaff) { window.location.href = 'waiter.html'; return true; }
+    return false;
+  }
+
   (async () => {
     if (typeof supabaseClient === 'undefined' || !supabaseClient) return;
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) return;
-    const { data: isAdmin } = await supabaseClient.rpc('is_admin');
-    if (isAdmin) {
-      window.location.href = 'dashboard.html';
-    } else {
-      await supabaseClient.auth.signOut();
-    }
+    const routed = await routeToRoleHome();
+    if (!routed) await supabaseClient.auth.signOut();
   })();
 
   const form = document.getElementById('loginForm');
@@ -141,7 +145,13 @@
       return;
     }
 
-    window.location.href = 'dashboard.html';
+    const routed = await routeToRoleHome();
+    if (!routed) {
+      await supabaseClient.auth.signOut();
+      errorEl.textContent = 'This account has no access. — ამ ანგარიშს წვდომა არ აქვს.';
+      btn.disabled = false;
+      btn.textContent = 'Log In — შესვლა';
+    }
   });
 </script>
 </body>

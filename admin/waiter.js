@@ -63,10 +63,14 @@
     }
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) { window.location.href = 'login.html'; return false; }
-    const { data: isAdmin } = await supabaseClient.rpc('is_admin');
-    if (!isAdmin) { await supabaseClient.auth.signOut(); window.location.href = 'login.html'; return false; }
+    // Staff (waiters) and admins can both take orders here; only admins
+    // also get the link back to the full dashboard.
+    const { data: isStaff } = await supabaseClient.rpc('is_staff');
+    if (!isStaff) { await supabaseClient.auth.signOut(); window.location.href = 'login.html'; return false; }
     currentUser = session.user;
     document.getElementById('userEmail').textContent = currentUser.email || '';
+    const { data: isAdmin } = await supabaseClient.rpc('is_admin');
+    document.getElementById('dashboardLink').hidden = !isAdmin;
     return true;
   }
 
