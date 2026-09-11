@@ -613,6 +613,7 @@
     document.getElementById('dTagSpicy').checked = tags.includes('spicy');
     document.getElementById('dTagVeg').checked = tags.includes('veg');
     document.getElementById('dTagNew').checked = tags.includes('new');
+    document.getElementById('dTagPopular').checked = tags.includes('popular');
 
     LANGS.forEach(lang => {
       document.getElementById(`dName_${lang}`).value = dish ? dish[`name_${lang}`] : '';
@@ -791,6 +792,7 @@
     if (document.getElementById('dTagSpicy').checked) tags.push('spicy');
     if (document.getElementById('dTagVeg').checked) tags.push('veg');
     if (document.getElementById('dTagNew').checked) tags.push('new');
+    if (document.getElementById('dTagPopular').checked) tags.push('popular');
 
     const payload = {
       category: document.getElementById('dCategory').value,

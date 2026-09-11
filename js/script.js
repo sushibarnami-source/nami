@@ -149,9 +149,9 @@
   };
 
   const TAG_LABELS = {
-    en: { spicy: '🌶 Spicy', veg: 'Veg', new: 'New' },
-    ka: { spicy: '🌶 ცხარე', veg: 'ვეგეტარიანული', new: 'ახალი' },
-    ru: { spicy: '🌶 Острое', veg: 'Вег.', new: 'Новинка' },
+    en: { spicy: '🌶 Spicy', veg: 'Veg', new: 'New', popular: '⭐ Best Seller' },
+    ka: { spicy: '🌶 ცხარე', veg: 'ვეგეტარიანული', new: 'ახალი', popular: '⭐ ყველაზე გაყიდვადი' },
+    ru: { spicy: '🌶 Острое', veg: 'Вег.', new: 'Новинка', popular: '⭐ Хит продаж' },
   };
 
   const SUPPORTED_LANGS = ['en', 'ka', 'ru'];
