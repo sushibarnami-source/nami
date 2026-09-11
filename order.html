@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ka" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>NAMI • შეკვეთა</title>
+<meta name="description" content="Order from your table at NAMI sushi bar.">
+<meta name="robots" content="noindex">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="order-page">
+
+<header class="order-header">
+  <div class="container order-header-inner">
+    <a href="index.html" class="logo">
+      <img src="images/nami-logo.png" alt="NAMI logo" class="logo-img">
+    </a>
+    <div class="order-table-badge" id="tableBadge" hidden>
+      <span data-i18n="badge_table">Table</span> <span id="tableBadgeNum"></span>
+    </div>
+    <div class="lang-switch" id="langSwitch" role="group" aria-label="Language / ენა / Язык">
+      <button type="button" class="lang-btn" data-lang="en">EN</button>
+      <button type="button" class="lang-btn active" data-lang="ka">GE</button>
+      <button type="button" class="lang-btn" data-lang="ru">RU</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- ================= TABLE GATE ================= -->
+  <section class="order-gate container" id="tableGate">
+    <p class="section-eyebrow" data-i18n="gate_eyebrow">NAMI • ნამი</p>
+    <h1 class="section-title" data-i18n="gate_title">Which table are you at?</h1>
+    <p class="section-lead" data-i18n="gate_lead" style="margin:0 auto;">Enter the table number to start ordering.</p>
+    <form id="tableForm" class="order-gate-form">
+      <input type="number" id="tableInput" min="1" step="1" inputmode="numeric" placeholder="1" required>
+      <button type="submit" class="btn btn-primary" data-i18n="gate_btn">Continue</button>
+    </form>
+    <p class="order-gate-error" id="tableError" hidden></p>
+  </section>
+
+  <!-- ================= MENU ================= -->
+  <section class="order-menu container" id="orderMenuSection" hidden>
+    <p class="admin-loading" id="menuLoading" data-i18n="menu_loading">Loading menu…</p>
+
+    <div class="menu-tabs" id="menuTabs" role="tablist" hidden>
+      <button class="menu-tab active" data-category="rolls" data-i18n="tab_rolls">Rolls</button>
+      <button class="menu-tab" data-category="nigiri" data-i18n="tab_nigiri">Nigiri</button>
+      <button class="menu-tab" data-category="maki" data-i18n="tab_maki">Maki</button>
+      <button class="menu-tab" data-category="futomaki" data-i18n="tab_futomaki">Futomaki</button>
+      <button class="menu-tab" data-category="tempuraRoll" data-i18n="tab_tempuraRoll">Hot Rolls</button>
+      <button class="menu-tab" data-category="sets" data-i18n="tab_sets">Sets</button>
+      <button class="menu-tab" data-category="noodles" data-i18n="tab_noodles">Noodles</button>
+      <button class="menu-tab" data-category="appetizers" data-i18n="tab_appetizers">Appetizers</button>
+      <button class="menu-tab" data-category="desserts" data-i18n="tab_desserts">Desserts</button>
+      <button class="menu-tab" data-category="drinks" data-i18n="tab_drinks">Drinks</button>
+    </div>
+
+    <div class="menu-grid order-menu-grid" id="menuGrid"></div>
+  </section>
+
+  <!-- ================= SUCCESS ================= -->
+  <section class="order-success container" id="orderSuccessSection" hidden>
+    <p class="success-icon" aria-hidden="true">🍣</p>
+    <h1 class="section-title" data-i18n="success_title">Order sent!</h1>
+    <p class="section-lead" id="successLead" style="margin:0 auto;"></p>
+    <div class="order-cart-panel order-success-recap" id="successRecap"></div>
+    <button type="button" class="btn btn-primary" id="orderAnotherBtn" data-i18n="success_another">Order more</button>
+  </section>
+</main>
+
+<!-- ================= CART BAR ================= -->
+<div class="order-cart-bar" id="cartBar" hidden>
+  <button type="button" id="openCartBtn">
+    <span><span id="cartCount">0</span> <span data-i18n="cart_items_label">items</span></span>
+    <span id="cartTotal">0.00 ₾</span>
+  </button>
+</div>
+
+<!-- ================= CART MODAL ================= -->
+<div class="order-cart-modal" id="cartModal" hidden>
+  <div class="order-cart-backdrop" id="cartBackdrop"></div>
+  <div class="order-cart-panel" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+    <button class="blog-modal-close" id="cartCloseBtn" aria-label="Close">&times;</button>
+    <h3 id="cartTitle" data-i18n="cart_title">Your order</h3>
+    <div id="cartItemsList"></div>
+    <div class="order-cart-total-row">
+      <span data-i18n="cart_total_label">Total</span>
+      <span id="cartModalTotal">0.00 ₾</span>
+    </div>
+    <textarea id="orderNote" rows="2" data-i18n-placeholder="cart_note_placeholder" placeholder="Note for the kitchen (optional)"></textarea>
+    <p class="order-gate-error" id="cartError" hidden></p>
+    <button type="button" class="btn btn-primary" id="submitOrderBtn" style="width:100%; margin-top:16px;" data-i18n="cart_submit">Send order</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
+<script src="js/order.js"></script>
+</body>
+</html>
