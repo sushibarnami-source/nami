@@ -414,6 +414,8 @@ section { padding: 110px 0; }
 .tag.spicy { background: rgba(168,52,42,.12); color: var(--red); }
 .tag.veg { background: rgba(79,122,92,.14); color: var(--green); }
 .tag.new { background: rgba(183,163,105,.2); color: #8a6d1f; }
+.tag.popular { background: rgba(183,163,105,.28); color: #8a6d1f; font-weight: 600; }
+.menu-item:has(.tag.popular) { border-color: var(--gold); box-shadow: 0 8px 24px rgba(183,163,105,.2); }
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(14px); }
