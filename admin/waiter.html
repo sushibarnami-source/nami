@@ -29,6 +29,11 @@
       <h2>აირჩიეთ მაგიდა — Pick a table</h2>
       <button type="button" class="admin-btn-secondary" id="refreshTablesBtn">⟳ განახლება — Refresh</button>
     </div>
+    <button type="button" class="waiter-table-btn waiter-takeout-btn" id="takeoutBtn">
+      <span class="waiter-table-num">🥡</span>
+      <span>გასატანი — Takeout</span>
+      <span class="waiter-table-badge" id="takeoutBadge" hidden></span>
+    </button>
     <div id="tableGrid" class="waiter-table-grid">
       <p class="admin-loading">იტვირთება… — Loading…</p>
     </div>
@@ -79,6 +84,10 @@
     <div class="order-cart-total-row">
       <span>ჯამი — Total</span>
       <span id="cartModalTotal">0.00 ₾</span>
+    </div>
+    <div id="takeoutCustomerFields" hidden>
+      <input type="text" id="takeoutCustomerName" placeholder="მომხმარებლის სახელი — Customer name" style="width:100%; margin-bottom:8px; padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border); font-family:var(--font-body);">
+      <input type="tel" id="takeoutCustomerPhone" placeholder="ტელეფონი — Phone" style="width:100%; margin-bottom:8px; padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border); font-family:var(--font-body);">
     </div>
     <textarea id="orderNote" rows="2" placeholder="შენიშვნა სამზარეულოსთვის (არასავალდებულო)"></textarea>
     <p class="order-gate-error" id="cartError" hidden></p>

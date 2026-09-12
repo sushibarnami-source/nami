@@ -459,12 +459,15 @@
         .join('');
       return `
         <div class="post-row order-row status-${o.status}">
-          <div class="post-row-icon">🍣</div>
+          <div class="post-row-icon">${o.order_type === 'takeout' ? '🥡' : '🍣'}</div>
           <div class="post-row-main">
             <p class="post-row-title">
-              Table ${o.table_number} — მაგიდა ${o.table_number}
+              ${o.order_type === 'takeout'
+                ? `Takeout — გასატანი${o.customer_name ? ` (${escapeHtml(o.customer_name)})` : ''}`
+                : `Table ${o.table_number} — მაგიდა ${o.table_number}`}
               <span class="post-row-badge status-${o.status}">${ORDER_STATUS_LABELS[o.status]}</span>
             </p>
+            ${o.order_type === 'takeout' && o.customer_phone ? `<p class="post-row-meta">📞 ${escapeHtml(o.customer_phone)}</p>` : ''}
             <p class="post-row-meta">${formatOrderDate(o.created_at)} · <span class="order-row-total">${formatMoney(orderTotal(o))}</span></p>
             <ul class="order-items-list">${itemsHtml}</ul>
             ${o.note ? `<p class="order-note">📝 ${escapeHtml(o.note)}</p>` : ''}
@@ -556,7 +559,9 @@
           <p class="receipt-logo">NAMI • ნამი</p>
           <p>სუში ბარი</p>
         </div>
-        <p class="receipt-table">მაგიდა #${order.table_number}</p>
+        <p class="receipt-table">${order.order_type === 'takeout'
+          ? `🥡 გასატანი${order.customer_name ? ` — ${escapeHtml(order.customer_name)}` : ''}`
+          : `მაგიდა #${order.table_number}`}</p>
         <p class="receipt-meta">${formatOrderDate(order.created_at)} · #${order.id.slice(0, 8)}</p>
         <hr>
         <table class="receipt-items">${itemsHtml}</table>

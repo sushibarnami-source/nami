@@ -9,10 +9,12 @@
   let currentUser = null;
   let tableCount = 12;
   let openOrdersByTable = {}; // table_number -> [{ id, status, items }]
+  let openTakeoutOrders = []; // [{ id, status, items }] — table_number is null
   let menuItems = [];
   let menuLoaded = false;
   let currentCategory = 'rolls';
   let currentTable = null;
+  let currentOrderType = 'dine_in'; // 'dine_in' | 'takeout'
   const cart = {}; // menu_item id -> { item, qty }
 
   const toastEl = document.getElementById('toast');
@@ -33,6 +35,12 @@
   const cartError = document.getElementById('cartError');
   const submitOrderBtn = document.getElementById('submitOrderBtn');
   const printAreaEl = document.getElementById('printArea');
+  const takeoutBtn = document.getElementById('takeoutBtn');
+  const takeoutBadge = document.getElementById('takeoutBadge');
+  const openCheckoutBtn = document.getElementById('openCheckoutBtn');
+  const takeoutCustomerFields = document.getElementById('takeoutCustomerFields');
+  const takeoutCustomerName = document.getElementById('takeoutCustomerName');
+  const takeoutCustomerPhone = document.getElementById('takeoutCustomerPhone');
 
   function showToast(message, isError) {
     toastEl.textContent = message;
@@ -104,10 +112,24 @@
     (itemRows || []).forEach(it => { (itemsByOrder[it.order_id] = itemsByOrder[it.order_id] || []).push(it); });
 
     openOrdersByTable = {};
+    openTakeoutOrders = [];
     (orderRows || []).forEach(o => {
       const order = { ...o, items: itemsByOrder[o.id] || [] };
-      (openOrdersByTable[o.table_number] = openOrdersByTable[o.table_number] || []).push(order);
+      if (o.order_type === 'takeout') {
+        openTakeoutOrders.push(order);
+      } else {
+        (openOrdersByTable[o.table_number] = openOrdersByTable[o.table_number] || []).push(order);
+      }
     });
+  }
+
+  function renderTakeoutBadge() {
+    const itemCount = openTakeoutOrders.reduce((sum, o) => sum + o.items.reduce((s, it) => s + it.quantity, 0), 0);
+    const isReady = openTakeoutOrders.some(o => o.status === 'ready');
+    takeoutBtn.classList.toggle('has-ready-order', isReady);
+    takeoutBtn.classList.toggle('has-open-order', !isReady && openTakeoutOrders.length > 0);
+    takeoutBadge.hidden = openTakeoutOrders.length === 0;
+    takeoutBadge.textContent = isReady ? '🔔 მზადაა' : `${itemCount} 🍣`;
   }
 
   function renderTableGrid() {
@@ -125,6 +147,7 @@
       `;
     }
     tableGridEl.innerHTML = html;
+    renderTakeoutBadge();
   }
 
   tableGridEl.addEventListener('click', (e) => {
@@ -142,6 +165,7 @@
 
   async function goToTables() {
     currentTable = null;
+    currentOrderType = 'dine_in';
     Object.keys(cart).forEach(k => delete cart[k]);
     renderCart();
     orderScreen.hidden = true;
@@ -151,10 +175,10 @@
   }
 
   /* ---------------------------------------------------------
-     Order builder for one table
+     Order builder for one table, or for takeout
   --------------------------------------------------------- */
   function renderOpenOrdersForTable() {
-    const open = openOrdersByTable[currentTable] || [];
+    const open = currentOrderType === 'takeout' ? openTakeoutOrders : (openOrdersByTable[currentTable] || []);
     if (!open.length) { waiterOpenOrdersEl.innerHTML = ''; return; }
     waiterOpenOrdersEl.innerHTML = `
       <div class="waiter-open-orders-box">
@@ -162,6 +186,7 @@
         ${open.map(o => `
           <p class="order-note" style="font-style:normal; margin-bottom:6px;">
             ${o.items.map(it => `${it.quantity}× ${escapeHtml(it.name_ka || it.name_en)}`).join(', ')}
+            ${currentOrderType === 'takeout' && o.customer_name ? ` — ${escapeHtml(o.customer_name)}` : ''}
             <span class="post-row-badge status-${o.status}">${o.status}</span>
           </p>
         `).join('')}
@@ -171,9 +196,12 @@
 
   async function selectTable(n) {
     currentTable = n;
+    currentOrderType = 'dine_in';
     Object.keys(cart).forEach(k => delete cart[k]);
     renderCart();
     waiterTableTitle.textContent = `მაგიდა ${n} — Table ${n}`;
+    openCheckoutBtn.hidden = false;
+    takeoutCustomerFields.hidden = true;
     tablesScreen.hidden = true;
     orderScreen.hidden = false;
     renderOpenOrdersForTable();
@@ -181,6 +209,26 @@
     if (!menuLoaded) await loadMenu();
     if (menuLoaded) renderMenu(currentCategory);
   }
+
+  async function selectTakeout() {
+    currentTable = null;
+    currentOrderType = 'takeout';
+    Object.keys(cart).forEach(k => delete cart[k]);
+    renderCart();
+    waiterTableTitle.textContent = '🥡 გასატანი — Takeout';
+    openCheckoutBtn.hidden = true;
+    takeoutCustomerFields.hidden = false;
+    takeoutCustomerName.value = '';
+    takeoutCustomerPhone.value = '';
+    tablesScreen.hidden = true;
+    orderScreen.hidden = false;
+    renderOpenOrdersForTable();
+
+    if (!menuLoaded) await loadMenu();
+    if (menuLoaded) renderMenu(currentCategory);
+  }
+
+  takeoutBtn.addEventListener('click', () => selectTakeout());
 
   async function loadMenu() {
     if (!supabaseClient) { wMenuLoading.textContent = "Couldn't load the menu. — მენიუ ვერ ჩაიტვირთა."; return; }
@@ -261,11 +309,13 @@
   function renderCart() {
     const entries = cartEntries();
     const count = entries.reduce((n, e) => n + e.qty, 0);
-    cartBar.hidden = count === 0 || currentTable === null;
+    cartBar.hidden = count === 0;
     cartCount.textContent = count;
-    document.getElementById('cartTitle').textContent = currentTable
-      ? `მაგიდა ${currentTable} — This round`
-      : 'ეს რაუნდი — This round';
+    document.getElementById('cartTitle').textContent = currentOrderType === 'takeout'
+      ? '🥡 გასატანი — Takeout'
+      : currentTable
+        ? `მაგიდა ${currentTable} — This round`
+        : 'ეს რაუნდი — This round';
     cartTotal.textContent = formatMoney(cartTotalValue());
     cartModalTotal.textContent = formatMoney(cartTotalValue());
 
@@ -319,12 +369,15 @@
       .map(it => `<li><strong>${it.quantity}×</strong> ${escapeHtml(it.name_ka || it.name_en)}</li>`)
       .join('');
     const time = new Date(order.created_at).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+    const headerLine = order.order_type === 'takeout'
+      ? `🥡 გასატანი${order.customer_name ? ` — ${escapeHtml(order.customer_name)}` : ''}${order.customer_phone ? ` (${escapeHtml(order.customer_phone)})` : ''}`
+      : `მაგიდა #${order.table_number}`;
     return `
       <div class="receipt is-kitchen">
         <div class="receipt-header">
           <p class="receipt-logo">სამზარეულო — KITCHEN</p>
         </div>
-        <p class="receipt-table">მაგიდა #${order.table_number}</p>
+        <p class="receipt-table">${headerLine}</p>
         <p class="receipt-meta">${time}</p>
         <hr>
         <ul class="receipt-kitchen-list">${itemsHtml}</ul>
@@ -338,6 +391,15 @@
     const entries = cartEntries();
     if (!entries.length) { cartError.textContent = 'ჯერ დაამატეთ კერძი — add a dish first'; cartError.hidden = false; return; }
 
+    const isTakeout = currentOrderType === 'takeout';
+    const customerName = isTakeout ? takeoutCustomerName.value.trim() : '';
+    const customerPhone = isTakeout ? takeoutCustomerPhone.value.trim() : '';
+    if (isTakeout && !customerName) {
+      cartError.textContent = 'შეიყვანეთ მომხმარებლის სახელი — enter a customer name';
+      cartError.hidden = false;
+      return;
+    }
+
     submitOrderBtn.disabled = true;
     submitOrderBtn.textContent = 'იგზავნება… — Sending…';
 
@@ -347,7 +409,12 @@
       const createdAt = new Date().toISOString();
 
       const { error: orderErr } = await supabaseClient.from('orders').insert({
-        id: orderId, table_number: currentTable, status: 'new', note, created_at: createdAt,
+        id: orderId,
+        table_number: isTakeout ? null : currentTable,
+        order_type: currentOrderType,
+        customer_name: customerName,
+        customer_phone: customerPhone,
+        status: 'new', note, created_at: createdAt,
         created_by: currentUser.email || '',
       });
       if (orderErr) throw orderErr;
@@ -364,17 +431,22 @@
       const { error: itemsErr } = await supabaseClient.from('order_items').insert(itemRows);
       if (itemsErr) throw itemsErr;
 
-      const order = { id: orderId, table_number: currentTable, note, created_at: createdAt, items: itemRows };
+      const order = {
+        id: orderId, table_number: isTakeout ? null : currentTable, order_type: currentOrderType,
+        customer_name: customerName, customer_phone: customerPhone, note, created_at: createdAt, items: itemRows,
+      };
       printKitchenTicket(order);
 
-      showToast(`შეკვეთა გაიგზავნა — მაგიდა ${currentTable} — Sent to kitchen.`);
+      showToast(isTakeout
+        ? `შეკვეთა გაიგზავნა — გასატანი (${customerName}) — Sent to kitchen.`
+        : `შეკვეთა გაიგზავნა — მაგიდა ${currentTable} — Sent to kitchen.`);
       cartModal.hidden = true;
       Object.keys(cart).forEach(k => delete cart[k]);
       document.getElementById('orderNote').value = '';
       renderCart();
 
       await loadOpenOrders();
-      setTimeout(() => { if (currentTable !== null) goToTables(); }, 700);
+      setTimeout(() => goToTables(), 700);
     } catch (e) {
       cartError.textContent = "შეკვეთის გაგზავნა ვერ მოხერხდა, სცადეთ თავიდან. — Couldn't send the order.";
       cartError.hidden = false;
@@ -502,9 +574,13 @@
 
   function renderReadyBanner() {
     if (!readyTables.size) { readyBannerEl.hidden = true; return; }
-    const tables = Array.from(readyTables).sort((a, b) => a - b);
-    readyBannerEl.innerHTML = tables.map(n => `
-      <span class="ready-banner-item">🔔 მაგიდა ${n} მზადაა <button type="button" data-dismiss-ready="${n}">✕</button></span>
+    const entries = Array.from(readyTables).sort((a, b) => {
+      if (a === 'takeout') return -1;
+      if (b === 'takeout') return 1;
+      return a - b;
+    });
+    readyBannerEl.innerHTML = entries.map(n => `
+      <span class="ready-banner-item">${n === 'takeout' ? '🥡 გასატანი მზადაა' : `🔔 მაგიდა ${n} მზადაა`} <button type="button" data-dismiss-ready="${n}">✕</button></span>
     `).join('');
     readyBannerEl.hidden = false;
   }
@@ -512,7 +588,8 @@
   readyBannerEl.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-dismiss-ready]');
     if (!btn) return;
-    readyTables.delete(parseInt(btn.dataset.dismissReady, 10));
+    const val = btn.dataset.dismissReady;
+    readyTables.delete(val === 'takeout' ? 'takeout' : parseInt(val, 10));
     renderReadyBanner();
   });
 
@@ -521,19 +598,18 @@
     supabaseClient.channel('waiter-ready-orders')
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, (payload) => {
         const o = payload.new;
+        const isTakeout = o.order_type === 'takeout';
 
         // Keep the local open-orders cache in sync so the table grid and
         // the "already sent" summary reflect the new status right away.
-        const list = openOrdersByTable[o.table_number];
-        if (list) {
-          const existing = list.find(x => x.id === o.id);
-          if (existing) Object.assign(existing, o);
-        }
+        const list = isTakeout ? openTakeoutOrders : (openOrdersByTable[o.table_number] || []);
+        const existing = list.find(x => x.id === o.id);
+        if (existing) Object.assign(existing, o);
         if (!tablesScreen.hidden) renderTableGrid();
-        if (currentTable === o.table_number) renderOpenOrdersForTable();
+        if (isTakeout ? currentOrderType === 'takeout' : currentTable === o.table_number) renderOpenOrdersForTable();
 
         if (o.created_by === currentUser.email && o.status === 'ready' && payload.old.status !== 'ready') {
-          readyTables.add(o.table_number);
+          readyTables.add(isTakeout ? 'takeout' : o.table_number);
           renderReadyBanner();
           playReadyBeep();
         }
