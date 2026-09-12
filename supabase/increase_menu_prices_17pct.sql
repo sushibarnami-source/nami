@@ -18,7 +18,7 @@ alter table menu_items add column if not exists price_amount numeric not null de
 select
   name_en,
   price as old_price,
-  round((substring(price from '[0-9]+(\.[0-9]+)?')::numeric) * 1.17, 2) || ' ₾' as new_price
+  round((substring(price from '[0-9]+\.[0-9]+')::numeric) * 1.17, 2) || ' ₾' as new_price
 from menu_items
 order by category, sort_order desc;
 
@@ -27,6 +27,6 @@ order by category, sort_order desc;
 -- ---------------------------------------------------------------
 update menu_items
 set
-  price_amount = round((substring(price from '[0-9]+(\.[0-9]+)?')::numeric) * 1.17, 2),
-  price = round((substring(price from '[0-9]+(\.[0-9]+)?')::numeric) * 1.17, 2) || ' ₾'
-where price ~ '[0-9]';
+  price_amount = round((substring(price from '[0-9]+\.[0-9]+')::numeric) * 1.17, 2),
+  price = round((substring(price from '[0-9]+\.[0-9]+')::numeric) * 1.17, 2) || ' ₾'
+where price ~ '[0-9]+\.[0-9]+';
