@@ -41,6 +41,8 @@
   const takeoutCustomerFields = document.getElementById('takeoutCustomerFields');
   const takeoutCustomerName = document.getElementById('takeoutCustomerName');
   const takeoutCustomerPhone = document.getElementById('takeoutCustomerPhone');
+  const takeoutCustomerAddress = document.getElementById('takeoutCustomerAddress');
+  const takeoutDeliveryFee = document.getElementById('takeoutDeliveryFee');
 
   function showToast(message, isError) {
     toastEl.textContent = message;
@@ -220,6 +222,8 @@
     takeoutCustomerFields.hidden = false;
     takeoutCustomerName.value = '';
     takeoutCustomerPhone.value = '';
+    takeoutCustomerAddress.value = '';
+    takeoutDeliveryFee.value = '';
     tablesScreen.hidden = true;
     orderScreen.hidden = false;
     renderOpenOrdersForTable();
@@ -378,6 +382,8 @@
           <p class="receipt-logo">სამზარეულო — KITCHEN</p>
         </div>
         <p class="receipt-table">${headerLine}</p>
+        ${order.order_type === 'takeout' && order.customer_address ? `<p class="receipt-note">📍 ${escapeHtml(order.customer_address)}</p>` : ''}
+        ${order.order_type === 'takeout' && order.delivery_fee ? `<p class="receipt-note">🚕 მიწოდება: ${Number(order.delivery_fee).toFixed(2)} ₾</p>` : ''}
         <p class="receipt-meta">${time}</p>
         <hr>
         <ul class="receipt-kitchen-list">${itemsHtml}</ul>
@@ -394,8 +400,15 @@
     const isTakeout = currentOrderType === 'takeout';
     const customerName = isTakeout ? takeoutCustomerName.value.trim() : '';
     const customerPhone = isTakeout ? takeoutCustomerPhone.value.trim() : '';
+    const customerAddress = isTakeout ? takeoutCustomerAddress.value.trim() : '';
+    const deliveryFee = isTakeout ? (parseFloat(takeoutDeliveryFee.value) || 0) : 0;
     if (isTakeout && !customerName) {
       cartError.textContent = 'შეიყვანეთ მომხმარებლის სახელი — enter a customer name';
+      cartError.hidden = false;
+      return;
+    }
+    if (isTakeout && !customerAddress) {
+      cartError.textContent = 'შეიყვანეთ მისამართი — enter a delivery address';
       cartError.hidden = false;
       return;
     }
@@ -414,6 +427,8 @@
         order_type: currentOrderType,
         customer_name: customerName,
         customer_phone: customerPhone,
+        customer_address: customerAddress,
+        delivery_fee: deliveryFee,
         status: 'new', note, created_at: createdAt,
         created_by: currentUser.email || '',
       });
@@ -433,7 +448,8 @@
 
       const order = {
         id: orderId, table_number: isTakeout ? null : currentTable, order_type: currentOrderType,
-        customer_name: customerName, customer_phone: customerPhone, note, created_at: createdAt, items: itemRows,
+        customer_name: customerName, customer_phone: customerPhone, customer_address: customerAddress,
+        delivery_fee: deliveryFee, note, created_at: createdAt, items: itemRows,
       };
       printKitchenTicket(order);
 

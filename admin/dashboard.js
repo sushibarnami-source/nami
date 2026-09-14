@@ -403,7 +403,8 @@
   }
   function formatMoney(n) { return n.toFixed(2) + ' ₾'; }
   function orderTotal(order) {
-    return (order.items || []).reduce((sum, it) => sum + parsePrice(it.price) * it.quantity, 0);
+    const itemsTotal = (order.items || []).reduce((sum, it) => sum + parsePrice(it.price) * it.quantity, 0);
+    return itemsTotal + (Number(order.delivery_fee) || 0);
   }
   function formatOrderDate(iso) {
     const d = new Date(iso);
@@ -468,6 +469,8 @@
               <span class="post-row-badge status-${o.status}">${ORDER_STATUS_LABELS[o.status]}</span>
             </p>
             ${o.order_type === 'takeout' && o.customer_phone ? `<p class="post-row-meta">📞 ${escapeHtml(o.customer_phone)}</p>` : ''}
+            ${o.order_type === 'takeout' && o.customer_address ? `<p class="post-row-meta">📍 ${escapeHtml(o.customer_address)}</p>` : ''}
+            ${o.order_type === 'takeout' && Number(o.delivery_fee) > 0 ? `<p class="post-row-meta">🚕 მიწოდება: ${formatMoney(Number(o.delivery_fee))}</p>` : ''}
             <p class="post-row-meta">${formatOrderDate(o.created_at)} · <span class="order-row-total">${formatMoney(orderTotal(o))}</span></p>
             <ul class="order-items-list">${itemsHtml}</ul>
             ${o.note ? `<p class="order-note">📝 ${escapeHtml(o.note)}</p>` : ''}
@@ -562,9 +565,14 @@
         <p class="receipt-table">${order.order_type === 'takeout'
           ? `🥡 გასატანი${order.customer_name ? ` — ${escapeHtml(order.customer_name)}` : ''}`
           : `მაგიდა #${order.table_number}`}</p>
+        ${order.order_type === 'takeout' && order.customer_address ? `<p class="receipt-note">📍 ${escapeHtml(order.customer_address)}</p>` : ''}
         <p class="receipt-meta">${formatOrderDate(order.created_at)} · #${order.id.slice(0, 8)}</p>
         <hr>
         <table class="receipt-items">${itemsHtml}</table>
+        ${order.order_type === 'takeout' && Number(order.delivery_fee) > 0 ? `
+        <table class="receipt-items">
+          <tr><td>🚕</td><td>მიწოდება — Delivery</td><td>${formatMoney(Number(order.delivery_fee))}</td></tr>
+        </table>` : ''}
         <hr>
         <p class="receipt-total">სულ: ${formatMoney(orderTotal(order))}</p>
         ${order.note ? `<p class="receipt-note">შენიშვნა: ${escapeHtml(order.note)}</p>` : ''}
