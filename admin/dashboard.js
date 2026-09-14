@@ -886,7 +886,11 @@
 
   function renderDishList() {
     const filter = categoryFilter.value;
-    const filtered = filter ? dishes.filter(d => d.category === filter) : dishes;
+    const filtered = (filter ? dishes.filter(d => d.category === filter) : dishes.slice())
+      .sort((a, b) => {
+        if (a.category !== b.category) return a.category.localeCompare(b.category);
+        return (b.sort_order || 0) - (a.sort_order || 0);
+      });
 
     if (!filtered.length) {
       dishListEl.innerHTML = '<p class="admin-empty">No dishes yet — click "New Dish" to add one. — კერძები ჯერ არ არის, დააჭირეთ „New Dish"-ს.</p>';
