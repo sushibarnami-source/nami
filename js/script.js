@@ -17,6 +17,7 @@
       hero_btn_menu: 'View Menu', hero_btn_story: 'Our Story',
       menu_eyebrow: 'Our Menu', menu_title: 'Crafted With Care',
       menu_lead: 'Every dish is prepared upon order with fresh and premium ingredients. Browse our categories below.',
+      tab_all: 'All',
       tab_rolls: 'Rolls', tab_nigiri: 'Nigiri', tab_maki: 'Maki', tab_futomaki: 'Futomaki',
       tab_tempuraRoll: 'Hot Rolls', tab_sets: 'Sets', tab_noodles: 'Noodles', tab_appetizers: 'Appetizers',
       tab_desserts: 'Desserts', tab_drinks: 'Drinks',
@@ -63,6 +64,7 @@
       hero_btn_menu: 'მენიუს ნახვა', hero_btn_story: 'ჩვენი ისტორია',
       menu_eyebrow: 'ჩვენი მენიუ', menu_title: 'სიყვარულით მომზადებული',
       menu_lead: 'ყოველი კერძი მზადდება შეკვეთისთანავე, უახლესი და პრემიუმ ხარისხის ინგრედიენტებით. დაათვალიერეთ ჩვენი კატეგორიები ქვემოთ.',
+      tab_all: 'ყველა',
       tab_rolls: 'როლი', tab_nigiri: 'ნიგირი', tab_maki: 'მაკი', tab_futomaki: 'ფუტომაკი',
       tab_tempuraRoll: 'შემწვარი როლი', tab_sets: 'სეტი', tab_noodles: 'ატრია', tab_appetizers: 'ხემსი',
       tab_desserts: 'დესერტი', tab_drinks: 'სასმელი',
@@ -109,6 +111,7 @@
       hero_btn_menu: 'Смотреть меню', hero_btn_story: 'Наша история',
       menu_eyebrow: 'Наше меню', menu_title: 'С заботой о каждом блюде',
       menu_lead: 'Каждое блюдо готовится под заказ из свежайших и премиальных ингредиентов. Ознакомьтесь с нашими категориями ниже.',
+      tab_all: 'Все',
       tab_rolls: 'Роллы', tab_nigiri: 'Нигири', tab_maki: 'Маки', tab_futomaki: 'Футомаки',
       tab_tempuraRoll: 'Горячие роллы', tab_sets: 'Сеты', tab_noodles: 'Лапша', tab_appetizers: 'Закуски',
       tab_desserts: 'Десерты', tab_drinks: 'Напитки',
@@ -527,48 +530,72 @@
   --------------------------------------------------------- */
   const menuGrid = document.getElementById('menuGrid');
   const menuTabs = document.getElementById('menuTabs');
-  let currentCategory = 'rolls';
+  let currentCategory = 'all';
+
+  const CATEGORY_ORDER = ['rolls', 'nigiri', 'maki', 'futomaki', 'tempuraRoll', 'sets', 'noodles', 'appetizers', 'desserts', 'drinks'];
+
+  function buildMenuItemCard(item, delayIndex) {
+    const card = document.createElement('article');
+    card.className = 'menu-item';
+    card.style.animationDelay = `${(delayIndex % 12) * 0.04}s`;
+
+    const tagLabels = TAG_LABELS[currentLang] || TAG_LABELS.en;
+    const tagsHtml = (item.tags || [])
+      .map(tag => `<span class="tag ${tag}">${tagLabels[tag] || tag}</span>`)
+      .join('');
+
+    const name = item.name[currentLang] || item.name.en;
+    const desc = item.desc[currentLang] || item.desc.en;
+    const photoHtml = item.photo
+      ? `<div class="menu-item-photo-wrap"><img class="menu-item-photo" src="${item.photo}" alt="${name}" loading="lazy"></div>`
+      : '';
+
+    card.innerHTML = `
+      ${photoHtml}
+      <div class="menu-item-top">
+        <h3 class="menu-item-name">${name}</h3>
+        <span class="menu-item-price">${item.price}</span>
+      </div>
+      <p class="menu-item-desc">${desc}</p>
+      ${tagsHtml ? `<div class="menu-item-tags">${tagsHtml}</div>` : ''}
+    `;
+    card.addEventListener('click', () => openDishModal(item));
+    return card;
+  }
 
   function renderMenu(category) {
     currentCategory = category;
-    const items = MENU_ITEMS.filter(item => item.category === category);
-
     menuGrid.innerHTML = '';
+
+    if (category === 'all') {
+      let count = 0;
+      CATEGORY_ORDER.forEach(cat => {
+        const items = MENU_ITEMS.filter(item => item.category === cat);
+        if (!items.length) return;
+
+        const heading = document.createElement('h3');
+        heading.className = 'menu-category-heading';
+        heading.textContent = t('tab_' + cat);
+        menuGrid.appendChild(heading);
+
+        items.forEach(item => {
+          menuGrid.appendChild(buildMenuItemCard(item, count));
+          count++;
+        });
+      });
+
+      if (!count) menuGrid.innerHTML = `<p class="menu-empty">${t('menu_empty')}</p>`;
+      return;
+    }
+
+    const items = MENU_ITEMS.filter(item => item.category === category);
 
     if (!items.length) {
       menuGrid.innerHTML = `<p class="menu-empty">${t('menu_empty')}</p>`;
       return;
     }
 
-    const tagLabels = TAG_LABELS[currentLang] || TAG_LABELS.en;
-
-    items.forEach((item, i) => {
-      const card = document.createElement('article');
-      card.className = 'menu-item';
-      card.style.animationDelay = `${(i % 12) * 0.04}s`;
-
-      const tagsHtml = (item.tags || [])
-        .map(tag => `<span class="tag ${tag}">${tagLabels[tag] || tag}</span>`)
-        .join('');
-
-      const name = item.name[currentLang] || item.name.en;
-      const desc = item.desc[currentLang] || item.desc.en;
-      const photoHtml = item.photo
-        ? `<div class="menu-item-photo-wrap"><img class="menu-item-photo" src="${item.photo}" alt="${name}" loading="lazy"></div>`
-        : '';
-
-      card.innerHTML = `
-        ${photoHtml}
-        <div class="menu-item-top">
-          <h3 class="menu-item-name">${name}</h3>
-          <span class="menu-item-price">${item.price}</span>
-        </div>
-        <p class="menu-item-desc">${desc}</p>
-        ${tagsHtml ? `<div class="menu-item-tags">${tagsHtml}</div>` : ''}
-      `;
-      card.addEventListener('click', () => openDishModal(item));
-      menuGrid.appendChild(card);
-    });
+    items.forEach((item, i) => menuGrid.appendChild(buildMenuItemCard(item, i)));
   }
 
   /* ---------------------------------------------------------
@@ -975,7 +1002,7 @@
   });
   document.getElementById('htmlRoot').setAttribute('lang', currentLang === 'ka' ? 'ka' : currentLang === 'ru' ? 'ru' : 'en');
   applyStaticTranslations();
-  renderMenu('rolls');
+  renderMenu('all');
   renderBlog();
   updateHours();
   renderFooterCopy();

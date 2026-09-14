@@ -350,6 +350,16 @@ section { padding: 110px 0; }
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 22px;
 }
+.menu-category-heading {
+  grid-column: 1 / -1;
+  font-family: var(--font-head);
+  font-size: 1.6rem;
+  margin: 10px 0 -6px;
+  color: var(--ink);
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+}
+.menu-category-heading:first-child { margin-top: 0; padding-top: 0; border-top: none; }
 
 .menu-item {
   background: var(--cream);
