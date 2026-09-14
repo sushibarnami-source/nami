@@ -878,6 +878,12 @@
     dishRecipeCosts = totals;
   }
 
+  function categorySiblings(category) {
+    return dishes
+      .filter(d => d.category === category)
+      .sort((a, b) => (b.sort_order || 0) - (a.sort_order || 0));
+  }
+
   function renderDishList() {
     const filter = categoryFilter.value;
     const filtered = filter ? dishes.filter(d => d.category === filter) : dishes;
@@ -887,7 +893,12 @@
       return;
     }
 
-    dishListEl.innerHTML = filtered.map(d => `
+    dishListEl.innerHTML = filtered.map(d => {
+      const siblings = categorySiblings(d.category);
+      const idx = siblings.findIndex(s => s.id === d.id);
+      const isFirst = idx <= 0;
+      const isLast = idx === -1 || idx === siblings.length - 1;
+      return `
       <div class="post-row">
         ${d.photo_url
           ? `<img class="post-row-thumb" src="${escapeHtml(d.photo_url)}" alt="">`
@@ -899,12 +910,47 @@
         </div>
         <span class="post-row-category">${escapeHtml(CATEGORY_LABELS[d.category] || d.category)}</span>
         <span class="post-row-badge ${d.published ? 'is-published' : ''}">${d.published ? 'გამოქვეყნებული' : 'მონახაზი'}</span>
+        <div class="post-row-reorder">
+          <button class="admin-btn-secondary" data-move-dish="${d.id}" data-direction="up" ${isFirst ? 'disabled' : ''} title="მაღლა — Move up">▲</button>
+          <button class="admin-btn-secondary" data-move-dish="${d.id}" data-direction="down" ${isLast ? 'disabled' : ''} title="დაბლა — Move down">▼</button>
+        </div>
         <div class="post-row-actions">
           <button class="admin-btn-secondary" data-edit-dish="${d.id}">Edit — რედაქტირება</button>
           <button class="admin-btn-danger" data-delete-dish="${d.id}">Delete — წაშლა</button>
         </div>
       </div>
-    `).join('');
+    `;
+    }).join('');
+  }
+
+  async function moveDish(id, direction) {
+    const dish = dishes.find(d => d.id === id);
+    if (!dish) return;
+
+    const siblings = categorySiblings(dish.category);
+    const idx = siblings.findIndex(s => s.id === id);
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (idx === -1 || swapIdx < 0 || swapIdx >= siblings.length) return;
+
+    [siblings[idx], siblings[swapIdx]] = [siblings[swapIdx], siblings[idx]];
+
+    const total = siblings.length;
+    const updates = siblings.map((d, i) => ({ id: d.id, sort_order: total - i }));
+
+    updates.forEach(u => {
+      const dishObj = dishes.find(d => d.id === u.id);
+      if (dishObj) dishObj.sort_order = u.sort_order;
+    });
+    renderDishList();
+
+    const results = await Promise.all(
+      updates.map(u => supabaseClient.from('menu_items').update({ sort_order: u.sort_order }).eq('id', u.id))
+    );
+    const failed = results.find(r => r.error);
+    if (failed) {
+      showToast(`Couldn't reorder: ${failed.error.message} — ვერ შეიცვალა თანმიმდევრობა`, true);
+      await loadDishes();
+    }
   }
 
   function dishCostLine(dish) {
@@ -924,6 +970,11 @@
   categoryFilter.addEventListener('change', renderDishList);
 
   dishListEl.addEventListener('click', (e) => {
+    const moveBtn = e.target.closest('[data-move-dish]');
+    if (moveBtn) {
+      moveDish(moveBtn.dataset.moveDish, moveBtn.dataset.direction);
+      return;
+    }
     const editBtn = e.target.closest('[data-edit-dish]');
     if (editBtn) {
       openDishEditor(dishes.find(d => d.id === editBtn.dataset.editDish));
