@@ -43,6 +43,22 @@
       <button type="submit" class="btn btn-primary" data-i18n="gate_btn">Continue</button>
     </form>
     <p class="order-gate-error" id="tableError" hidden></p>
+    <p class="order-gate-switch"><a href="?type=takeout" data-i18n="gate_switch_takeout">Ordering for takeout or delivery instead?</a></p>
+  </section>
+
+  <!-- ================= TAKEOUT GATE ================= -->
+  <section class="order-gate container" id="takeoutGate" hidden>
+    <p class="section-eyebrow" data-i18n="gate_eyebrow">NAMI • ნამი</p>
+    <h1 class="section-title" data-i18n="takeout_gate_title">Order for takeout or delivery</h1>
+    <p class="section-lead" data-i18n="takeout_gate_lead" style="margin:0 auto;">Tell us who you are, we'll call to confirm and arrange payment.</p>
+    <form id="takeoutForm" class="order-gate-form">
+      <input type="text" id="takeoutNameInput" data-i18n-placeholder="takeout_name_placeholder" placeholder="Your name" required>
+      <input type="tel" id="takeoutPhoneInput" data-i18n-placeholder="takeout_phone_placeholder" placeholder="Phone number" required>
+      <input type="text" id="takeoutAddressInput" data-i18n-placeholder="takeout_address_placeholder" placeholder="Delivery address (leave blank for pickup)">
+      <button type="submit" class="btn btn-primary" data-i18n="gate_btn">Continue</button>
+    </form>
+    <p class="order-gate-error" id="takeoutError" hidden></p>
+    <p class="order-gate-switch"><a href="?" data-i18n="gate_switch_table">At a table? Order from there instead</a></p>
   </section>
 
   <!-- ================= MENU ================= -->

@@ -470,7 +470,7 @@
             </p>
             ${o.order_type === 'takeout' && o.customer_phone ? `<p class="post-row-meta">📞 ${escapeHtml(o.customer_phone)}</p>` : ''}
             ${o.order_type === 'takeout' && o.customer_address ? `<p class="post-row-meta">📍 ${escapeHtml(o.customer_address)}</p>` : ''}
-            ${o.order_type === 'takeout' && Number(o.delivery_fee) > 0 ? `<p class="post-row-meta">🚕 მიწოდება: ${formatMoney(Number(o.delivery_fee))}</p>` : ''}
+            ${o.order_type === 'takeout' ? `<p class="post-row-meta">🚕 მიწოდება: <input type="number" step="0.01" min="0" class="order-delivery-fee-input" data-order-delivery-fee="${o.id}" value="${Number(o.delivery_fee) || 0}" style="width:80px; padding:2px 6px; border-radius:4px; border:1px solid var(--border); font-family:var(--font-body);"> ₾</p>` : ''}
             <p class="post-row-meta">${formatOrderDate(o.created_at)} · <span class="order-row-total">${formatMoney(orderTotal(o))}</span></p>
             <ul class="order-items-list">${itemsHtml}</ul>
             ${o.note ? `<p class="order-note">📝 ${escapeHtml(o.note)}</p>` : ''}
@@ -501,14 +501,28 @@
 
   orderListEl.addEventListener('change', async (e) => {
     const sel = e.target.closest('[data-order-status]');
-    if (!sel) return;
-    const id = sel.dataset.orderStatus;
-    const { error } = await supabaseClient.from('orders').update({ status: sel.value }).eq('id', id);
-    if (error) { showToast(`Couldn't update: ${error.message} — ვერ განახლდა`, true); return; }
-    const o = orders.find(x => x.id === id);
-    if (o) o.status = sel.value;
-    renderOrderList();
-    renderOrderStats();
+    if (sel) {
+      const id = sel.dataset.orderStatus;
+      const { error } = await supabaseClient.from('orders').update({ status: sel.value }).eq('id', id);
+      if (error) { showToast(`Couldn't update: ${error.message} — ვერ განახლდა`, true); return; }
+      const o = orders.find(x => x.id === id);
+      if (o) o.status = sel.value;
+      renderOrderList();
+      renderOrderStats();
+      return;
+    }
+
+    const feeInput = e.target.closest('[data-order-delivery-fee]');
+    if (feeInput) {
+      const id = feeInput.dataset.orderDeliveryFee;
+      const fee = Number(feeInput.value) || 0;
+      const { error } = await supabaseClient.from('orders').update({ delivery_fee: fee }).eq('id', id);
+      if (error) { showToast(`Couldn't update: ${error.message} — ვერ განახლდა`, true); return; }
+      const o = orders.find(x => x.id === id);
+      if (o) o.delivery_fee = fee;
+      renderOrderList();
+      renderOrderStats();
+    }
   });
 
   orderListEl.addEventListener('click', async (e) => {
