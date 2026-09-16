@@ -25,6 +25,7 @@
     <button type="button" class="admin-main-tab-btn" data-tab="menu">Menu — მენიუ</button>
     <button type="button" class="admin-main-tab-btn" data-tab="inventory">Inventory — მარაგი</button>
     <button type="button" class="admin-main-tab-btn" data-tab="orders">Orders — შეკვეთები <span id="newOrderBadge" class="admin-tab-badge" hidden></span></button>
+    <button type="button" class="admin-main-tab-btn" data-tab="sales">Sales — გაყიდვები</button>
     <button type="button" class="admin-main-tab-btn" data-tab="messages">Messages — შეტყობინებები <span id="unreadMessageBadge" class="admin-tab-badge" hidden></span></button>
     <button type="button" class="admin-main-tab-btn" data-tab="settings">Site Settings — პარამეტრები</button>
   </div>
@@ -312,6 +313,38 @@
 
     <div id="orderList" class="post-list">
       <p class="admin-loading">Loading orders… — იტვირთება...</p>
+    </div>
+  </section>
+
+  <section id="tabSales" class="admin-tab-pane" hidden>
+    <div class="admin-toolbar">
+      <h2>Sales — მიღებული შეკვეთები (გაყიდვები)</h2>
+      <button type="button" class="admin-btn-secondary" id="refreshSalesBtn">⟳ Refresh — განახლება</button>
+    </div>
+
+    <div class="editor-field" style="max-width:240px; margin-bottom:16px;">
+      <label for="salesPeriodFilter">Period — პერიოდი</label>
+      <select id="salesPeriodFilter">
+        <option value="today">Today — დღეს</option>
+        <option value="week">This week — ამ კვირას</option>
+        <option value="month">This month — ამ თვეს</option>
+        <option value="all">All time — ყველა დრო</option>
+      </select>
+    </div>
+
+    <div class="stat-cards" id="salesStats">
+      <div class="stat-card">
+        <p class="stat-card-value" id="statSalesCount">–</p>
+        <p class="stat-card-label">Orders sold — გაყიდული შეკვეთა</p>
+      </div>
+      <div class="stat-card">
+        <p class="stat-card-value" id="statSalesRevenue">–</p>
+        <p class="stat-card-label">Total revenue — ჯამური შემოსავალი</p>
+      </div>
+    </div>
+
+    <div id="salesList" class="post-list">
+      <p class="admin-loading">Loading… — იტვირთება...</p>
     </div>
   </section>
 
