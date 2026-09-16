@@ -924,6 +924,7 @@
     rolls: 'როლები', nigiri: 'ნიგირი', maki: 'მაკი', futomaki: 'ფუტომაკი',
     tempuraRoll: 'ცხელი როლები', sets: 'სეტები', noodles: 'ნუდლი',
     appetizers: 'აპეტაიზერები', desserts: 'დესერტები', drinks: 'სასმელები',
+    packaging: 'ტარა',
   };
 
   const dishListEl = document.getElementById('dishList');
