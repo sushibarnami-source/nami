@@ -437,7 +437,7 @@
     orders = (orderRows || []).map(o => ({ ...o, items: itemsByOrder[o.id] || [] }));
     knownOrderIds = new Set(orders.map(o => o.id));
     renderOrderList();
-    renderOrderStats();
+    renderOrderStats(); renderSalesList();
   }
 
   function renderOrderList() {
@@ -499,6 +499,73 @@
     newOrderBadgeEl.textContent = String(newCount);
   }
 
+  /* ---------------------------------------------------------
+     Sales — a read-only log of paid (sold) orders, so the owner
+     can see what's actually been sold, separate from the live
+     kitchen/action queue on the Orders tab.
+  --------------------------------------------------------- */
+  const salesListEl = document.getElementById('salesList');
+  const salesPeriodFilter = document.getElementById('salesPeriodFilter');
+
+  function periodStart(period) {
+    const d = new Date();
+    if (period === 'today') { d.setHours(0, 0, 0, 0); return d; }
+    if (period === 'week') { d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - d.getDay()); return d; }
+    if (period === 'month') { d.setHours(0, 0, 0, 0); d.setDate(1); return d; }
+    return null; // all time
+  }
+
+  function soldOrders() {
+    const start = periodStart(salesPeriodFilter.value);
+    return orders
+      .filter(o => o.status === 'paid')
+      .filter(o => !start || new Date(o.created_at) >= start)
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  }
+
+  function renderSalesList() {
+    const sold = soldOrders();
+
+    document.getElementById('statSalesCount').textContent = String(sold.length);
+    document.getElementById('statSalesRevenue').textContent = formatMoney(sold.reduce((sum, o) => sum + orderTotal(o), 0));
+
+    if (!sold.length) {
+      salesListEl.innerHTML = '<p class="admin-empty">No sales in this period. — ამ პერიოდში გაყიდვები არ არის.</p>';
+      return;
+    }
+
+    salesListEl.innerHTML = sold.map(o => {
+      const itemsHtml = (o.items || [])
+        .map(it => `<li>${it.quantity}× ${escapeHtml(it.name_ka || it.name_en)} — ${escapeHtml(it.price)}</li>`)
+        .join('');
+      return `
+        <div class="post-row order-row status-paid">
+          <div class="post-row-icon">${o.order_type === 'takeout' ? '🥡' : '🍣'}</div>
+          <div class="post-row-main">
+            <p class="post-row-title">
+              ${o.order_type === 'takeout'
+                ? `Takeout — გასატანი${o.customer_name ? ` (${escapeHtml(o.customer_name)})` : ''}`
+                : `Table ${o.table_number} — მაგიდა ${o.table_number}`}
+            </p>
+            <p class="post-row-meta">${formatOrderDate(o.created_at)} · <span class="order-row-total">${formatMoney(orderTotal(o))}</span></p>
+            <ul class="order-items-list">${itemsHtml}</ul>
+          </div>
+          <div class="post-row-actions">
+            <button class="admin-btn-secondary" data-print-order="${o.id}">Print — ბეჭდვა</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  salesPeriodFilter.addEventListener('change', renderSalesList);
+  document.getElementById('refreshSalesBtn').addEventListener('click', () => loadOrders());
+
+  salesListEl.addEventListener('click', (e) => {
+    const printBtn = e.target.closest('[data-print-order]');
+    if (printBtn) printOrder(orders.find(o => o.id === printBtn.dataset.printOrder));
+  });
+
   orderListEl.addEventListener('change', async (e) => {
     const sel = e.target.closest('[data-order-status]');
     if (sel) {
@@ -508,7 +575,7 @@
       const o = orders.find(x => x.id === id);
       if (o) o.status = sel.value;
       renderOrderList();
-      renderOrderStats();
+      renderOrderStats(); renderSalesList();
       return;
     }
 
@@ -521,7 +588,7 @@
       const o = orders.find(x => x.id === id);
       if (o) o.delivery_fee = fee;
       renderOrderList();
-      renderOrderStats();
+      renderOrderStats(); renderSalesList();
     }
   });
 
@@ -538,7 +605,7 @@
       orders = orders.filter(o => o.id !== id);
       knownOrderIds.delete(id);
       renderOrderList();
-      renderOrderStats();
+      renderOrderStats(); renderSalesList();
     }
   });
 
@@ -707,7 +774,7 @@
     orders.unshift(order);
     knownOrderIds.add(order.id);
     renderOrderList();
-    renderOrderStats();
+    renderOrderStats(); renderSalesList();
     playBeep();
     if (autoPrintToggle.checked) printOrder(order);
   }
@@ -720,13 +787,13 @@
       })
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, (payload) => {
         const o = orders.find(x => x.id === payload.new.id);
-        if (o) { Object.assign(o, payload.new); renderOrderList(); renderOrderStats(); }
+        if (o) { Object.assign(o, payload.new); renderOrderList(); renderOrderStats(); renderSalesList(); }
       })
       .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'orders' }, (payload) => {
         orders = orders.filter(o => o.id !== payload.old.id);
         knownOrderIds.delete(payload.old.id);
         renderOrderList();
-        renderOrderStats();
+        renderOrderStats(); renderSalesList();
       })
       .subscribe();
   }
@@ -739,6 +806,7 @@
     menu: document.getElementById('tabMenu'),
     inventory: document.getElementById('tabInventory'),
     orders: document.getElementById('tabOrders'),
+    sales: document.getElementById('tabSales'),
     messages: document.getElementById('tabMessages'),
     settings: document.getElementById('tabSettings'),
   };
