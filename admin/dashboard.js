@@ -790,6 +790,7 @@
     renderOrderStats(); renderSalesList();
     playBeep();
     if (autoPrintToggle.checked) printOrder(order);
+    sendNewOrderWhatsApp(order);
   }
 
   function subscribeToOrders() {
@@ -1644,6 +1645,10 @@
         errorEl.textContent = txError.message;
         return;
       }
+
+      const wasLow = Number(item.quantity) <= Number(item.min_quantity);
+      const isLow = newQuantity <= Number(item.min_quantity);
+      if (isLow && !wasLow) sendLowStockWhatsApp(item, newQuantity);
     }
 
     saveBtn.disabled = false;
@@ -1720,6 +1725,85 @@
   }
   settingsForm.querySelectorAll('.settings-lang-tab').forEach(btn => {
     btn.addEventListener('click', () => switchSettingsLangTab(btn.dataset.lang));
+  });
+
+  /* ---------------------------------------------------------
+     WhatsApp notifications (new order / low stock) via CallMeBot
+     https://www.callmebot.com/blog/free-api-whatsapp-messages/
+     Uses an <img> tag to fire the GET request so it works from the
+     browser without hitting CORS (we never read the response).
+     Only fires while this dashboard tab is open somewhere.
+  --------------------------------------------------------- */
+  let notificationSettings = { whatsapp_phone: '', whatsapp_apikey: '', new_order_alerts: true, low_stock_alerts: true };
+
+  function sendWhatsApp(message) {
+    if (!notificationSettings.whatsapp_phone || !notificationSettings.whatsapp_apikey) return;
+    const url = `https://api.callmebot.com/whatsapp.php?phone=${encodeURIComponent(notificationSettings.whatsapp_phone)}&text=${encodeURIComponent(message)}&apikey=${encodeURIComponent(notificationSettings.whatsapp_apikey)}`;
+    const img = new Image();
+    img.onerror = () => { /* CallMeBot doesn't return an image; the request already fired */ };
+    img.src = url;
+  }
+
+  function sendNewOrderWhatsApp(order) {
+    if (!notificationSettings.new_order_alerts) return;
+    const itemsSummary = (order.items || []).map(it => `${it.quantity}× ${it.name_ka || it.name_en}`).join(', ');
+    const header = order.order_type === 'takeout'
+      ? `🥡 გასატანი${order.customer_name ? ` — ${order.customer_name}` : ''}`
+      : `🍽 მაგიდა ${order.table_number}`;
+    sendWhatsApp(`🍣 ახალი შეკვეთა — NAMI\n${header}\n${itemsSummary}\nჯამი: ${formatMoney(orderTotal(order))}`);
+  }
+
+  function sendLowStockWhatsApp(item, newQuantity) {
+    if (!notificationSettings.low_stock_alerts) return;
+    sendWhatsApp(`⚠️ დაბალი მარაგი — NAMI\n${item.name}: ${formatQty(newQuantity)} ${item.unit} დარჩა (მინ. ${formatQty(item.min_quantity)} ${item.unit})`);
+  }
+
+  async function loadNotificationSettings() {
+    const { data, error } = await supabaseClient.from('notification_settings').select('*').eq('id', 1).single();
+    if (error || !data) return;
+    notificationSettings = data;
+    document.getElementById('sWhatsappPhone').value = data.whatsapp_phone || '';
+    document.getElementById('sWhatsappApikey').value = data.whatsapp_apikey || '';
+    document.getElementById('sNewOrderAlerts').checked = data.new_order_alerts;
+    document.getElementById('sLowStockAlerts').checked = data.low_stock_alerts;
+  }
+
+  document.getElementById('saveWhatsappSettingsBtn').addEventListener('click', async () => {
+    const errorEl = document.getElementById('whatsappSettingsError');
+    errorEl.textContent = '';
+    const btn = document.getElementById('saveWhatsappSettingsBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving… — ინახება...';
+
+    const payload = {
+      id: 1,
+      whatsapp_phone: document.getElementById('sWhatsappPhone').value.trim(),
+      whatsapp_apikey: document.getElementById('sWhatsappApikey').value.trim(),
+      new_order_alerts: document.getElementById('sNewOrderAlerts').checked,
+      low_stock_alerts: document.getElementById('sLowStockAlerts').checked,
+    };
+    const { error } = await supabaseClient.from('notification_settings').update(payload).eq('id', 1);
+
+    btn.disabled = false;
+    btn.textContent = 'Save — შენახვა';
+
+    if (error) { errorEl.textContent = error.message; return; }
+    notificationSettings = payload;
+    showToast('Notification settings saved. — პარამეტრები შენახულია.');
+  });
+
+  document.getElementById('testWhatsappBtn').addEventListener('click', () => {
+    const phone = document.getElementById('sWhatsappPhone').value.trim();
+    const apikey = document.getElementById('sWhatsappApikey').value.trim();
+    if (!phone || !apikey) {
+      document.getElementById('whatsappSettingsError').textContent = 'ჯერ შეავსეთ ნომერი და API Key. — Fill in the phone and API key first.';
+      return;
+    }
+    const url = `https://api.callmebot.com/whatsapp.php?phone=${encodeURIComponent(phone)}&text=${encodeURIComponent('✅ NAMI — სატესტო შეტყობინება მუშაობს!')}&apikey=${encodeURIComponent(apikey)}`;
+    const img = new Image();
+    img.onerror = () => {};
+    img.src = url;
+    showToast('სატესტო შეტყობინება გაიგზავნა — Test message sent.');
   });
 
   async function loadSettings() {
@@ -1807,6 +1891,7 @@
     await loadDishes();
     await loadMessages();
     await loadSettings();
+    await loadNotificationSettings();
     await loadTableCount();
     await loadOrders();
     subscribeToOrders();
