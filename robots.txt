@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sushibarnami-source.github.io/nami/sitemap.xml
