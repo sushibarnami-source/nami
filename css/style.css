@@ -886,6 +886,22 @@ body.order-page { padding-bottom: 90px; }
   margin-top: 14px;
 }
 
+.order-gate-form input[type="text"],
+.order-gate-form input[type="tel"] {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: var(--cream);
+  font-family: var(--font-body);
+  font-size: 1rem;
+}
+.order-gate-switch {
+  margin-top: 18px;
+  font-size: .85rem;
+}
+.order-gate-switch a { color: var(--green-deep); font-weight: 600; }
+
 .order-menu { padding-top: 28px; padding-bottom: 40px; }
 .order-menu .menu-tabs { margin: 0 0 32px; }
 .order-menu-grid .menu-item { cursor: default; }

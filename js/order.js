@@ -21,6 +21,16 @@
       gate_lead: 'Enter the table number to start ordering.',
       gate_btn: 'Continue',
       gate_error_range: 'Please enter a valid table number (1–{max}).',
+      gate_switch_takeout: 'Ordering for takeout or delivery instead?',
+      gate_switch_table: 'At a table? Order from there instead',
+      takeout_gate_title: 'Order for takeout or delivery',
+      takeout_gate_lead: "Tell us who you are — we'll call to confirm and arrange payment.",
+      takeout_name_placeholder: 'Your name',
+      takeout_phone_placeholder: 'Phone number',
+      takeout_address_placeholder: 'Delivery address (leave blank for pickup)',
+      takeout_error_name: 'Please enter your name.',
+      takeout_error_phone: 'Please enter your phone number.',
+      takeout_badge: 'Takeout order',
       menu_loading: 'Loading menu…',
       menu_error: "Couldn't load the menu. Please check your connection and reload.",
       menu_empty: 'No dishes in this category yet.',
@@ -38,6 +48,7 @@
       cart_remove: 'Remove',
       success_title: 'Order sent!',
       success_lead: 'Your order for table {table} is on its way to the kitchen.',
+      takeout_success_lead: "We've got your order, {name} — we'll call {phone} shortly to confirm and arrange payment.",
       success_another: 'Order more',
     },
     ka: {
@@ -47,6 +58,16 @@
       gate_lead: 'შეიყვანეთ მაგიდის ნომერი შეკვეთის დასაწყებად.',
       gate_btn: 'გაგრძელება',
       gate_error_range: 'გთხოვთ, შეიყვანოთ სწორი მაგიდის ნომერი (1–{max}).',
+      gate_switch_takeout: 'გსურთ შეკვეთა წამოსატანად ან მისატანად?',
+      gate_switch_table: 'მაგიდასთან ხართ? შეუკვეთეთ იქიდან',
+      takeout_gate_title: 'შეკვეთა წამოსატანად ან მისატანად',
+      takeout_gate_lead: 'დაგვიტოვეთ თქვენი მონაცემები — დაგირეკავთ დასადასტურებლად და გადახდის შესათანხმებლად.',
+      takeout_name_placeholder: 'თქვენი სახელი',
+      takeout_phone_placeholder: 'ტელეფონის ნომერი',
+      takeout_address_placeholder: 'მისამართი მიტანისთვის (თუ თვითონ წამოხვალთ, ცარიელი დატოვეთ)',
+      takeout_error_name: 'გთხოვთ, შეიყვანოთ სახელი.',
+      takeout_error_phone: 'გთხოვთ, შეიყვანოთ ტელეფონის ნომერი.',
+      takeout_badge: 'გასატანი შეკვეთა',
       menu_loading: 'მენიუ იტვირთება…',
       menu_error: 'მენიუს ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ ინტერნეტი და განაახლეთ გვერდი.',
       menu_empty: 'ამ კატეგორიაში კერძები ჯერ არ არის.',
@@ -64,6 +85,7 @@
       cart_remove: 'წაშლა',
       success_title: 'შეკვეთა გაიგზავნა!',
       success_lead: 'თქვენი შეკვეთა (მაგიდა {table}) უკვე სამზარეულოშია.',
+      takeout_success_lead: 'შეკვეთა მიღებულია, {name} — მალე დაგირეკავთ {phone}-ზე დასადასტურებლად და გადახდის შესათანხმებლად.',
       success_another: 'კიდევ შეკვეთა',
     },
     ru: {
@@ -73,6 +95,16 @@
       gate_lead: 'Введите номер стола, чтобы начать заказ.',
       gate_btn: 'Продолжить',
       gate_error_range: 'Введите правильный номер стола (1–{max}).',
+      gate_switch_takeout: 'Хотите заказать навынос или с доставкой?',
+      gate_switch_table: 'Вы за столом? Закажите оттуда',
+      takeout_gate_title: 'Заказ навынос или с доставкой',
+      takeout_gate_lead: 'Оставьте свои данные — мы позвоним, чтобы подтвердить заказ и согласовать оплату.',
+      takeout_name_placeholder: 'Ваше имя',
+      takeout_phone_placeholder: 'Номер телефона',
+      takeout_address_placeholder: 'Адрес доставки (оставьте пустым для самовывоза)',
+      takeout_error_name: 'Пожалуйста, введите ваше имя.',
+      takeout_error_phone: 'Пожалуйста, введите номер телефона.',
+      takeout_badge: 'Заказ навынос',
       menu_loading: 'Загрузка меню…',
       menu_error: 'Не удалось загрузить меню. Проверьте соединение и обновите страницу.',
       menu_empty: 'В этой категории пока нет блюд.',
@@ -90,6 +122,7 @@
       cart_remove: 'Удалить',
       success_title: 'Заказ отправлен!',
       success_lead: 'Ваш заказ (стол {table}) уже на кухне.',
+      takeout_success_lead: 'Заказ получен, {name} — мы скоро позвоним на {phone}, чтобы подтвердить и согласовать оплату.',
       success_another: 'Заказать ещё',
     },
   };
@@ -127,13 +160,18 @@
   /* ---------------------------------------------------------
      State
   --------------------------------------------------------- */
+  let orderMode = 'dine_in'; // dine_in | takeout
   let tableNumber = null;
   let tableCount = 12; // matches the site_settings default until the real value loads
+  let takeoutName = '';
+  let takeoutPhone = '';
+  let takeoutAddress = '';
   let menuItems = []; // flat list from Supabase
   let currentCategory = 'rolls';
   const cart = {}; // menu_item id -> { item, qty }
 
   const tableGate = document.getElementById('tableGate');
+  const takeoutGate = document.getElementById('takeoutGate');
   const orderMenuSection = document.getElementById('orderMenuSection');
   const orderSuccessSection = document.getElementById('orderSuccessSection');
   const tableBadge = document.getElementById('tableBadge');
@@ -161,6 +199,7 @@
     document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b === btn));
     document.getElementById('htmlRoot').lang = currentLang;
     applyI18n();
+    if (orderMode === 'takeout' && !tableBadge.hidden) tableBadgeNum.textContent = t('takeout_badge');
     if (menuItems.length) renderMenu(currentCategory);
     renderCart();
   });
@@ -196,6 +235,38 @@
       return;
     }
     enterTable(val);
+  });
+
+  /* ---------------------------------------------------------
+     Takeout gate
+  --------------------------------------------------------- */
+  function showTakeoutError(msg) {
+    const el = document.getElementById('takeoutError');
+    el.textContent = msg;
+    el.hidden = false;
+  }
+
+  function enterTakeout(name, phone, address) {
+    orderMode = 'takeout';
+    takeoutName = name;
+    takeoutPhone = phone;
+    takeoutAddress = address;
+    takeoutGate.hidden = true;
+    orderMenuSection.hidden = false;
+    tableBadge.hidden = false;
+    tableBadge.querySelector('[data-i18n="badge_table"]').hidden = true;
+    tableBadgeNum.textContent = t('takeout_badge');
+  }
+
+  document.getElementById('takeoutForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    document.getElementById('takeoutError').hidden = true;
+    const name = document.getElementById('takeoutNameInput').value.trim();
+    const phone = document.getElementById('takeoutPhoneInput').value.trim();
+    const address = document.getElementById('takeoutAddressInput').value.trim();
+    if (!name) { showTakeoutError(t('takeout_error_name')); return; }
+    if (!phone) { showTakeoutError(t('takeout_error_phone')); return; }
+    enterTakeout(name, phone, address);
   });
 
   /* ---------------------------------------------------------
@@ -360,12 +431,25 @@
       const orderId = crypto.randomUUID();
       const note = document.getElementById('orderNote').value.trim();
 
-      const { error: orderErr } = await supabaseClient.from('orders').insert({
-        id: orderId,
-        table_number: tableNumber,
-        status: 'new',
-        note,
-      });
+      const orderPayload = orderMode === 'takeout'
+        ? {
+          id: orderId,
+          order_type: 'takeout',
+          table_number: null,
+          customer_name: takeoutName,
+          customer_phone: takeoutPhone,
+          customer_address: takeoutAddress,
+          status: 'new',
+          note,
+        }
+        : {
+          id: orderId,
+          table_number: tableNumber,
+          status: 'new',
+          note,
+        };
+
+      const { error: orderErr } = await supabaseClient.from('orders').insert(orderPayload);
       if (orderErr) throw orderErr;
 
       const itemRows = entries.map(({ item, qty }) => ({
@@ -395,7 +479,9 @@
     orderMenuSection.hidden = true;
     cartBar.hidden = true;
     orderSuccessSection.hidden = false;
-    document.getElementById('successLead').textContent = t('success_lead', { table: tableNumber });
+    document.getElementById('successLead').textContent = orderMode === 'takeout'
+      ? t('takeout_success_lead', { name: takeoutName, phone: takeoutPhone })
+      : t('success_lead', { table: tableNumber });
 
     document.getElementById('successRecap').innerHTML = entries.map(({ item, qty }) => {
       const name = item.name[currentLang] || item.name.en;
@@ -432,6 +518,13 @@
     await loadMenu();
 
     const params = new URLSearchParams(window.location.search);
+
+    if (params.get('type') === 'takeout') {
+      tableGate.hidden = true;
+      takeoutGate.hidden = false;
+      return;
+    }
+
     const fromUrl = parseInt(params.get('table'), 10);
     if (fromUrl && fromUrl >= 1 && fromUrl <= tableCount) {
       enterTable(fromUrl);
