@@ -148,6 +148,34 @@
         </div>
       </div>
 
+      <h3 class="settings-group-title">WhatsApp შეტყობინებები — Notifications</h3>
+      <p class="content-help" style="margin-bottom:10px;">
+        მუშაობს <a href="https://www.callmebot.com/blog/free-api-whatsapp-messages/" target="_blank" rel="noopener">CallMeBot</a>-ის უფასო სერვისით — ჯერ თქვენი WhatsApp-იდან გააქტიურეთ (ინსტრუქციას გამოგიგზავნით), მერე ჩაწერეთ ნომერი და გასაღები აქ. შეტყობინება მოვა მხოლოდ მაშინ, როცა ეს Dashboard გვერდი ღიაა რომელიმე ბრაუზერში.
+      </p>
+      <div class="editor-row">
+        <div class="editor-field">
+          <label for="sWhatsappPhone">WhatsApp ნომერი (საერთაშორისო ფორმატით, +995-ის გარეშე) — Phone</label>
+          <input type="text" id="sWhatsappPhone" placeholder="995555123456">
+        </div>
+        <div class="editor-field">
+          <label for="sWhatsappApikey">CallMeBot API Key</label>
+          <input type="text" id="sWhatsappApikey">
+        </div>
+      </div>
+      <div class="editor-row">
+        <label style="font-size:.85rem; display:flex; align-items:center; gap:6px; cursor:pointer;">
+          <input type="checkbox" id="sNewOrderAlerts"> ახალი შეკვეთის შეტყობინება — New order alerts
+        </label>
+        <label style="font-size:.85rem; display:flex; align-items:center; gap:6px; cursor:pointer; margin-left:20px;">
+          <input type="checkbox" id="sLowStockAlerts"> დაბალი მარაგის შეტყობინება — Low stock alerts
+        </label>
+      </div>
+      <p class="login-error" id="whatsappSettingsError" style="color:var(--red); font-size:.85rem;"></p>
+      <div class="editor-actions" style="justify-content:flex-end; margin-bottom:24px;">
+        <button type="button" class="admin-btn-secondary" id="testWhatsappBtn">🔔 სატესტო შეტყობინება — Send test</button>
+        <button type="button" class="admin-btn-primary" id="saveWhatsappSettingsBtn">Save — შენახვა</button>
+      </div>
+
       <h3 class="settings-group-title">Homepage Text — მთავარი გვერდის ტექსტი</h3>
       <div class="lang-tabs">
         <button type="button" class="lang-tab-btn settings-lang-tab active" data-lang="en">English</button>
