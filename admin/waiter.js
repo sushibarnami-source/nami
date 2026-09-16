@@ -205,6 +205,7 @@
     waiterTableTitle.textContent = `მაგიდა ${n} — Table ${n}`;
     openCheckoutBtn.hidden = false;
     takeoutCustomerFields.hidden = true;
+    wPackagingSection.hidden = true;
     tablesScreen.hidden = true;
     orderScreen.hidden = false;
     renderOpenOrdersForTable();
@@ -225,12 +226,13 @@
     takeoutCustomerPhone.value = '';
     takeoutCustomerAddress.value = '';
     takeoutDeliveryFee.value = '';
+    wPackagingSection.hidden = false;
     tablesScreen.hidden = true;
     orderScreen.hidden = false;
     renderOpenOrdersForTable();
 
     if (!menuLoaded) await loadMenu();
-    if (menuLoaded) renderMenu(currentCategory);
+    if (menuLoaded) { renderMenu(currentCategory); renderPackaging(); }
   }
 
   takeoutBtn.addEventListener('click', () => selectTakeout());
@@ -266,15 +268,14 @@
     if (qty <= 0) delete cart[item.id];
     else cart[item.id] = { item, qty };
     renderCart();
-    const el = wMenuGrid.querySelector(`[data-item-id="${item.id}"] .qty-value`);
+    // Search the whole page, not just one grid — this item's card could
+    // be in the food menu grid or the packaging grid.
+    const el = document.querySelector(`[data-item-id="${item.id}"] .qty-value`);
     if (el) el.textContent = qtyFor(item.id);
   }
 
-  function renderMenu(category) {
-    currentCategory = category;
-    const items = menuItems.filter(i => i.category === category);
-    if (!items.length) { wMenuGrid.innerHTML = '<p class="menu-empty">ამ კატეგორიაში კერძები არ არის.</p>'; return; }
-    wMenuGrid.innerHTML = items.map(item => `
+  function itemCardHtml(item) {
+    return `
       <article class="menu-item" data-item-id="${item.id}">
         <div class="menu-item-top">
           <h3 class="menu-item-name">${escapeHtml(item.name.ka || item.name.en)}</h3>
@@ -286,17 +287,39 @@
           <button type="button" class="qty-btn" data-qty-plus>+</button>
         </div>
       </article>
-    `).join('');
+    `;
   }
 
-  wMenuGrid.addEventListener('click', (e) => {
+  function renderMenu(category) {
+    currentCategory = category;
+    const items = menuItems.filter(i => i.category === category);
+    if (!items.length) { wMenuGrid.innerHTML = '<p class="menu-empty">ამ კატეგორიაში კერძები არ არის.</p>'; return; }
+    wMenuGrid.innerHTML = items.map(itemCardHtml).join('');
+  }
+
+  function onQtyGridClick(e) {
     const card = e.target.closest('.menu-item');
     if (!card) return;
     const item = menuItems.find(i => i.id === card.dataset.itemId);
     if (!item) return;
     if (e.target.closest('[data-qty-plus]')) setQty(item, qtyFor(item.id) + 1);
     else if (e.target.closest('[data-qty-minus]')) setQty(item, Math.max(0, qtyFor(item.id) - 1));
-  });
+  }
+
+  wMenuGrid.addEventListener('click', onQtyGridClick);
+
+  /* ---------------------------------------------------------
+     Packaging — containers/bags added to takeout orders only
+  --------------------------------------------------------- */
+  const wPackagingSection = document.getElementById('wPackagingSection');
+  const wPackagingGrid = document.getElementById('wPackagingGrid');
+
+  function renderPackaging() {
+    const items = menuItems.filter(i => i.category === 'packaging');
+    wPackagingGrid.innerHTML = items.map(itemCardHtml).join('');
+  }
+
+  wPackagingGrid.addEventListener('click', onQtyGridClick);
 
   wMenuTabs.addEventListener('click', (e) => {
     const btn = e.target.closest('.menu-tab');
