@@ -552,6 +552,7 @@
           </div>
           <div class="post-row-actions">
             <button class="admin-btn-secondary" data-print-order="${o.id}">Print — ბეჭდვა</button>
+            <button class="admin-btn-danger" data-delete-order="${o.id}">Delete — წაშლა</button>
           </div>
         </div>
       `;
@@ -561,9 +562,21 @@
   salesPeriodFilter.addEventListener('change', renderSalesList);
   document.getElementById('refreshSalesBtn').addEventListener('click', () => loadOrders());
 
-  salesListEl.addEventListener('click', (e) => {
+  salesListEl.addEventListener('click', async (e) => {
     const printBtn = e.target.closest('[data-print-order]');
-    if (printBtn) printOrder(orders.find(o => o.id === printBtn.dataset.printOrder));
+    if (printBtn) { printOrder(orders.find(o => o.id === printBtn.dataset.printOrder)); return; }
+
+    const delBtn = e.target.closest('[data-delete-order]');
+    if (delBtn) {
+      if (!window.confirm('Delete this sale? This cannot be undone. — წავშალო გაყიდვა? დაბრუნება შეუძლებელია.')) return;
+      const id = delBtn.dataset.deleteOrder;
+      const { error } = await supabaseClient.from('orders').delete().eq('id', id);
+      if (error) { showToast(`Couldn't delete: ${error.message} — ვერ წაიშალა`, true); return; }
+      orders = orders.filter(o => o.id !== id);
+      knownOrderIds.delete(id);
+      renderOrderList();
+      renderOrderStats(); renderSalesList();
+    }
   });
 
   orderListEl.addEventListener('change', async (e) => {
