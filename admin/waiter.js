@@ -16,6 +16,7 @@
   let currentTable = null;
   let currentOrderType = 'dine_in'; // 'dine_in' | 'takeout'
   const cart = {}; // menu_item id -> { item, qty }
+  let allOrders = []; // for the Orders/Sales tabs — every order (not just open ones)
 
   const toastEl = document.getElementById('toast');
   const tableGridEl = document.getElementById('tableGrid');
@@ -569,6 +570,267 @@
   });
 
   /* ---------------------------------------------------------
+     Main tabs: Tables / Orders / Sales
+  --------------------------------------------------------- */
+  const waiterTabPanes = {
+    tables: document.getElementById('waiterTablesPane'),
+    orders: document.getElementById('waiterOrdersPane'),
+    sales: document.getElementById('waiterSalesPane'),
+  };
+  document.querySelectorAll('.admin-main-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.admin-main-tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+      const key = btn.dataset.wtab;
+      Object.entries(waiterTabPanes).forEach(([k, pane]) => { pane.hidden = k !== key; });
+      if (key === 'orders' || key === 'sales') loadAllOrders();
+    });
+  });
+
+  /* ---------------------------------------------------------
+     Orders tab — every order, with a status dropdown so a waiter
+     can move it along and "close" it themselves (pick Paid).
+     Sales tab — a read-only log of paid orders, same as dashboard.
+  --------------------------------------------------------- */
+  const ORDER_STATUSES = ['new', 'preparing', 'ready', 'served', 'paid', 'cancelled'];
+  const ORDER_STATUS_LABELS = {
+    new: 'New — ახალი',
+    preparing: 'Preparing — მზადდება',
+    ready: 'Ready — მზადაა',
+    served: 'Served — მიწოდებული',
+    paid: 'Paid — გადახდილი',
+    cancelled: 'Cancelled — გაუქმებული',
+  };
+
+  const waiterOrderListEl = document.getElementById('waiterOrderList');
+  const waiterOrderStatusFilter = document.getElementById('waiterOrderStatusFilter');
+  const waiterNewOrderBadgeEl = document.getElementById('waiterNewOrderBadge');
+  const waiterSalesListEl = document.getElementById('waiterSalesList');
+  const waiterSalesPeriodFilter = document.getElementById('waiterSalesPeriodFilter');
+
+  function orderTotal(order) {
+    const itemsTotal = (order.items || []).reduce((sum, it) => sum + parsePrice(it.price) * it.quantity, 0);
+    return itemsTotal + (Number(order.delivery_fee) || 0);
+  }
+  function formatOrderDate(iso) {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    return d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+
+  async function loadAllOrders() {
+    waiterOrderListEl.innerHTML = '<p class="admin-loading">Loading orders… — იტვირთება...</p>';
+    const { data: orderRows, error } = await supabaseClient
+      .from('orders')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(200);
+
+    if (error) {
+      waiterOrderListEl.innerHTML = `<p class="admin-empty">Couldn't load orders: ${escapeHtml(error.message)} — ვერ ჩაიტვირთა</p>`;
+      return;
+    }
+
+    const orderIds = (orderRows || []).map(o => o.id);
+    const { data: itemRows } = await supabaseClient
+      .from('order_items')
+      .select('*')
+      .in('order_id', orderIds.length ? orderIds : ['00000000-0000-0000-0000-000000000000']);
+
+    const itemsByOrder = {};
+    (itemRows || []).forEach(it => { (itemsByOrder[it.order_id] = itemsByOrder[it.order_id] || []).push(it); });
+
+    allOrders = (orderRows || []).map(o => ({ ...o, items: itemsByOrder[o.id] || [] }));
+    renderWaiterOrderList();
+    renderWaiterOrderStats();
+    renderWaiterSalesList();
+  }
+
+  function renderWaiterOrderList() {
+    const filter = waiterOrderStatusFilter.value;
+    let filtered = allOrders;
+    if (filter === '') filtered = allOrders.filter(o => o.status !== 'paid' && o.status !== 'cancelled');
+    else if (filter !== 'everything') filtered = allOrders.filter(o => o.status === filter);
+
+    if (!filtered.length) {
+      waiterOrderListEl.innerHTML = '<p class="admin-empty">No orders here. — შეკვეთები არ არის.</p>';
+      return;
+    }
+
+    waiterOrderListEl.innerHTML = filtered.map(o => {
+      const itemsHtml = (o.items || [])
+        .map(it => `<li>${it.quantity}× ${escapeHtml(it.name_ka || it.name_en)} — ${escapeHtml(it.price)}</li>`)
+        .join('');
+      const statusOptions = ORDER_STATUSES
+        .map(s => `<option value="${s}" ${s === o.status ? 'selected' : ''}>${ORDER_STATUS_LABELS[s]}</option>`)
+        .join('');
+      return `
+        <div class="post-row order-row status-${o.status}">
+          <div class="post-row-icon">${o.order_type === 'takeout' ? '🥡' : '🍣'}</div>
+          <div class="post-row-main">
+            <p class="post-row-title">
+              ${o.order_type === 'takeout'
+                ? `Takeout — გასატანი${o.customer_name ? ` (${escapeHtml(o.customer_name)})` : ''}`
+                : `Table ${o.table_number} — მაგიდა ${o.table_number}`}
+              <span class="post-row-badge status-${o.status}">${ORDER_STATUS_LABELS[o.status]}</span>
+            </p>
+            ${o.order_type === 'takeout' && o.customer_phone ? `<p class="post-row-meta">📞 ${escapeHtml(o.customer_phone)}</p>` : ''}
+            ${o.order_type === 'takeout' && o.customer_address ? `<p class="post-row-meta">📍 ${escapeHtml(o.customer_address)}</p>` : ''}
+            ${o.order_type === 'takeout' ? `<p class="post-row-meta">🚕 მიწოდება: <input type="number" step="0.01" min="0" class="order-delivery-fee-input" data-order-delivery-fee="${o.id}" value="${Number(o.delivery_fee) || 0}" style="width:80px; padding:2px 6px; border-radius:4px; border:1px solid var(--border); font-family:var(--font-body);"> ₾</p>` : ''}
+            <p class="post-row-meta">${formatOrderDate(o.created_at)} · <span class="order-row-total">${formatMoney(orderTotal(o))}</span></p>
+            <ul class="order-items-list">${itemsHtml}</ul>
+            ${o.note ? `<p class="order-note">📝 ${escapeHtml(o.note)}</p>` : ''}
+          </div>
+          <div class="post-row-actions">
+            <select class="order-status-select" data-order-status="${o.id}">${statusOptions}</select>
+            <button class="admin-btn-secondary" data-print-order="${o.id}">Print — ბეჭდვა</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderWaiterOrderStats() {
+    document.getElementById('waiterStatNewOrders').textContent = allOrders.filter(o => o.status === 'new').length;
+    document.getElementById('waiterStatPreparingOrders').textContent = allOrders.filter(o => o.status === 'preparing').length;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const paidToday = allOrders.filter(o => o.status === 'paid' && new Date(o.created_at) >= today);
+    document.getElementById('waiterStatTodayRevenue').textContent = formatMoney(paidToday.reduce((sum, o) => sum + orderTotal(o), 0));
+
+    const newCount = allOrders.filter(o => o.status === 'new').length;
+    waiterNewOrderBadgeEl.hidden = newCount === 0;
+    waiterNewOrderBadgeEl.textContent = String(newCount);
+  }
+
+  function periodStart(period) {
+    const d = new Date();
+    if (period === 'today') { d.setHours(0, 0, 0, 0); return d; }
+    if (period === 'week') { d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - d.getDay()); return d; }
+    if (period === 'month') { d.setHours(0, 0, 0, 0); d.setDate(1); return d; }
+    return null; // all time
+  }
+
+  function renderWaiterSalesList() {
+    const start = periodStart(waiterSalesPeriodFilter.value);
+    const sold = allOrders
+      .filter(o => o.status === 'paid')
+      .filter(o => !start || new Date(o.created_at) >= start)
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    document.getElementById('waiterStatSalesCount').textContent = String(sold.length);
+    document.getElementById('waiterStatSalesRevenue').textContent = formatMoney(sold.reduce((sum, o) => sum + orderTotal(o), 0));
+
+    if (!sold.length) {
+      waiterSalesListEl.innerHTML = '<p class="admin-empty">No sales in this period. — ამ პერიოდში გაყიდვები არ არის.</p>';
+      return;
+    }
+
+    waiterSalesListEl.innerHTML = sold.map(o => {
+      const itemsHtml = (o.items || [])
+        .map(it => `<li>${it.quantity}× ${escapeHtml(it.name_ka || it.name_en)} — ${escapeHtml(it.price)}</li>`)
+        .join('');
+      return `
+        <div class="post-row order-row status-paid">
+          <div class="post-row-icon">${o.order_type === 'takeout' ? '🥡' : '🍣'}</div>
+          <div class="post-row-main">
+            <p class="post-row-title">
+              ${o.order_type === 'takeout'
+                ? `Takeout — გასატანი${o.customer_name ? ` (${escapeHtml(o.customer_name)})` : ''}`
+                : `Table ${o.table_number} — მაგიდა ${o.table_number}`}
+            </p>
+            <p class="post-row-meta">${formatOrderDate(o.created_at)} · <span class="order-row-total">${formatMoney(orderTotal(o))}</span></p>
+            <ul class="order-items-list">${itemsHtml}</ul>
+          </div>
+          <div class="post-row-actions">
+            <button class="admin-btn-secondary" data-print-order="${o.id}">Print — ბეჭდვა</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function buildOrderReceiptHtml(order) {
+    const itemsHtml = (order.items || []).map(it => `
+      <tr>
+        <td>${it.quantity}×</td>
+        <td>${escapeHtml(it.name_ka || it.name_en)}</td>
+        <td>${formatMoney(parsePrice(it.price) * it.quantity)}</td>
+      </tr>
+    `).join('');
+    return `
+      <div class="receipt">
+        <div class="receipt-header">
+          <p class="receipt-logo">NAMI • ნამი</p>
+          <p>სუში ბარი</p>
+        </div>
+        <p class="receipt-table">${order.order_type === 'takeout'
+          ? `🥡 გასატანი${order.customer_name ? ` — ${escapeHtml(order.customer_name)}` : ''}`
+          : `მაგიდა #${order.table_number}`}</p>
+        ${order.order_type === 'takeout' && order.customer_address ? `<p class="receipt-note">📍 ${escapeHtml(order.customer_address)}</p>` : ''}
+        <p class="receipt-meta">${formatOrderDate(order.created_at)} · #${order.id.slice(0, 8)}</p>
+        <hr>
+        <table class="receipt-items">${itemsHtml}</table>
+        ${order.order_type === 'takeout' && Number(order.delivery_fee) > 0 ? `
+        <table class="receipt-items">
+          <tr><td>🚕</td><td>მიწოდება — Delivery</td><td>${formatMoney(Number(order.delivery_fee))}</td></tr>
+        </table>` : ''}
+        <hr>
+        <p class="receipt-total">სულ: ${formatMoney(orderTotal(order))}</p>
+        ${order.note ? `<p class="receipt-note">შენიშვნა: ${escapeHtml(order.note)}</p>` : ''}
+        <p class="receipt-footer">გმადლობთ! 🙏</p>
+      </div>
+    `;
+  }
+  function printOrderReceipt(order) {
+    if (!order) return;
+    printHtml(buildOrderReceiptHtml(order));
+  }
+
+  waiterOrderStatusFilter.addEventListener('change', renderWaiterOrderList);
+  waiterSalesPeriodFilter.addEventListener('change', renderWaiterSalesList);
+  document.getElementById('waiterRefreshOrdersBtn').addEventListener('click', () => loadAllOrders());
+  document.getElementById('waiterRefreshSalesBtn').addEventListener('click', () => loadAllOrders());
+
+  waiterOrderListEl.addEventListener('change', async (e) => {
+    const sel = e.target.closest('[data-order-status]');
+    if (sel) {
+      const id = sel.dataset.orderStatus;
+      const { error } = await supabaseClient.from('orders').update({ status: sel.value }).eq('id', id);
+      if (error) { showToast(`Couldn't update: ${error.message} — ვერ განახლდა`, true); return; }
+      const o = allOrders.find(x => x.id === id);
+      if (o) o.status = sel.value;
+      renderWaiterOrderList();
+      renderWaiterOrderStats();
+      renderWaiterSalesList();
+      return;
+    }
+
+    const feeInput = e.target.closest('[data-order-delivery-fee]');
+    if (feeInput) {
+      const id = feeInput.dataset.orderDeliveryFee;
+      const fee = Number(feeInput.value) || 0;
+      const { error } = await supabaseClient.from('orders').update({ delivery_fee: fee }).eq('id', id);
+      if (error) { showToast(`Couldn't update: ${error.message} — ვერ განახლდა`, true); return; }
+      const o = allOrders.find(x => x.id === id);
+      if (o) o.delivery_fee = fee;
+      renderWaiterOrderList();
+      renderWaiterOrderStats();
+      renderWaiterSalesList();
+    }
+  });
+
+  waiterOrderListEl.addEventListener('click', (e) => {
+    const printBtn = e.target.closest('[data-print-order]');
+    if (printBtn) printOrderReceipt(allOrders.find(o => o.id === printBtn.dataset.printOrder));
+  });
+
+  waiterSalesListEl.addEventListener('click', (e) => {
+    const printBtn = e.target.closest('[data-print-order]');
+    if (printBtn) printOrderReceipt(allOrders.find(o => o.id === printBtn.dataset.printOrder));
+  });
+
+  /* ---------------------------------------------------------
      "Order ready" ping — from the kitchen back to this waiter
   --------------------------------------------------------- */
   const readyBannerEl = document.getElementById('readyBanner');
@@ -609,9 +871,27 @@
     renderReadyBanner();
   });
 
+  function refreshWaiterOrdersTabsIfVisible() {
+    if (!waiterTabPanes.orders.hidden) { renderWaiterOrderList(); renderWaiterOrderStats(); }
+    if (!waiterTabPanes.sales.hidden) renderWaiterSalesList();
+  }
+
+  async function handleIncomingOrderForTabs(newOrderRow) {
+    if (allOrders.some(o => o.id === newOrderRow.id)) return;
+    // order_items are inserted right after the order row — give them a
+    // moment to land before fetching, same as the admin dashboard.
+    await new Promise(resolve => setTimeout(resolve, 900));
+    const { data: itemRows } = await supabaseClient.from('order_items').select('*').eq('order_id', newOrderRow.id);
+    allOrders.unshift({ ...newOrderRow, items: itemRows || [] });
+    refreshWaiterOrdersTabsIfVisible();
+  }
+
   function subscribeToReadyOrders() {
     if (!supabaseClient || typeof supabaseClient.channel !== 'function') return;
     supabaseClient.channel('waiter-ready-orders')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' }, (payload) => {
+        handleIncomingOrderForTabs(payload.new);
+      })
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, (payload) => {
         const o = payload.new;
         const isTakeout = o.order_type === 'takeout';
@@ -624,11 +904,19 @@
         if (!tablesScreen.hidden) renderTableGrid();
         if (isTakeout ? currentOrderType === 'takeout' : currentTable === o.table_number) renderOpenOrdersForTable();
 
+        const inAllOrders = allOrders.find(x => x.id === o.id);
+        if (inAllOrders) Object.assign(inAllOrders, o);
+        refreshWaiterOrdersTabsIfVisible();
+
         if (o.created_by === currentUser.email && o.status === 'ready' && payload.old.status !== 'ready') {
           readyTables.add(isTakeout ? 'takeout' : o.table_number);
           renderReadyBanner();
           playReadyBeep();
         }
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'orders' }, (payload) => {
+        allOrders = allOrders.filter(o => o.id !== payload.old.id);
+        refreshWaiterOrdersTabsIfVisible();
       })
       .subscribe();
   }

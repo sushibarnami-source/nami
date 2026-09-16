@@ -21,7 +21,14 @@
 
 <div id="readyBanner" class="ready-banner" hidden></div>
 
-<div class="admin-container waiter-container">
+<div class="admin-container">
+  <div class="admin-main-tabs">
+    <button type="button" class="admin-main-tab-btn active" data-wtab="tables">მაგიდები — Tables</button>
+    <button type="button" class="admin-main-tab-btn" data-wtab="orders">შეკვეთები — Orders <span id="waiterNewOrderBadge" class="admin-tab-badge" hidden></span></button>
+    <button type="button" class="admin-main-tab-btn" data-wtab="sales">გაყიდვები — Sales</button>
+  </div>
+
+<div class="admin-tab-pane waiter-container" id="waiterTablesPane">
 
   <!-- ================= TABLE PICKER ================= -->
   <section id="waiterTablesScreen">
@@ -64,6 +71,81 @@
     </div>
     <div class="menu-grid order-menu-grid" id="wMenuGrid"></div>
   </section>
+</div>
+
+<!-- ================= ORDERS TAB ================= -->
+<div class="admin-tab-pane" id="waiterOrdersPane" hidden>
+  <div class="admin-toolbar">
+    <h2>შეკვეთები — Orders</h2>
+    <button type="button" class="admin-btn-secondary" id="waiterRefreshOrdersBtn">⟳ განახლება — Refresh</button>
+  </div>
+
+  <div class="stat-cards" id="waiterOrderStats">
+    <div class="stat-card">
+      <p class="stat-card-value" id="waiterStatNewOrders">–</p>
+      <p class="stat-card-label">New — ახალი</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-card-value" id="waiterStatPreparingOrders">–</p>
+      <p class="stat-card-label">Preparing — მზადდება</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-card-value" id="waiterStatTodayRevenue">–</p>
+      <p class="stat-card-label">Paid today — გადახდილი დღეს</p>
+    </div>
+  </div>
+
+  <div class="editor-field" style="max-width:240px; margin-bottom:16px;">
+    <label for="waiterOrderStatusFilter">Filter — ფილტრი</label>
+    <select id="waiterOrderStatusFilter">
+      <option value="">Active — აქტიური</option>
+      <option value="new">New — ახალი</option>
+      <option value="preparing">Preparing — მზადდება</option>
+      <option value="served">Served — მიწოდებული</option>
+      <option value="paid">Paid — გადახდილი</option>
+      <option value="cancelled">Cancelled — გაუქმებული</option>
+      <option value="everything">Everything — ყველაფერი</option>
+    </select>
+  </div>
+
+  <div id="waiterOrderList" class="post-list">
+    <p class="admin-loading">Loading orders… — იტვირთება...</p>
+  </div>
+</div>
+
+<!-- ================= SALES TAB ================= -->
+<div class="admin-tab-pane" id="waiterSalesPane" hidden>
+  <div class="admin-toolbar">
+    <h2>გაყიდვები — Sales</h2>
+    <button type="button" class="admin-btn-secondary" id="waiterRefreshSalesBtn">⟳ განახლება — Refresh</button>
+  </div>
+
+  <div class="editor-field" style="max-width:240px; margin-bottom:16px;">
+    <label for="waiterSalesPeriodFilter">Period — პერიოდი</label>
+    <select id="waiterSalesPeriodFilter">
+      <option value="today">Today — დღეს</option>
+      <option value="week">This week — ამ კვირას</option>
+      <option value="month">This month — ამ თვეს</option>
+      <option value="all">All time — ყველა დრო</option>
+    </select>
+  </div>
+
+  <div class="stat-cards" id="waiterSalesStats">
+    <div class="stat-card">
+      <p class="stat-card-value" id="waiterStatSalesCount">–</p>
+      <p class="stat-card-label">Orders sold — გაყიდული შეკვეთა</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-card-value" id="waiterStatSalesRevenue">–</p>
+      <p class="stat-card-label">Total revenue — ჯამური შემოსავალი</p>
+    </div>
+  </div>
+
+  <div id="waiterSalesList" class="post-list">
+    <p class="admin-loading">Loading… — იტვირთება...</p>
+  </div>
+</div>
+
 </div>
 
 <!-- ================= CART BAR ================= -->
