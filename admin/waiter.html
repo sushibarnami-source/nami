@@ -202,6 +202,40 @@
   </div>
 </div>
 
+<!-- ================= Order detail overlay ================= -->
+<div class="editor-overlay" id="orderDetailOverlay" hidden>
+  <div class="editor-panel" style="max-width:560px;">
+    <h2 id="orderDetailHeading">Order — შეკვეთა</h2>
+    <p class="content-help" id="orderDetailMeta" style="margin-bottom:14px;"></p>
+
+    <div id="orderDetailItems"></div>
+    <div class="order-cart-total-row">
+      <span>ჯამი — Total</span>
+      <span id="orderDetailTotal">0.00 ₾</span>
+    </div>
+
+    <div id="orderDetailAddSection" style="margin-top:20px;">
+      <label for="orderDetailAddItem">Add item — კერძის დამატება</label>
+      <div class="editor-row" style="align-items:flex-start;">
+        <div class="editor-field" style="flex:2;">
+          <input type="text" id="orderDetailAddItem" list="orderMenuItemDatalist" placeholder="ძებნა — Search dish…" autocomplete="off">
+        </div>
+        <div class="editor-field" style="max-width:90px;">
+          <input type="number" id="orderDetailAddQty" min="1" step="1" value="1">
+        </div>
+        <button type="button" class="admin-btn-secondary" id="orderDetailAddBtn" style="margin-top:2px;">+ დამატება — Add</button>
+      </div>
+      <datalist id="orderMenuItemDatalist"></datalist>
+      <p class="login-error" id="orderDetailAddError" style="color:var(--red); font-size:.85rem;"></p>
+    </div>
+    <p class="content-help" id="orderDetailLockedNote" hidden>ეს შეკვეთა დახურულია/გაუქმებულია — ვეღარ დაემატება ახალი კერძი. — This order is closed; items can no longer be added.</p>
+
+    <div class="editor-actions" style="justify-content:flex-end; margin-top:18px;">
+      <button type="button" class="admin-btn-secondary" id="closeOrderDetailBtn">Close — დახურვა</button>
+    </div>
+  </div>
+</div>
+
 <div id="printArea"></div>
 <div class="admin-toast" id="toast" hidden></div>
 
