@@ -494,6 +494,14 @@ body.is-printing #printArea { display: block !important; }
   line-height: 1;
   font-size: .75rem;
 }
+.ready-banner-item.new-order-alert {
+  background: var(--gold);
+  color: var(--ink);
+}
+.ready-banner-item.new-order-alert button {
+  background: rgba(17,36,28,.15);
+  color: var(--ink);
+}
 
 .waiter-open-orders-box {
   background: var(--paper);

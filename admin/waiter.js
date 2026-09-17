@@ -858,6 +858,7 @@
   --------------------------------------------------------- */
   const readyBannerEl = document.getElementById('readyBanner');
   const readyTables = new Set();
+  const newOrderAlerts = new Map(); // order id -> label, for self-placed (QR/online) orders
 
   function playReadyBeep() {
     try {
@@ -873,29 +874,59 @@
     } catch (e) { /* audio unavailable */ }
   }
 
+  function playNewOrderBeep() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [523, 659].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.frequency.value = freq;
+        gain.gain.value = 0.18;
+        osc.connect(gain).connect(ctx.destination);
+        const start = ctx.currentTime + i * 0.16;
+        osc.start(start);
+        osc.stop(start + 0.14);
+        if (i === 1) osc.onended = () => ctx.close();
+      });
+    } catch (e) { /* audio unavailable */ }
+  }
+
   function renderReadyBanner() {
-    if (!readyTables.size) { readyBannerEl.hidden = true; return; }
-    const entries = Array.from(readyTables).sort((a, b) => {
+    if (!readyTables.size && !newOrderAlerts.size) { readyBannerEl.hidden = true; return; }
+    const readyEntries = Array.from(readyTables).sort((a, b) => {
       if (a === 'takeout') return -1;
       if (b === 'takeout') return 1;
       return a - b;
-    });
-    readyBannerEl.innerHTML = entries.map(n => `
+    }).map(n => `
       <span class="ready-banner-item">${n === 'takeout' ? '🥡 გასატანი მზადაა' : `🔔 მაგიდა ${n} მზადაა`} <button type="button" data-dismiss-ready="${n}">✕</button></span>
-    `).join('');
+    `);
+    const newOrderEntries = Array.from(newOrderAlerts.entries()).map(([id, label]) => `
+      <span class="ready-banner-item new-order-alert">🆕 ${escapeHtml(label)} <button type="button" data-dismiss-new-order="${id}">✕</button></span>
+    `);
+    readyBannerEl.innerHTML = readyEntries.concat(newOrderEntries).join('');
     readyBannerEl.hidden = false;
   }
 
   readyBannerEl.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-dismiss-ready]');
-    if (!btn) return;
-    const val = btn.dataset.dismissReady;
-    readyTables.delete(val === 'takeout' ? 'takeout' : parseInt(val, 10));
-    renderReadyBanner();
+    const readyBtn = e.target.closest('[data-dismiss-ready]');
+    if (readyBtn) {
+      const val = readyBtn.dataset.dismissReady;
+      readyTables.delete(val === 'takeout' ? 'takeout' : parseInt(val, 10));
+      renderReadyBanner();
+      return;
+    }
+    const newOrderBtn = e.target.closest('[data-dismiss-new-order]');
+    if (newOrderBtn) {
+      newOrderAlerts.delete(newOrderBtn.dataset.dismissNewOrder);
+      renderReadyBanner();
+    }
   });
 
   function refreshWaiterOrdersTabsIfVisible() {
-    if (!waiterTabPanes.orders.hidden) { renderWaiterOrderList(); renderWaiterOrderStats(); }
+    // The badge lives in the tab bar itself, so it should stay accurate
+    // no matter which pane is currently showing.
+    renderWaiterOrderStats();
+    if (!waiterTabPanes.orders.hidden) renderWaiterOrderList();
     if (!waiterTabPanes.sales.hidden) renderWaiterSalesList();
   }
 
@@ -905,8 +936,31 @@
     // moment to land before fetching, same as the admin dashboard.
     await new Promise(resolve => setTimeout(resolve, 900));
     const { data: itemRows } = await supabaseClient.from('order_items').select('*').eq('order_id', newOrderRow.id);
-    allOrders.unshift({ ...newOrderRow, items: itemRows || [] });
+    const order = { ...newOrderRow, items: itemRows || [] };
+    allOrders.unshift(order);
     refreshWaiterOrdersTabsIfVisible();
+
+    // Keep the Tables screen's open-orders cache in sync too, so a
+    // table's badge/"already sent" list updates live without a manual
+    // refresh — this matters most for orders customers place themselves
+    // via the table QR code, since no waiter typed them in.
+    const isTakeout = order.order_type === 'takeout';
+    if (isTakeout) openTakeoutOrders.push(order);
+    else (openOrdersByTable[order.table_number] = openOrdersByTable[order.table_number] || []).push(order);
+    if (!tablesScreen.hidden) renderTableGrid();
+    if (isTakeout ? currentOrderType === 'takeout' : currentTable === order.table_number) renderOpenOrdersForTable();
+
+    // No created_by means a customer placed this themselves (QR order),
+    // not a waiter — surface it with a banner + sound so staff notice
+    // right away, whichever tab they're on.
+    if (!order.created_by) {
+      const label = isTakeout
+        ? `გასატანი — ონლაინ შეკვეთა${order.customer_name ? ` (${order.customer_name})` : ''}`
+        : `მაგიდა ${order.table_number} — ონლაინ შეკვეთა`;
+      newOrderAlerts.set(order.id, label);
+      renderReadyBanner();
+      playNewOrderBeep();
+    }
   }
 
   function subscribeToReadyOrders() {
@@ -939,6 +993,7 @@
       })
       .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'orders' }, (payload) => {
         allOrders = allOrders.filter(o => o.id !== payload.old.id);
+        if (newOrderAlerts.delete(payload.old.id)) renderReadyBanner();
         refreshWaiterOrdersTabsIfVisible();
       })
       .subscribe();
