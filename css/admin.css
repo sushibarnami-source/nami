@@ -159,6 +159,7 @@ body.admin-body {
   color: var(--muted);
 }
 .post-row-badge.is-published { background: var(--green-light); color: var(--green-deep); }
+.post-row-value { font-size: 1.05rem; font-weight: 700; color: var(--ink); white-space: nowrap; text-align: right; }
 .post-row-actions { display: flex; flex-wrap: wrap; gap: 8px; flex-shrink: 0; }
 .post-row-reorder { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
 .post-row-reorder .admin-btn-secondary { padding: 2px 10px; line-height: 1.4; font-size: .78rem; }
