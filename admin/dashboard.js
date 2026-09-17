@@ -1390,7 +1390,7 @@
     sauces_condiments: 'სოუსები', dairy: 'რძის პროდ.', dry_goods: 'საშრობი',
     beverages: 'სასმელები', packaging: 'შეფუთვა', other: 'სხვა',
   };
-  const INV_MOVEMENT_LABELS = { restock: 'შემოსავალი', usage: 'მოხმარება', waste: 'დანაკარგი', adjustment: 'კორექტირება' };
+  const INV_MOVEMENT_LABELS = { restock: 'შემოსავალი', usage: 'მოხმარება', waste: 'დანაკარგი', adjustment: 'კორექტირება', count: 'ინვენტარიზაცია' };
 
   const inventoryListEl = document.getElementById('inventoryList');
   const itemOverlay = document.getElementById('itemEditorOverlay');
@@ -1612,8 +1612,15 @@
 
   function updateMovementLabel() {
     const type = document.getElementById('mType').value;
-    document.getElementById('mQuantityLabel').textContent =
-      type === 'adjustment' ? 'Amount (use a negative number to subtract) — რაოდენობა (გამოსაკლებად გამოიყენეთ მინუსი)' : 'Amount — რაოდენობა';
+    const qtyInput = document.getElementById('mQuantity');
+    if (type === 'count') {
+      document.getElementById('mQuantityLabel').textContent = 'New total on hand — ახალი ჯამური რაოდენობა';
+      const item = inventoryItems.find(i => i.id === movementItemId);
+      if (item && !qtyInput.value) qtyInput.value = item.quantity;
+    } else {
+      document.getElementById('mQuantityLabel').textContent =
+        type === 'adjustment' ? 'Amount (use a negative number to subtract) — რაოდენობა (გამოსაკლებად გამოიყენეთ მინუსი)' : 'Amount — რაოდენობა';
+    }
   }
   document.getElementById('mType').addEventListener('change', updateMovementLabel);
 
@@ -1627,16 +1634,22 @@
     if (!item) return;
 
     const type = document.getElementById('mType').value;
-    const rawAmount = Number(document.getElementById('mQuantity').value);
-    if (!rawAmount) {
+    const qtyRaw = document.getElementById('mQuantity').value;
+    const rawAmount = Number(qtyRaw);
+    if (qtyRaw.trim() === '' || (type !== 'count' && !rawAmount)) {
       errorEl.textContent = 'Enter a non-zero amount. — შეიყვანეთ ნულისგან განსხვავებული რაოდენობა.';
       return;
     }
+    if (type === 'count' && rawAmount < 0) {
+      errorEl.textContent = 'Amount can\'t be negative. — რაოდენობა არ შეიძლება იყოს უარყოფითი.';
+      return;
+    }
 
-    const delta = type === 'adjustment' ? rawAmount
+    const delta = type === 'count' ? rawAmount - Number(item.quantity)
+      : type === 'adjustment' ? rawAmount
       : (type === 'restock' ? Math.abs(rawAmount) : -Math.abs(rawAmount));
 
-    const newQuantity = Number(item.quantity) + delta;
+    const newQuantity = type === 'count' ? rawAmount : Number(item.quantity) + delta;
     if (newQuantity < 0) {
       errorEl.textContent = `That would leave stock at ${formatQty(newQuantity)} ${item.unit}. Check the amount. — ამის შემდეგ მარაგი უარყოფითი გახდება, გადაამოწმეთ რაოდენობა.`;
       return;
