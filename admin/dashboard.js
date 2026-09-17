@@ -1547,12 +1547,6 @@
       return;
     }
 
-    const newQuantity = Number(document.getElementById('iQuantity').value) || 0;
-    if (newQuantity < 0) {
-      errorEl.textContent = 'Quantity can\'t be negative. — რაოდენობა არ შეიძლება იყოს უარყოფითი.';
-      return;
-    }
-
     const payload = {
       name,
       category: document.getElementById('iCategory').value,
