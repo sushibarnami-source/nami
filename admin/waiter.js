@@ -705,6 +705,7 @@
           </div>
           <div class="post-row-actions">
             <select class="order-status-select" data-order-status="${o.id}">${statusOptions}</select>
+            <button class="admin-btn-secondary" data-open-order="${o.id}">Open — გახსნა</button>
             <button class="admin-btn-secondary" data-print-order="${o.id}">Print — ბეჭდვა</button>
           </div>
         </div>
@@ -766,6 +767,7 @@
             <ul class="order-items-list">${itemsHtml}</ul>
           </div>
           <div class="post-row-actions">
+            <button class="admin-btn-secondary" data-open-order="${o.id}">Open — გახსნა</button>
             <button class="admin-btn-secondary" data-print-order="${o.id}">Print — ბეჭდვა</button>
           </div>
         </div>
@@ -844,13 +846,118 @@
   });
 
   waiterOrderListEl.addEventListener('click', (e) => {
+    const openBtn = e.target.closest('[data-open-order]');
+    if (openBtn) { openOrderDetail(openBtn.dataset.openOrder); return; }
     const printBtn = e.target.closest('[data-print-order]');
     if (printBtn) printOrderReceipt(allOrders.find(o => o.id === printBtn.dataset.printOrder));
   });
 
   waiterSalesListEl.addEventListener('click', (e) => {
+    const openBtn = e.target.closest('[data-open-order]');
+    if (openBtn) { openOrderDetail(openBtn.dataset.openOrder); return; }
     const printBtn = e.target.closest('[data-print-order]');
     if (printBtn) printOrderReceipt(allOrders.find(o => o.id === printBtn.dataset.printOrder));
+  });
+
+  /* ---------------------------------------------------------
+     Order detail overlay — full info, plus adding more items to
+     an order that's already been sent (before it's paid).
+  --------------------------------------------------------- */
+  const orderDetailOverlay = document.getElementById('orderDetailOverlay');
+  const orderDetailItemsEl = document.getElementById('orderDetailItems');
+  const orderDetailAddSection = document.getElementById('orderDetailAddSection');
+  const orderDetailLockedNote = document.getElementById('orderDetailLockedNote');
+  const orderDetailAddItem = document.getElementById('orderDetailAddItem');
+  const orderDetailAddQty = document.getElementById('orderDetailAddQty');
+  const orderDetailAddError = document.getElementById('orderDetailAddError');
+  let openOrderDetailId = null;
+
+  function renderOrderMenuDatalist() {
+    const datalist = document.getElementById('orderMenuItemDatalist');
+    datalist.innerHTML = menuItems
+      .map(i => `<option value="${escapeHtml(i.name.ka || i.name.en)}">`)
+      .join('');
+  }
+
+  function renderOrderDetail() {
+    const o = allOrders.find(x => x.id === openOrderDetailId);
+    if (!o) return;
+
+    document.getElementById('orderDetailHeading').textContent = o.order_type === 'takeout'
+      ? `🥡 გასატანი${o.customer_name ? ` — ${o.customer_name}` : ''}`
+      : `მაგიდა ${o.table_number} — Table ${o.table_number}`;
+
+    const metaParts = [ORDER_STATUS_LABELS[o.status], formatOrderDate(o.created_at)];
+    if (o.order_type === 'takeout' && o.customer_phone) metaParts.push(`📞 ${o.customer_phone}`);
+    if (o.order_type === 'takeout' && o.customer_address) metaParts.push(`📍 ${o.customer_address}`);
+    if (o.note) metaParts.push(`📝 ${o.note}`);
+    document.getElementById('orderDetailMeta').textContent = metaParts.filter(Boolean).join(' · ');
+
+    orderDetailItemsEl.innerHTML = (o.items || []).map(it => `
+      <div class="order-cart-row">
+        <span>${it.quantity}× ${escapeHtml(it.name_ka || it.name_en)}</span>
+        <span style="white-space:nowrap; font-weight:600;">${formatMoney(parsePrice(it.price) * it.quantity)}</span>
+      </div>
+    `).join('') || '<p class="admin-empty">No items. — კერძი არ არის.</p>';
+
+    document.getElementById('orderDetailTotal').textContent = formatMoney(orderTotal(o));
+
+    const locked = o.status === 'paid' || o.status === 'cancelled';
+    orderDetailAddSection.hidden = locked;
+    orderDetailLockedNote.hidden = !locked;
+  }
+
+  async function openOrderDetail(id) {
+    openOrderDetailId = id;
+    orderDetailAddItem.value = '';
+    orderDetailAddQty.value = '1';
+    orderDetailAddError.textContent = '';
+    if (!menuLoaded) await loadMenu();
+    renderOrderMenuDatalist();
+    renderOrderDetail();
+    orderDetailOverlay.hidden = false;
+  }
+
+  document.getElementById('closeOrderDetailBtn').addEventListener('click', () => { orderDetailOverlay.hidden = true; });
+
+  document.getElementById('orderDetailAddBtn').addEventListener('click', async () => {
+    orderDetailAddError.textContent = '';
+    const o = allOrders.find(x => x.id === openOrderDetailId);
+    if (!o) return;
+
+    const typed = orderDetailAddItem.value.trim();
+    const qty = Number(orderDetailAddQty.value) || 0;
+    if (!typed) { orderDetailAddError.textContent = 'აირჩიეთ კერძი სიიდან — pick a dish from the list'; return; }
+    if (qty <= 0) { orderDetailAddError.textContent = 'რაოდენობა 0-ზე მეტი უნდა იყოს — quantity must be above 0'; return; }
+
+    const item = menuItems.find(i => (i.name.ka || i.name.en).toLowerCase() === typed.toLowerCase());
+    if (!item) { orderDetailAddError.textContent = `"${typed}" ვერ მოიძებნა მენიუში — no such dish in the menu`; return; }
+
+    const addBtn = document.getElementById('orderDetailAddBtn');
+    addBtn.disabled = true;
+
+    const { data, error } = await supabaseClient.from('order_items').insert({
+      order_id: o.id,
+      menu_item_id: item.id,
+      name_en: item.name.en,
+      name_ka: item.name.ka,
+      name_ru: item.name.ru,
+      price: item.price,
+      quantity: qty,
+    }).select().single();
+
+    addBtn.disabled = false;
+    if (error) { orderDetailAddError.textContent = error.message; return; }
+
+    o.items = o.items || [];
+    o.items.push(data);
+    orderDetailAddItem.value = '';
+    orderDetailAddQty.value = '1';
+    renderOrderDetail();
+    renderWaiterOrderList();
+    renderWaiterOrderStats();
+    renderWaiterSalesList();
+    showToast('დაემატა — Added.');
   });
 
   /* ---------------------------------------------------------
