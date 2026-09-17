@@ -1152,11 +1152,13 @@
     } else {
       container.innerHTML = currentDishRecipeRows.map((row, idx) => {
         const selected = inventoryItems.find(i => i.id === row.inventory_item_id);
+        const lineCost = selected ? effectiveCostPerUnit(selected) * (Number(row.quantity) || 0) : 0;
         return `
           <div class="recipe-row" data-row-index="${idx}">
             <input type="text" data-recipe-item list="dIngredientDatalist" value="${escapeHtml(selected ? selected.name : '')}" placeholder="ძებნა — Search ingredient…" autocomplete="off">
             <input type="number" step="any" min="0" value="${row.quantity || ''}" data-recipe-qty placeholder="0">
             <span class="recipe-row-unit">${escapeHtml(selected ? selected.unit : '')}</span>
+            <span class="recipe-row-cost">${lineCost.toFixed(2)} ₾</span>
             <button type="button" class="recipe-row-remove" data-recipe-remove title="Remove ingredient">✕</button>
           </div>
         `;
@@ -1217,7 +1219,7 @@
       renderRecipeRows();
     } else if (e.target.matches('[data-recipe-qty]')) {
       currentDishRecipeRows[idx].quantity = Number(e.target.value) || 0;
-      updateRecipeCostSummary();
+      renderRecipeRows();
     }
   });
 
