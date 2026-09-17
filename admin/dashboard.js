@@ -1488,6 +1488,14 @@
   invLowStockOnly.addEventListener('change', renderInventoryList);
   invSortBy.addEventListener('change', renderInventoryList);
 
+  document.getElementById('statLowStockCard').addEventListener('click', () => {
+    invLowStockOnly.checked = true;
+    invCategoryFilter.value = '';
+    invSearch.value = '';
+    renderInventoryList();
+    inventoryListEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
   inventoryListEl.addEventListener('click', (e) => {
     const editBtn = e.target.closest('[data-edit-item]');
     if (editBtn) {

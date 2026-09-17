@@ -302,6 +302,8 @@ body.admin-body {
 .stat-card-value { font-size: 1.6rem; font-weight: 700; margin: 0 0 2px; color: var(--green-deep); }
 .stat-card-label { font-size: .78rem; color: var(--muted); margin: 0; }
 .stat-card.is-warning .stat-card-value { color: var(--red); }
+.stat-card.is-clickable { cursor: pointer; transition: border-color .15s, background .15s; }
+.stat-card.is-clickable:hover { border-color: var(--green); background: var(--paper); }
 
 .inventory-filters { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; margin-bottom: 18px; }
 
