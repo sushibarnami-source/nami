@@ -1397,6 +1397,7 @@
   const invCategoryFilter = document.getElementById('invCategoryFilter');
   const invSearch = document.getElementById('invSearch');
   const invLowStockOnly = document.getElementById('invLowStockOnly');
+  const invSortBy = document.getElementById('invSortBy');
 
   let inventoryItems = [];
   let editingItemId = null;
@@ -1443,6 +1444,10 @@
       return true;
     });
 
+    if (invSortBy.value === 'value_desc') {
+      filtered.sort((a, b) => (Number(b.quantity) * Number(b.cost_per_unit) || 0) - (Number(a.quantity) * Number(a.cost_per_unit) || 0));
+    }
+
     if (!filtered.length) {
       inventoryListEl.innerHTML = '<p class="admin-empty">No items match — click "New Item" to add stock to track. — შესატყვისი ნივთი არ არის, დააჭირეთ „New Item"-ს.</p>';
       return;
@@ -1454,6 +1459,7 @@
         <div class="post-row-main">
           <p class="post-row-title">${escapeHtml(i.name)}</p>
           <p class="post-row-qty">${formatQty(i.quantity)} ${escapeHtml(i.unit)} მარაგშია · მინ. ${formatQty(i.min_quantity)} ${escapeHtml(i.unit)}${i.supplier ? ` · ${escapeHtml(i.supplier)}` : ''}${Number(i.yield_pct) < 100 ? ` · გამოსავლიანობა ${formatQty(i.yield_pct)}% (ეფექტური ${effectiveCostPerUnit(i).toFixed(2)} ₾/${escapeHtml(i.unit)})` : ''}</p>
+          <p class="post-row-meta">ფასი: ${formatMoney(Number(i.cost_per_unit) || 0)}/${escapeHtml(i.unit)} · ჯამური ღირებულება: <strong>${formatMoney(Number(i.quantity) * Number(i.cost_per_unit) || 0)}</strong></p>
         </div>
         <span class="post-row-category">${escapeHtml(INV_CATEGORY_LABELS[i.category] || i.category)}</span>
         <span class="post-row-badge ${isLowStock(i) ? 'is-low-stock' : 'is-published'}">${isLowStock(i) ? 'დაბალი მარაგი' : 'წესრიგშია'}</span>
@@ -1475,6 +1481,7 @@
   invCategoryFilter.addEventListener('change', renderInventoryList);
   invSearch.addEventListener('input', renderInventoryList);
   invLowStockOnly.addEventListener('change', renderInventoryList);
+  invSortBy.addEventListener('change', renderInventoryList);
 
   inventoryListEl.addEventListener('click', (e) => {
     const editBtn = e.target.closest('[data-edit-item]');
