@@ -707,10 +707,10 @@
         <p class="content-help">რა ღირს 1 ერთეული (1კგ/1ც/1ლ) მომწოდებელთან — შესყიდვის ფასი, არა გასაყიდი.</p>
       </div>
       <div class="editor-field">
-        <label for="iYieldPct">Yield % (usable after trim/waste) — გამოსავლიანობა %</label>
-        <input type="number" id="iYieldPct" step="any" min="1" max="100" value="100">
-        <p class="content-help">E.g. 80 if 20% of the as-purchased weight is trimmed away (skin, bones…). Raises the effective cost used in recipe math below.</p>
-        <p class="content-help">რამდენი % რჩება გამოსაყენებელი დამუშავების შემდეგ (მაგ. 80, თუ 20% იკარგება ძვალზე/კანზე). თუ არ იცით ზუსტად — დატოვეთ 100.</p>
+        <label for="iYieldPct">Yield % (usable after cooking/trim) — გამოსავლიანობა %</label>
+        <input type="number" id="iYieldPct" step="any" min="1" max="1000" value="100">
+        <p class="content-help">Below 100 if trimming loses weight (skin, bones…); above 100 if cooking adds weight (rice, noodles absorbing water). Changes the effective cost used in recipe math below.</p>
+        <p class="content-help">100-ზე ნაკლები — თუ დამუშავებისას იკლებს წონა (ძვალი/კანი). 100-ზე მეტი — თუ მოხარშვისას იმატებს წონა (ბრინჯი, უდონი წყალს იწოვს — მაგ. 200 ან 300). თუ არ იცით ზუსტად — დატოვეთ 100.</p>
       </div>
       <div class="editor-field">
         <label for="iSupplier">Supplier — მომწოდებელი</label>
