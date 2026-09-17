@@ -1511,7 +1511,6 @@
     document.getElementById('iCategory').value = item ? item.category : 'other';
     document.getElementById('iUnit').value = item ? item.unit : 'pcs';
     document.getElementById('iQuantity').value = item ? item.quantity : 0;
-    document.getElementById('iQuantity').disabled = !!item;
     document.getElementById('iQuantityHelp').hidden = !item;
     document.getElementById('iMinQuantity').value = item ? item.min_quantity : 0;
     document.getElementById('iCostPerUnit').value = item ? item.cost_per_unit : 0;
@@ -1540,6 +1539,12 @@
       return;
     }
 
+    const newQuantity = Number(document.getElementById('iQuantity').value) || 0;
+    if (newQuantity < 0) {
+      errorEl.textContent = 'Quantity can\'t be negative. — რაოდენობა არ შეიძლება იყოს უარყოფითი.';
+      return;
+    }
+
     const payload = {
       name,
       category: document.getElementById('iCategory').value,
@@ -1549,10 +1554,11 @@
       yield_pct: yieldPct,
       supplier: document.getElementById('iSupplier').value.trim(),
       notes: document.getElementById('iNotes').value.trim(),
+      quantity: newQuantity,
     };
-    if (!editingItemId) {
-      payload.quantity = Number(document.getElementById('iQuantity').value) || 0;
-    }
+
+    const existingItem = editingItemId ? inventoryItems.find(i => i.id === editingItemId) : null;
+    const quantityDelta = existingItem ? newQuantity - Number(existingItem.quantity) : 0;
 
     const saveBtn = document.getElementById('saveItemBtn');
     saveBtn.disabled = true;
@@ -1563,6 +1569,25 @@
       result = await supabaseClient.from('inventory_items').update(payload).eq('id', editingItemId);
     } else {
       result = await supabaseClient.from('inventory_items').insert(payload);
+    }
+
+    if (!result.error && existingItem && quantityDelta !== 0) {
+      const { error: txError } = await supabaseClient.from('inventory_transactions').insert({
+        item_id: editingItemId,
+        type: 'count',
+        delta: quantityDelta,
+        note: 'Edited directly on the item — რედაქტირებულია ნივთის ფანჯრიდან',
+        created_by: (currentUser && currentUser.email) || '',
+      });
+      if (txError) {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Item — შენახვა';
+        errorEl.textContent = `Item saved, but the history entry failed: ${txError.message} — ნივთი შენახულია, მაგრამ ისტორია ვერ ჩაიწერა`;
+        return;
+      }
+      const wasLow = Number(existingItem.quantity) <= Number(existingItem.min_quantity);
+      const isLow = newQuantity <= Number(payload.min_quantity);
+      if (isLow && !wasLow) sendLowStockWhatsApp(existingItem, newQuantity);
     }
 
     saveBtn.disabled = false;
