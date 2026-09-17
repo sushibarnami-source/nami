@@ -129,8 +129,10 @@
     return div.innerHTML;
   }
 
-  // Cost per usable unit, after accounting for trim/waste (yield_pct).
-  // 45 ₾/kg at 80% yield → 56.25 ₾/kg of actually-usable product.
+  // Cost per usable unit, after accounting for yield_pct — trim/waste
+  // shrinks it (80% yield: 45 ₾/kg raw → 56.25 ₾/kg usable), cooking
+  // gain grows it (rice/noodles absorbing water, e.g. 200-300% yield:
+  // 45 ₾/kg dry → 15-22.50 ₾/kg cooked).
   function effectiveCostPerUnit(item) {
     const yieldFraction = (Number(item.yield_pct) || 100) / 100;
     return (Number(item.cost_per_unit) || 0) / yieldFraction;
@@ -1460,7 +1462,7 @@
         <div class="post-row-icon">📦</div>
         <div class="post-row-main">
           <p class="post-row-title">${escapeHtml(i.name)}</p>
-          <p class="post-row-qty">${formatQty(i.quantity)} ${escapeHtml(i.unit)} მარაგშია · მინ. ${formatQty(i.min_quantity)} ${escapeHtml(i.unit)}${i.supplier ? ` · ${escapeHtml(i.supplier)}` : ''}${Number(i.yield_pct) < 100 ? ` · გამოსავლიანობა ${formatQty(i.yield_pct)}% (ეფექტური ${effectiveCostPerUnit(i).toFixed(2)} ₾/${escapeHtml(i.unit)})` : ''}</p>
+          <p class="post-row-qty">${formatQty(i.quantity)} ${escapeHtml(i.unit)} მარაგშია · მინ. ${formatQty(i.min_quantity)} ${escapeHtml(i.unit)}${i.supplier ? ` · ${escapeHtml(i.supplier)}` : ''}${Number(i.yield_pct) !== 100 ? ` · გამოსავლიანობა ${formatQty(i.yield_pct)}% (ეფექტური ${effectiveCostPerUnit(i).toFixed(2)} ₾/${escapeHtml(i.unit)})` : ''}</p>
           <p class="post-row-meta">ფასი: ${formatMoney(Number(i.cost_per_unit) || 0)}/${escapeHtml(i.unit)}</p>
         </div>
         <span class="post-row-value">${formatMoney(Number(i.quantity) * Number(i.cost_per_unit) || 0)}</span>
@@ -1534,8 +1536,8 @@
       return;
     }
     const yieldPct = Number(document.getElementById('iYieldPct').value) || 100;
-    if (yieldPct <= 0 || yieldPct > 100) {
-      errorEl.textContent = 'Yield % must be between 1 and 100. — გამოსავლიანობა უნდა იყოს 1-დან 100-მდე.';
+    if (yieldPct <= 0 || yieldPct > 1000) {
+      errorEl.textContent = 'Yield % must be between 1 and 1000. — გამოსავლიანობა უნდა იყოს 1-დან 1000-მდე.';
       return;
     }
 
