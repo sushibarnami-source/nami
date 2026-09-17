@@ -1139,19 +1139,22 @@
   }
 
   /* --- Recipe (dish ingredients) editor --- */
+  function renderIngredientDatalist() {
+    const datalist = document.getElementById('dIngredientDatalist');
+    datalist.innerHTML = inventoryItems.map(i => `<option value="${escapeHtml(i.name)}">`).join('');
+  }
+
   function renderRecipeRows() {
+    renderIngredientDatalist();
     const container = document.getElementById('dRecipeRows');
     if (!currentDishRecipeRows.length) {
       container.innerHTML = '<p class="content-help">No ingredients yet — click "Add Ingredient". — ინგრედიენტები ჯერ არ არის, დააჭირეთ „Add Ingredient"-ს.</p>';
     } else {
       container.innerHTML = currentDishRecipeRows.map((row, idx) => {
-        const options = inventoryItems.map(i =>
-          `<option value="${i.id}" ${i.id === row.inventory_item_id ? 'selected' : ''}>${escapeHtml(i.name)}</option>`
-        ).join('');
         const selected = inventoryItems.find(i => i.id === row.inventory_item_id);
         return `
           <div class="recipe-row" data-row-index="${idx}">
-            <select data-recipe-item>${options}</select>
+            <input type="text" data-recipe-item list="dIngredientDatalist" value="${escapeHtml(selected ? selected.name : '')}" placeholder="ძებნა — Search ingredient…" autocomplete="off">
             <input type="number" step="any" min="0" value="${row.quantity || ''}" data-recipe-qty placeholder="0">
             <span class="recipe-row-unit">${escapeHtml(selected ? selected.unit : '')}</span>
             <button type="button" class="recipe-row-remove" data-recipe-remove title="Remove ingredient">✕</button>
@@ -1202,7 +1205,15 @@
     if (!row) return;
     const idx = Number(row.dataset.rowIndex);
     if (e.target.matches('[data-recipe-item]')) {
-      currentDishRecipeRows[idx].inventory_item_id = e.target.value;
+      const typed = e.target.value.trim();
+      const match = inventoryItems.find(i => i.name.toLowerCase() === typed.toLowerCase());
+      if (match) {
+        currentDishRecipeRows[idx].inventory_item_id = match.id;
+      } else if (!typed) {
+        showToast('აირჩიეთ ინგრედიენტი სიიდან — pick an ingredient from the list', true);
+      } else {
+        showToast(`"${typed}" ვერ მოიძებნა მარაგში — no such ingredient in Inventory`, true);
+      }
       renderRecipeRows();
     } else if (e.target.matches('[data-recipe-qty]')) {
       currentDishRecipeRows[idx].quantity = Number(e.target.value) || 0;

@@ -309,7 +309,8 @@ body.admin-body {
 
 /* ---------- Recipe (dish ingredients) ---------- */
 .recipe-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
-.recipe-row select { flex: 1; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-family: var(--font-body); font-size: .85rem; background: var(--paper); }
+.recipe-row select,
+.recipe-row input[type="text"] { flex: 1; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-family: var(--font-body); font-size: .85rem; background: var(--paper); }
 .recipe-row input[type="number"] { width: 90px; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); font-family: var(--font-body); font-size: .85rem; background: var(--paper); }
 .recipe-row-unit { font-size: .78rem; color: var(--muted); width: 32px; }
 .recipe-row-remove { background: none; border: none; color: var(--red); cursor: pointer; font-size: 1.1rem; padding: 4px 8px; line-height: 1; }
