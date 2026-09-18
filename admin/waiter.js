@@ -587,7 +587,7 @@
     closeBtn.disabled = true;
     try {
       const orderIds = orders.map(o => o.id);
-      const { error } = await supabaseClient.from('orders').update({ status: 'paid' }).in('id', orderIds);
+      const { error } = await supabaseClient.from('orders').update(statusUpdatePayload('paid')).in('id', orderIds);
       if (error) throw error;
 
       showToast(`მაგიდა ${currentTable} დაანგარიშდა — Table closed.`);
@@ -633,12 +633,23 @@
     paid: 'Paid — გადახდილი',
     cancelled: 'Cancelled — გაუქმებული',
   };
+  // created_at already marks "new" — every later stage gets its own
+  // timestamp column, set the first time an order reaches it.
+  const STATUS_TIMESTAMP_FIELD = {
+    preparing: 'preparing_at', ready: 'ready_at', served: 'served_at', paid: 'paid_at', cancelled: 'cancelled_at',
+  };
+  function statusUpdatePayload(status) {
+    const field = STATUS_TIMESTAMP_FIELD[status];
+    return field ? { status, [field]: new Date().toISOString() } : { status };
+  }
 
   const waiterOrderListEl = document.getElementById('waiterOrderList');
   const waiterOrderStatusFilter = document.getElementById('waiterOrderStatusFilter');
   const waiterNewOrderBadgeEl = document.getElementById('waiterNewOrderBadge');
   const waiterSalesListEl = document.getElementById('waiterSalesList');
   const waiterSalesPeriodFilter = document.getElementById('waiterSalesPeriodFilter');
+  const waiterSalesDateFilter = document.getElementById('waiterSalesDateFilter');
+  const waiterSalesDateClearBtn = document.getElementById('waiterSalesDateClearBtn');
 
   function orderTotal(order) {
     const itemsTotal = (order.items || []).reduce((sum, it) => sum + parsePrice(it.price) * it.quantity, 0);
@@ -648,6 +659,22 @@
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return iso;
     return d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+  function formatOrderTime(iso) {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+  }
+  function buildStatusTimelineText(o) {
+    const stages = [
+      { label: 'მიღებულია', time: o.created_at },
+      { label: 'მზადდება', time: o.preparing_at },
+      { label: 'მზადაა', time: o.ready_at },
+      { label: 'მიწოდებული', time: o.served_at },
+      { label: 'გადახდილი', time: o.paid_at },
+      { label: 'გაუქმებული', time: o.cancelled_at },
+    ].filter(s => s.time);
+    return stages.map(s => `${s.label} ${formatOrderTime(s.time)}`).join(' → ');
   }
 
   async function loadAllOrders() {
@@ -746,11 +773,20 @@
   }
 
   function renderWaiterSalesList() {
-    const start = periodStart(waiterSalesPeriodFilter.value);
-    const sold = allOrders
-      .filter(o => o.status === 'paid')
-      .filter(o => !start || new Date(o.created_at) >= start)
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    const paid = allOrders.filter(o => o.status === 'paid');
+    let sold;
+    if (waiterSalesDateFilter.value) {
+      const dayStart = new Date(`${waiterSalesDateFilter.value}T00:00:00`);
+      const dayEnd = new Date(`${waiterSalesDateFilter.value}T23:59:59.999`);
+      sold = paid.filter(o => {
+        const t = new Date(o.created_at);
+        return t >= dayStart && t <= dayEnd;
+      });
+    } else {
+      const start = periodStart(waiterSalesPeriodFilter.value);
+      sold = paid.filter(o => !start || new Date(o.created_at) >= start);
+    }
+    sold.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
     document.getElementById('waiterStatSalesCount').textContent = String(sold.length);
     document.getElementById('waiterStatSalesRevenue').textContent = formatMoney(sold.reduce((sum, o) => sum + orderTotal(o), 0));
@@ -773,7 +809,7 @@
                 ? `${o.is_pickup ? 'Pickup — წამოსვლა' : 'Takeout — გასატანი'}${o.customer_name ? ` (${escapeHtml(o.customer_name)})` : ''}`
                 : `Table ${o.table_number} — მაგიდა ${o.table_number}`}
             </p>
-            <p class="post-row-meta">${formatOrderDate(o.created_at)} · <span class="order-row-total">${formatMoney(orderTotal(o))}</span></p>
+            <p class="post-row-meta">მიღებულია ${formatOrderDate(o.created_at)}${o.paid_at ? ` · გადახდილია ${formatOrderTime(o.paid_at)}` : ''} · <span class="order-row-total">${formatMoney(orderTotal(o))}</span></p>
             <ul class="order-items-list">${itemsHtml}</ul>
           </div>
           <div class="post-row-actions">
@@ -824,6 +860,17 @@
 
   waiterOrderStatusFilter.addEventListener('change', renderWaiterOrderList);
   waiterSalesPeriodFilter.addEventListener('change', renderWaiterSalesList);
+  waiterSalesDateFilter.addEventListener('change', () => {
+    waiterSalesPeriodFilter.disabled = !!waiterSalesDateFilter.value;
+    waiterSalesDateClearBtn.hidden = !waiterSalesDateFilter.value;
+    renderWaiterSalesList();
+  });
+  waiterSalesDateClearBtn.addEventListener('click', () => {
+    waiterSalesDateFilter.value = '';
+    waiterSalesPeriodFilter.disabled = false;
+    waiterSalesDateClearBtn.hidden = true;
+    renderWaiterSalesList();
+  });
   document.getElementById('waiterRefreshOrdersBtn').addEventListener('click', () => loadAllOrders());
   document.getElementById('waiterRefreshSalesBtn').addEventListener('click', () => loadAllOrders());
 
@@ -831,10 +878,11 @@
     const sel = e.target.closest('[data-order-status]');
     if (sel) {
       const id = sel.dataset.orderStatus;
-      const { error } = await supabaseClient.from('orders').update({ status: sel.value }).eq('id', id);
+      const payload = statusUpdatePayload(sel.value);
+      const { error } = await supabaseClient.from('orders').update(payload).eq('id', id);
       if (error) { showToast(`Couldn't update: ${error.message} — ვერ განახლდა`, true); return; }
       const o = allOrders.find(x => x.id === id);
-      if (o) o.status = sel.value;
+      if (o) Object.assign(o, payload);
       renderWaiterOrderList();
       renderWaiterOrderStats();
       renderWaiterSalesList();
@@ -897,11 +945,12 @@
       ? `${o.is_pickup ? '🚶 წამოსვლა' : '🥡 გასატანი'}${o.customer_name ? ` — ${o.customer_name}` : ''}`
       : `მაგიდა ${o.table_number} — Table ${o.table_number}`;
 
-    const metaParts = [ORDER_STATUS_LABELS[o.status], formatOrderDate(o.created_at)];
+    const metaParts = [ORDER_STATUS_LABELS[o.status]];
     if (o.order_type === 'takeout' && o.customer_phone) metaParts.push(`📞 ${o.customer_phone}`);
     if (o.order_type === 'takeout' && !o.is_pickup && o.customer_address) metaParts.push(`📍 ${o.customer_address}`);
     if (o.note) metaParts.push(`📝 ${o.note}`);
     document.getElementById('orderDetailMeta').textContent = metaParts.filter(Boolean).join(' · ');
+    document.getElementById('orderDetailTimeline').textContent = buildStatusTimelineText(o);
 
     orderDetailItemsEl.innerHTML = (o.items || []).map(it => `
       <div class="order-cart-row">
