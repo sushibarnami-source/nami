@@ -48,7 +48,11 @@
   const takeoutDeliveryFee = document.getElementById('takeoutDeliveryFee');
 
   takeoutMethod.addEventListener('change', () => {
-    takeoutDeliveryFields.hidden = takeoutMethod.value === 'pickup';
+    const isPickup = takeoutMethod.value === 'pickup';
+    takeoutDeliveryFields.hidden = isPickup;
+    takeoutCustomerName.placeholder = isPickup
+      ? 'მომხმარებლის სახელი (არასავალდებულო) — Customer name (optional)'
+      : 'მომხმარებლის სახელი — Customer name';
   });
 
   function showToast(message, isError) {
@@ -230,6 +234,7 @@
     takeoutCustomerFields.hidden = false;
     takeoutMethod.value = 'delivery';
     takeoutDeliveryFields.hidden = false;
+    takeoutCustomerName.placeholder = 'მომხმარებლის სახელი — Customer name';
     takeoutCustomerName.value = '';
     takeoutCustomerPhone.value = '';
     takeoutCustomerAddress.value = '';
@@ -435,7 +440,7 @@
     const customerPhone = isTakeout ? takeoutCustomerPhone.value.trim() : '';
     const customerAddress = (isTakeout && !isPickup) ? takeoutCustomerAddress.value.trim() : '';
     const deliveryFee = (isTakeout && !isPickup) ? (parseFloat(takeoutDeliveryFee.value) || 0) : 0;
-    if (isTakeout && !customerName) {
+    if (isTakeout && !isPickup && !customerName) {
       cartError.textContent = 'შეიყვანეთ მომხმარებლის სახელი — enter a customer name';
       cartError.hidden = false;
       return;
