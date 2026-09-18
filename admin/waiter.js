@@ -40,10 +40,16 @@
   const takeoutBadge = document.getElementById('takeoutBadge');
   const openCheckoutBtn = document.getElementById('openCheckoutBtn');
   const takeoutCustomerFields = document.getElementById('takeoutCustomerFields');
+  const takeoutMethod = document.getElementById('takeoutMethod');
+  const takeoutDeliveryFields = document.getElementById('takeoutDeliveryFields');
   const takeoutCustomerName = document.getElementById('takeoutCustomerName');
   const takeoutCustomerPhone = document.getElementById('takeoutCustomerPhone');
   const takeoutCustomerAddress = document.getElementById('takeoutCustomerAddress');
   const takeoutDeliveryFee = document.getElementById('takeoutDeliveryFee');
+
+  takeoutMethod.addEventListener('change', () => {
+    takeoutDeliveryFields.hidden = takeoutMethod.value === 'pickup';
+  });
 
   function showToast(message, isError) {
     toastEl.textContent = message;
@@ -222,6 +228,8 @@
     waiterTableTitle.textContent = '🥡 გასატანი — Takeout';
     openCheckoutBtn.hidden = true;
     takeoutCustomerFields.hidden = false;
+    takeoutMethod.value = 'delivery';
+    takeoutDeliveryFields.hidden = false;
     takeoutCustomerName.value = '';
     takeoutCustomerPhone.value = '';
     takeoutCustomerAddress.value = '';
@@ -398,7 +406,7 @@
       .join('');
     const time = new Date(order.created_at).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
     const headerLine = order.order_type === 'takeout'
-      ? `🥡 გასატანი${order.customer_name ? ` — ${escapeHtml(order.customer_name)}` : ''}${order.customer_phone ? ` (${escapeHtml(order.customer_phone)})` : ''}`
+      ? `${order.is_pickup ? '🚶 წამოსვლა' : '🥡 გასატანი'}${order.customer_name ? ` — ${escapeHtml(order.customer_name)}` : ''}${order.customer_phone ? ` (${escapeHtml(order.customer_phone)})` : ''}`
       : `მაგიდა #${order.table_number}`;
     return `
       <div class="receipt is-kitchen">
@@ -422,16 +430,17 @@
     if (!entries.length) { cartError.textContent = 'ჯერ დაამატეთ კერძი — add a dish first'; cartError.hidden = false; return; }
 
     const isTakeout = currentOrderType === 'takeout';
+    const isPickup = isTakeout && takeoutMethod.value === 'pickup';
     const customerName = isTakeout ? takeoutCustomerName.value.trim() : '';
     const customerPhone = isTakeout ? takeoutCustomerPhone.value.trim() : '';
-    const customerAddress = isTakeout ? takeoutCustomerAddress.value.trim() : '';
-    const deliveryFee = isTakeout ? (parseFloat(takeoutDeliveryFee.value) || 0) : 0;
+    const customerAddress = (isTakeout && !isPickup) ? takeoutCustomerAddress.value.trim() : '';
+    const deliveryFee = (isTakeout && !isPickup) ? (parseFloat(takeoutDeliveryFee.value) || 0) : 0;
     if (isTakeout && !customerName) {
       cartError.textContent = 'შეიყვანეთ მომხმარებლის სახელი — enter a customer name';
       cartError.hidden = false;
       return;
     }
-    if (isTakeout && !customerAddress) {
+    if (isTakeout && !isPickup && !customerAddress) {
       cartError.textContent = 'შეიყვანეთ მისამართი — enter a delivery address';
       cartError.hidden = false;
       return;
@@ -453,6 +462,7 @@
         customer_phone: customerPhone,
         customer_address: customerAddress,
         delivery_fee: deliveryFee,
+        is_pickup: isPickup,
         status: 'new', note, created_at: createdAt,
         created_by: currentUser.email || '',
       });
@@ -473,7 +483,7 @@
       const order = {
         id: orderId, table_number: isTakeout ? null : currentTable, order_type: currentOrderType,
         customer_name: customerName, customer_phone: customerPhone, customer_address: customerAddress,
-        delivery_fee: deliveryFee, note, created_at: createdAt, items: itemRows,
+        delivery_fee: deliveryFee, is_pickup: isPickup, note, created_at: createdAt, items: itemRows,
       };
       printKitchenTicket(order);
 
@@ -688,17 +698,17 @@
         .join('');
       return `
         <div class="post-row order-row status-${o.status}">
-          <div class="post-row-icon">${o.order_type === 'takeout' ? '🥡' : '🍣'}</div>
+          <div class="post-row-icon">${o.order_type === 'takeout' ? (o.is_pickup ? '🚶' : '🥡') : '🍣'}</div>
           <div class="post-row-main">
             <p class="post-row-title">
               ${o.order_type === 'takeout'
-                ? `Takeout — გასატანი${o.customer_name ? ` (${escapeHtml(o.customer_name)})` : ''}`
+                ? `${o.is_pickup ? 'Pickup — წამოსვლა' : 'Takeout — გასატანი'}${o.customer_name ? ` (${escapeHtml(o.customer_name)})` : ''}`
                 : `Table ${o.table_number} — მაგიდა ${o.table_number}`}
               <span class="post-row-badge status-${o.status}">${ORDER_STATUS_LABELS[o.status]}</span>
             </p>
             ${o.order_type === 'takeout' && o.customer_phone ? `<p class="post-row-meta">📞 ${escapeHtml(o.customer_phone)}</p>` : ''}
-            ${o.order_type === 'takeout' && o.customer_address ? `<p class="post-row-meta">📍 ${escapeHtml(o.customer_address)}</p>` : ''}
-            ${o.order_type === 'takeout' ? `<p class="post-row-meta">🚕 მიწოდება: <input type="number" step="0.01" min="0" class="order-delivery-fee-input" data-order-delivery-fee="${o.id}" value="${Number(o.delivery_fee) || 0}" style="width:80px; padding:2px 6px; border-radius:4px; border:1px solid var(--border); font-family:var(--font-body);"> ₾</p>` : ''}
+            ${o.order_type === 'takeout' && !o.is_pickup && o.customer_address ? `<p class="post-row-meta">📍 ${escapeHtml(o.customer_address)}</p>` : ''}
+            ${o.order_type === 'takeout' && !o.is_pickup ? `<p class="post-row-meta">🚕 მიწოდება: <input type="number" step="0.01" min="0" class="order-delivery-fee-input" data-order-delivery-fee="${o.id}" value="${Number(o.delivery_fee) || 0}" style="width:80px; padding:2px 6px; border-radius:4px; border:1px solid var(--border); font-family:var(--font-body);"> ₾</p>` : ''}
             <p class="post-row-meta">${formatOrderDate(o.created_at)} · <span class="order-row-total">${formatMoney(orderTotal(o))}</span></p>
             <ul class="order-items-list">${itemsHtml}</ul>
             ${o.note ? `<p class="order-note">📝 ${escapeHtml(o.note)}</p>` : ''}
@@ -756,11 +766,11 @@
         .join('');
       return `
         <div class="post-row order-row status-paid">
-          <div class="post-row-icon">${o.order_type === 'takeout' ? '🥡' : '🍣'}</div>
+          <div class="post-row-icon">${o.order_type === 'takeout' ? (o.is_pickup ? '🚶' : '🥡') : '🍣'}</div>
           <div class="post-row-main">
             <p class="post-row-title">
               ${o.order_type === 'takeout'
-                ? `Takeout — გასატანი${o.customer_name ? ` (${escapeHtml(o.customer_name)})` : ''}`
+                ? `${o.is_pickup ? 'Pickup — წამოსვლა' : 'Takeout — გასატანი'}${o.customer_name ? ` (${escapeHtml(o.customer_name)})` : ''}`
                 : `Table ${o.table_number} — მაგიდა ${o.table_number}`}
             </p>
             <p class="post-row-meta">${formatOrderDate(o.created_at)} · <span class="order-row-total">${formatMoney(orderTotal(o))}</span></p>
@@ -790,7 +800,7 @@
           <p>სუში ბარი</p>
         </div>
         <p class="receipt-table">${order.order_type === 'takeout'
-          ? `🥡 გასატანი${order.customer_name ? ` — ${escapeHtml(order.customer_name)}` : ''}`
+          ? `${order.is_pickup ? '🚶 წამოსვლა' : '🥡 გასატანი'}${order.customer_name ? ` — ${escapeHtml(order.customer_name)}` : ''}`
           : `მაგიდა #${order.table_number}`}</p>
         ${order.order_type === 'takeout' && order.customer_address ? `<p class="receipt-note">📍 ${escapeHtml(order.customer_address)}</p>` : ''}
         <p class="receipt-meta">${formatOrderDate(order.created_at)} · #${order.id.slice(0, 8)}</p>
@@ -884,12 +894,12 @@
     if (!o) return;
 
     document.getElementById('orderDetailHeading').textContent = o.order_type === 'takeout'
-      ? `🥡 გასატანი${o.customer_name ? ` — ${o.customer_name}` : ''}`
+      ? `${o.is_pickup ? '🚶 წამოსვლა' : '🥡 გასატანი'}${o.customer_name ? ` — ${o.customer_name}` : ''}`
       : `მაგიდა ${o.table_number} — Table ${o.table_number}`;
 
     const metaParts = [ORDER_STATUS_LABELS[o.status], formatOrderDate(o.created_at)];
     if (o.order_type === 'takeout' && o.customer_phone) metaParts.push(`📞 ${o.customer_phone}`);
-    if (o.order_type === 'takeout' && o.customer_address) metaParts.push(`📍 ${o.customer_address}`);
+    if (o.order_type === 'takeout' && !o.is_pickup && o.customer_address) metaParts.push(`📍 ${o.customer_address}`);
     if (o.note) metaParts.push(`📝 ${o.note}`);
     document.getElementById('orderDetailMeta').textContent = metaParts.filter(Boolean).join(' · ');
 

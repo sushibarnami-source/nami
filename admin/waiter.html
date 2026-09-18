@@ -173,10 +173,16 @@
       <span id="cartModalTotal">0.00 ₾</span>
     </div>
     <div id="takeoutCustomerFields" hidden>
+      <select id="takeoutMethod" style="width:100%; margin-bottom:8px; padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border); font-family:var(--font-body);">
+        <option value="delivery" selected>🚕 მიტანა — Delivery</option>
+        <option value="pickup">🚶 წამოსვლა — Pickup</option>
+      </select>
       <input type="text" id="takeoutCustomerName" placeholder="მომხმარებლის სახელი — Customer name" style="width:100%; margin-bottom:8px; padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border); font-family:var(--font-body);">
       <input type="tel" id="takeoutCustomerPhone" placeholder="ტელეფონი — Phone" style="width:100%; margin-bottom:8px; padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border); font-family:var(--font-body);">
-      <input type="text" id="takeoutCustomerAddress" placeholder="მისამართი — Delivery address" style="width:100%; margin-bottom:8px; padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border); font-family:var(--font-body);">
-      <input type="number" step="0.01" min="0" id="takeoutDeliveryFee" placeholder="მიწოდების საფასური, ₾ — Delivery fee" style="width:100%; margin-bottom:8px; padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border); font-family:var(--font-body);">
+      <div id="takeoutDeliveryFields">
+        <input type="text" id="takeoutCustomerAddress" placeholder="მისამართი — Delivery address" style="width:100%; margin-bottom:8px; padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border); font-family:var(--font-body);">
+        <input type="number" step="0.01" min="0" id="takeoutDeliveryFee" placeholder="მიწოდების საფასური, ₾ — Delivery fee" style="width:100%; margin-bottom:8px; padding:10px 12px; border-radius:var(--radius-sm); border:1px solid var(--border); font-family:var(--font-body);">
+      </div>
     </div>
     <textarea id="orderNote" rows="2" placeholder="შენიშვნა სამზარეულოსთვის (არასავალდებულო)"></textarea>
     <p class="order-gate-error" id="cartError" hidden></p>
