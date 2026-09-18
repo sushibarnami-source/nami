@@ -384,6 +384,15 @@
     paid: 'Paid — გადახდილი',
     cancelled: 'Cancelled — გაუქმებული',
   };
+  // created_at already marks "new" — every later stage gets its own
+  // timestamp column, set the first time an order reaches it.
+  const STATUS_TIMESTAMP_FIELD = {
+    preparing: 'preparing_at', ready: 'ready_at', served: 'served_at', paid: 'paid_at', cancelled: 'cancelled_at',
+  };
+  function statusUpdatePayload(status) {
+    const field = STATUS_TIMESTAMP_FIELD[status];
+    return field ? { status, [field]: new Date().toISOString() } : { status };
+  }
 
   const orderListEl = document.getElementById('orderList');
   const newOrderBadgeEl = document.getElementById('newOrderBadge');
@@ -412,6 +421,22 @@
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return iso;
     return d.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+  function formatOrderTime(iso) {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+  }
+  function buildStatusTimelineText(o) {
+    const stages = [
+      { label: 'მიღებულია', time: o.created_at },
+      { label: 'მზადდება', time: o.preparing_at },
+      { label: 'მზადაა', time: o.ready_at },
+      { label: 'მიწოდებული', time: o.served_at },
+      { label: 'გადახდილი', time: o.paid_at },
+      { label: 'გაუქმებული', time: o.cancelled_at },
+    ].filter(s => s.time);
+    return stages.map(s => `${s.label} ${formatOrderTime(s.time)}`).join(' → ');
   }
 
   async function loadOrders() {
@@ -509,6 +534,8 @@
   --------------------------------------------------------- */
   const salesListEl = document.getElementById('salesList');
   const salesPeriodFilter = document.getElementById('salesPeriodFilter');
+  const salesDateFilter = document.getElementById('salesDateFilter');
+  const salesDateClearBtn = document.getElementById('salesDateClearBtn');
 
   function periodStart(period) {
     const d = new Date();
@@ -519,11 +546,20 @@
   }
 
   function soldOrders() {
-    const start = periodStart(salesPeriodFilter.value);
-    return orders
-      .filter(o => o.status === 'paid')
-      .filter(o => !start || new Date(o.created_at) >= start)
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    const paid = orders.filter(o => o.status === 'paid');
+    let filtered;
+    if (salesDateFilter.value) {
+      const dayStart = new Date(`${salesDateFilter.value}T00:00:00`);
+      const dayEnd = new Date(`${salesDateFilter.value}T23:59:59.999`);
+      filtered = paid.filter(o => {
+        const t = new Date(o.created_at);
+        return t >= dayStart && t <= dayEnd;
+      });
+    } else {
+      const start = periodStart(salesPeriodFilter.value);
+      filtered = paid.filter(o => !start || new Date(o.created_at) >= start);
+    }
+    return filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   }
 
   function renderSalesList() {
@@ -550,7 +586,7 @@
                 ? `${o.is_pickup ? 'Pickup — წამოსვლა' : 'Takeout — გასატანი'}${o.customer_name ? ` (${escapeHtml(o.customer_name)})` : ''}`
                 : `Table ${o.table_number} — მაგიდა ${o.table_number}`}
             </p>
-            <p class="post-row-meta">${formatOrderDate(o.created_at)} · <span class="order-row-total">${formatMoney(orderTotal(o))}</span></p>
+            <p class="post-row-meta">მიღებულია ${formatOrderDate(o.created_at)}${o.paid_at ? ` · გადახდილია ${formatOrderTime(o.paid_at)}` : ''} · <span class="order-row-total">${formatMoney(orderTotal(o))}</span></p>
             <ul class="order-items-list">${itemsHtml}</ul>
           </div>
           <div class="post-row-actions">
@@ -564,6 +600,17 @@
   }
 
   salesPeriodFilter.addEventListener('change', renderSalesList);
+  salesDateFilter.addEventListener('change', () => {
+    salesPeriodFilter.disabled = !!salesDateFilter.value;
+    salesDateClearBtn.hidden = !salesDateFilter.value;
+    renderSalesList();
+  });
+  salesDateClearBtn.addEventListener('click', () => {
+    salesDateFilter.value = '';
+    salesPeriodFilter.disabled = false;
+    salesDateClearBtn.hidden = true;
+    renderSalesList();
+  });
   document.getElementById('refreshSalesBtn').addEventListener('click', () => loadOrders());
 
   salesListEl.addEventListener('click', async (e) => {
@@ -590,10 +637,11 @@
     const sel = e.target.closest('[data-order-status]');
     if (sel) {
       const id = sel.dataset.orderStatus;
-      const { error } = await supabaseClient.from('orders').update({ status: sel.value }).eq('id', id);
+      const payload = statusUpdatePayload(sel.value);
+      const { error } = await supabaseClient.from('orders').update(payload).eq('id', id);
       if (error) { showToast(`Couldn't update: ${error.message} — ვერ განახლდა`, true); return; }
       const o = orders.find(x => x.id === id);
-      if (o) o.status = sel.value;
+      if (o) Object.assign(o, payload);
       renderOrderList();
       renderOrderStats(); renderSalesList();
       return;
@@ -663,11 +711,12 @@
       ? `${o.is_pickup ? '🚶 წამოსვლა' : '🥡 გასატანი'}${o.customer_name ? ` — ${o.customer_name}` : ''}`
       : `მაგიდა ${o.table_number} — Table ${o.table_number}`;
 
-    const metaParts = [ORDER_STATUS_LABELS[o.status], formatOrderDate(o.created_at)];
+    const metaParts = [ORDER_STATUS_LABELS[o.status]];
     if (o.order_type === 'takeout' && o.customer_phone) metaParts.push(`📞 ${o.customer_phone}`);
     if (o.order_type === 'takeout' && !o.is_pickup && o.customer_address) metaParts.push(`📍 ${o.customer_address}`);
     if (o.note) metaParts.push(`📝 ${o.note}`);
     document.getElementById('orderDetailMeta').textContent = metaParts.filter(Boolean).join(' · ');
+    document.getElementById('orderDetailTimeline').textContent = buildStatusTimelineText(o);
 
     orderDetailItemsEl.innerHTML = (o.items || []).map(it => `
       <div class="order-cart-row">

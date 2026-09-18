@@ -358,14 +358,21 @@
       <button type="button" class="admin-btn-secondary" id="refreshSalesBtn">⟳ Refresh — განახლება</button>
     </div>
 
-    <div class="editor-field" style="max-width:240px; margin-bottom:16px;">
-      <label for="salesPeriodFilter">Period — პერიოდი</label>
-      <select id="salesPeriodFilter">
-        <option value="today">Today — დღეს</option>
-        <option value="week">This week — ამ კვირას</option>
-        <option value="month">This month — ამ თვეს</option>
-        <option value="all">All time — ყველა დრო</option>
-      </select>
+    <div class="editor-row" style="align-items:flex-end; max-width:600px;">
+      <div class="editor-field">
+        <label for="salesPeriodFilter">Period — პერიოდი</label>
+        <select id="salesPeriodFilter">
+          <option value="today">Today — დღეს</option>
+          <option value="week">This week — ამ კვირას</option>
+          <option value="month">This month — ამ თვეს</option>
+          <option value="all">All time — ყველა დრო</option>
+        </select>
+      </div>
+      <div class="editor-field">
+        <label for="salesDateFilter">Or pick a date — ან აირჩიეთ თარიღი</label>
+        <input type="date" id="salesDateFilter">
+      </div>
+      <button type="button" class="admin-btn-secondary" id="salesDateClearBtn" hidden>✕ Clear date — გასუფთავება</button>
     </div>
 
     <div class="stat-cards" id="salesStats">
@@ -791,7 +798,8 @@
 <div class="editor-overlay" id="orderDetailOverlay" hidden>
   <div class="editor-panel" style="max-width:560px;">
     <h2 id="orderDetailHeading">Order — შეკვეთა</h2>
-    <p class="content-help" id="orderDetailMeta" style="margin-bottom:14px;"></p>
+    <p class="content-help" id="orderDetailMeta" style="margin-bottom:6px;"></p>
+    <p class="content-help" id="orderDetailTimeline" style="margin-bottom:14px; font-weight:600;"></p>
 
     <div id="orderDetailItems"></div>
     <div class="order-cart-total-row">
