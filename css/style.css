@@ -362,6 +362,7 @@ section { padding: 110px 0; }
 .menu-category-heading:first-child { margin-top: 0; padding-top: 0; border-top: none; }
 
 .menu-item {
+  position: relative;
   background: var(--cream);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -377,6 +378,26 @@ section { padding: 110px 0; }
   transform: translateY(-6px);
   box-shadow: var(--shadow);
   border-color: rgba(79,122,92,.5);
+}
+.menu-item.is-sold-out { opacity: .55; }
+.menu-item.is-sold-out:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--border);
+}
+.menu-item-soldout-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  background: var(--red);
+  color: var(--cream);
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  padding: 4px 10px;
+  border-radius: 999px;
 }
 
 .menu-item-photo-wrap {

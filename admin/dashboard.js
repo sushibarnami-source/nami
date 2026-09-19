@@ -698,7 +698,7 @@
   function renderOrderMenuDatalist() {
     const datalist = document.getElementById('orderMenuItemDatalist');
     datalist.innerHTML = dishes
-      .filter(d => d.published)
+      .filter(d => d.published && !d.sold_out)
       .map(d => `<option value="${escapeHtml(d.name_ka || d.name_en)}">`)
       .join('');
   }
@@ -754,7 +754,7 @@
     if (!typed) { orderDetailAddError.textContent = 'აირჩიეთ კერძი სიიდან — pick a dish from the list'; return; }
     if (qty <= 0) { orderDetailAddError.textContent = 'რაოდენობა 0-ზე მეტი უნდა იყოს — quantity must be above 0'; return; }
 
-    const dish = dishes.find(d => d.published && (d.name_ka || d.name_en).toLowerCase() === typed.toLowerCase());
+    const dish = dishes.find(d => d.published && !d.sold_out && (d.name_ka || d.name_en).toLowerCase() === typed.toLowerCase());
     if (!dish) { orderDetailAddError.textContent = `"${typed}" ვერ მოიძებნა მენიუში — no such dish in the menu`; return; }
 
     const addBtn = document.getElementById('orderDetailAddBtn');
@@ -1170,11 +1170,13 @@
         </div>
         <span class="post-row-category">${escapeHtml(CATEGORY_LABELS[d.category] || d.category)}</span>
         <span class="post-row-badge ${d.published ? 'is-published' : ''}">${d.published ? 'გამოქვეყნებული' : 'მონახაზი'}</span>
+        ${d.sold_out ? '<span class="post-row-badge is-low-stock">🚫 არ არის</span>' : ''}
         <div class="post-row-reorder">
           <button class="admin-btn-secondary" data-move-dish="${d.id}" data-direction="up" ${isFirst ? 'disabled' : ''} title="მაღლა — Move up">▲</button>
           <button class="admin-btn-secondary" data-move-dish="${d.id}" data-direction="down" ${isLast ? 'disabled' : ''} title="დაბლა — Move down">▼</button>
         </div>
         <div class="post-row-actions">
+          <button class="admin-btn-secondary" data-toggle-sold-out="${d.id}">${d.sold_out ? '✅ დაბრუნება — Back in stock' : '🚫 შეჩერება — Mark sold out'}</button>
           <button class="admin-btn-secondary" data-edit-dish="${d.id}">Edit — რედაქტირება</button>
           <button class="admin-btn-danger" data-delete-dish="${d.id}">Delete — წაშლა</button>
         </div>
@@ -1229,7 +1231,7 @@
 
   categoryFilter.addEventListener('change', renderDishList);
 
-  dishListEl.addEventListener('click', (e) => {
+  dishListEl.addEventListener('click', async (e) => {
     const moveBtn = e.target.closest('[data-move-dish]');
     if (moveBtn) {
       moveDish(moveBtn.dataset.moveDish, moveBtn.dataset.direction);
@@ -1241,7 +1243,21 @@
       return;
     }
     const delBtn = e.target.closest('[data-delete-dish]');
-    if (delBtn) deleteDish(delBtn.dataset.deleteDish);
+    if (delBtn) { deleteDish(delBtn.dataset.deleteDish); return; }
+
+    const soldOutBtn = e.target.closest('[data-toggle-sold-out]');
+    if (soldOutBtn) {
+      const dish = dishes.find(d => d.id === soldOutBtn.dataset.toggleSoldOut);
+      if (!dish) return;
+      const newValue = !dish.sold_out;
+      soldOutBtn.disabled = true;
+      const { error } = await supabaseClient.from('menu_items').update({ sold_out: newValue }).eq('id', dish.id);
+      soldOutBtn.disabled = false;
+      if (error) { showToast(`Couldn't update: ${error.message} — ვერ განახლდა`, true); return; }
+      dish.sold_out = newValue;
+      renderDishList();
+      showToast(newValue ? 'მონიშნულია, როგორც ამოწურული — Marked sold out.' : 'დაბრუნდა ხელმისაწვდომებში — Back in stock.');
+    }
   });
 
   function switchDishLangTab(lang) {
@@ -1268,6 +1284,7 @@
     document.getElementById('dPriceAmount').value = dish && dish.price_amount ? dish.price_amount : '';
     document.getElementById('dSortOrder').value = dish ? dish.sort_order : 0;
     document.getElementById('dPublished').checked = dish ? dish.published : true;
+    document.getElementById('dSoldOut').checked = dish ? !!dish.sold_out : false;
 
     const tags = dish ? (dish.tags || []) : [];
     document.getElementById('dTagSpicy').checked = tags.includes('spicy');
@@ -1474,6 +1491,7 @@
       tags,
       photo_url: currentDishPhotoUrl,
       published: document.getElementById('dPublished').checked,
+      sold_out: document.getElementById('dSoldOut').checked,
       sort_order: Number(document.getElementById('dSortOrder').value) || 0,
     };
     LANGS.forEach(lang => {
