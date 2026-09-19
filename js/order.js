@@ -33,6 +33,7 @@
       menu_loading: 'Loading menu…',
       menu_error: "Couldn't load the menu. Please check your connection and reload.",
       menu_empty: 'No dishes in this category yet.',
+      menu_sold_out: 'Sold out',
       tab_rolls: 'Rolls', tab_nigiri: 'Nigiri', tab_maki: 'Maki', tab_futomaki: 'Futomaki',
       tab_tempuraRoll: 'Hot Rolls', tab_sets: 'Sets', tab_noodles: 'Noodles',
       tab_appetizers: 'Appetizers', tab_desserts: 'Desserts', tab_drinks: 'Drinks',
@@ -69,6 +70,7 @@
       menu_loading: 'მენიუ იტვირთება…',
       menu_error: 'მენიუს ჩატვირთვა ვერ მოხერხდა. შეამოწმეთ ინტერნეტი და განაახლეთ გვერდი.',
       menu_empty: 'ამ კატეგორიაში კერძები ჯერ არ არის.',
+      menu_sold_out: 'დროებით არ არის',
       tab_rolls: 'როლი', tab_nigiri: 'ნიგირი', tab_maki: 'მაკი', tab_futomaki: 'ფუტომაკი',
       tab_tempuraRoll: 'ცხელი როლი', tab_sets: 'სეტი', tab_noodles: 'ატრია',
       tab_appetizers: 'ხემსი', tab_desserts: 'დესერტი', tab_drinks: 'სასმელი',
@@ -105,6 +107,7 @@
       menu_loading: 'Загрузка меню…',
       menu_error: 'Не удалось загрузить меню. Проверьте соединение и обновите страницу.',
       menu_empty: 'В этой категории пока нет блюд.',
+      menu_sold_out: 'Нет в наличии',
       tab_rolls: 'Роллы', tab_nigiri: 'Нигири', tab_maki: 'Маки', tab_futomaki: 'Футомаки',
       tab_tempuraRoll: 'Темпура роллы', tab_sets: 'Сеты', tab_noodles: 'Лапша',
       tab_appetizers: 'Закуски', tab_desserts: 'Десерты', tab_drinks: 'Напитки',
@@ -291,6 +294,7 @@
         photo: row.photo_url || null,
         name: { en: row.name_en, ka: row.name_ka, ru: row.name_ru },
         desc: { en: row.desc_en, ka: row.desc_ka, ru: row.desc_ru },
+        soldOut: !!row.sold_out,
       }));
 
       menuLoading.hidden = true;
@@ -325,17 +329,18 @@
         ? `<div class="menu-item-photo-wrap"><img class="menu-item-photo" src="${item.photo}" alt="${escapeHtml(name)}" loading="lazy"></div>`
         : '';
       return `
-        <article class="menu-item" data-item-id="${item.id}">
+        <article class="menu-item${item.soldOut ? ' is-sold-out' : ''}" data-item-id="${item.id}">
           ${photoHtml}
+          ${item.soldOut ? `<span class="menu-item-soldout-badge">${t('menu_sold_out')}</span>` : ''}
           <div class="menu-item-top">
             <h3 class="menu-item-name">${escapeHtml(name)}</h3>
             <span class="menu-item-price">${escapeHtml(item.price)}</span>
           </div>
           <p class="menu-item-desc">${escapeHtml(desc)}</p>
           <div class="qty-stepper">
-            <button type="button" class="qty-btn" data-qty-minus>−</button>
+            <button type="button" class="qty-btn" data-qty-minus ${item.soldOut ? 'disabled' : ''}>−</button>
             <span class="qty-value">${qtyFor(item.id)}</span>
-            <button type="button" class="qty-btn" data-qty-plus>+</button>
+            <button type="button" class="qty-btn" data-qty-plus ${item.soldOut ? 'disabled' : ''}>+</button>
           </div>
         </article>
       `;
@@ -347,7 +352,7 @@
     if (!card) return;
     const id = card.dataset.itemId;
     const item = menuItems.find(i => i.id === id);
-    if (!item) return;
+    if (!item || item.soldOut) return;
     if (e.target.closest('[data-qty-plus]')) setQty(item, qtyFor(id) + 1);
     else if (e.target.closest('[data-qty-minus]')) setQty(item, Math.max(0, qtyFor(id) - 1));
   });

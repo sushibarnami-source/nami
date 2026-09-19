@@ -267,6 +267,7 @@
         price: row.price,
         photo: row.photo_url || null,
         name: { en: row.name_en, ka: row.name_ka, ru: row.name_ru },
+        soldOut: !!row.sold_out,
       }));
       menuLoaded = true;
       wMenuLoading.hidden = true;
@@ -289,15 +290,16 @@
 
   function itemCardHtml(item) {
     return `
-      <article class="menu-item" data-item-id="${item.id}">
+      <article class="menu-item${item.soldOut ? ' is-sold-out' : ''}" data-item-id="${item.id}">
+        ${item.soldOut ? '<span class="menu-item-soldout-badge">არ არის — Sold out</span>' : ''}
         <div class="menu-item-top">
           <h3 class="menu-item-name">${escapeHtml(item.name.ka || item.name.en)}</h3>
           <span class="menu-item-price">${escapeHtml(item.price)}</span>
         </div>
         <div class="qty-stepper">
-          <button type="button" class="qty-btn" data-qty-minus>−</button>
+          <button type="button" class="qty-btn" data-qty-minus ${item.soldOut ? 'disabled' : ''}>−</button>
           <span class="qty-value">${qtyFor(item.id)}</span>
-          <button type="button" class="qty-btn" data-qty-plus>+</button>
+          <button type="button" class="qty-btn" data-qty-plus ${item.soldOut ? 'disabled' : ''}>+</button>
         </div>
       </article>
     `;
@@ -314,7 +316,7 @@
     const card = e.target.closest('.menu-item');
     if (!card) return;
     const item = menuItems.find(i => i.id === card.dataset.itemId);
-    if (!item) return;
+    if (!item || item.soldOut) return;
     if (e.target.closest('[data-qty-plus]')) setQty(item, qtyFor(item.id) + 1);
     else if (e.target.closest('[data-qty-minus]')) setQty(item, Math.max(0, qtyFor(item.id) - 1));
   }
@@ -938,6 +940,7 @@
   function renderOrderMenuDatalist() {
     const datalist = document.getElementById('orderMenuItemDatalist');
     datalist.innerHTML = menuItems
+      .filter(i => !i.soldOut)
       .map(i => `<option value="${escapeHtml(i.name.ka || i.name.en)}">`)
       .join('');
   }
@@ -994,7 +997,7 @@
     if (!typed) { orderDetailAddError.textContent = 'აირჩიეთ კერძი სიიდან — pick a dish from the list'; return; }
     if (qty <= 0) { orderDetailAddError.textContent = 'რაოდენობა 0-ზე მეტი უნდა იყოს — quantity must be above 0'; return; }
 
-    const item = menuItems.find(i => (i.name.ka || i.name.en).toLowerCase() === typed.toLowerCase());
+    const item = menuItems.find(i => !i.soldOut && (i.name.ka || i.name.en).toLowerCase() === typed.toLowerCase());
     if (!item) { orderDetailAddError.textContent = `"${typed}" ვერ მოიძებნა მენიუში — no such dish in the menu`; return; }
 
     const addBtn = document.getElementById('orderDetailAddBtn');

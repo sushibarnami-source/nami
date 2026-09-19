@@ -156,6 +156,7 @@
     ka: { spicy: '🌶 ცხარე', veg: 'ვეგეტარიანული', new: 'ახალი', popular: '⭐ ყველაზე გაყიდვადი' },
     ru: { spicy: '🌶 Острое', veg: 'Вег.', new: 'Новинка', popular: '⭐ Хит продаж' },
   };
+  const SOLD_OUT_LABEL = { en: 'Sold out', ka: 'დროებით არ არის', ru: 'Нет в наличии' };
 
   const SUPPORTED_LANGS = ['en', 'ka', 'ru'];
   let currentLang = (() => {
@@ -344,6 +345,7 @@
         photo: row.photo_url || null,
         name: { en: row.name_en, ka: row.name_ka, ru: row.name_ru },
         desc: { en: row.desc_en, ka: row.desc_ka, ru: row.desc_ru },
+        soldOut: !!row.sold_out,
       }));
 
       renderMenu(currentCategory);
@@ -536,7 +538,7 @@
 
   function buildMenuItemCard(item, delayIndex) {
     const card = document.createElement('article');
-    card.className = 'menu-item';
+    card.className = 'menu-item' + (item.soldOut ? ' is-sold-out' : '');
     card.style.animationDelay = `${(delayIndex % 12) * 0.04}s`;
 
     const tagLabels = TAG_LABELS[currentLang] || TAG_LABELS.en;
@@ -549,9 +551,11 @@
     const photoHtml = item.photo
       ? `<div class="menu-item-photo-wrap"><img class="menu-item-photo" src="${item.photo}" alt="${name}" loading="lazy"></div>`
       : '';
+    const soldOutLabel = SOLD_OUT_LABEL[currentLang] || SOLD_OUT_LABEL.en;
 
     card.innerHTML = `
       ${photoHtml}
+      ${item.soldOut ? `<span class="menu-item-soldout-badge">${soldOutLabel}</span>` : ''}
       <div class="menu-item-top">
         <h3 class="menu-item-name">${name}</h3>
         <span class="menu-item-price">${item.price}</span>
