@@ -405,12 +405,12 @@
 
       const promoBanner = document.getElementById('promoBanner');
       if (promoBanner && data.promo_active) {
-        const photoWrap = document.getElementById('promoBannerPhotoWrap');
+        const mediaWrap = document.getElementById('promoBannerMedia');
         if (data.promo_photo_url) {
           document.getElementById('promoBannerPhoto').src = data.promo_photo_url;
-          photoWrap.hidden = false;
+          mediaWrap.hidden = false;
         } else {
-          photoWrap.hidden = true;
+          mediaWrap.hidden = true;
         }
         const amountEl = document.getElementById('promoBannerAmount');
         if (data.promo_amount) {
