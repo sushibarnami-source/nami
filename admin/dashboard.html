@@ -183,6 +183,25 @@
         <button type="button" class="admin-btn-primary" id="saveWhatsappSettingsBtn">Save — შენახვა</button>
       </div>
 
+      <h3 class="settings-group-title">Promotions Banner — აქციის ბანერი</h3>
+      <p class="content-help" style="margin-bottom:10px;">
+        დიდი ბანერი საიტის თავში, ჩანს მხოლოდ მაშინ, როცა "გააქტიურე" მონიშნულია. ტექსტი (სათაური/აღწერა) ჩაწერეთ ქვემოთ, „Homepage Text"-ის გვერდით, თითოეულ ენაზე ცალკე — Big banner at the top of the site, shown only while "Active" is checked below. Text fields are in the Homepage Text section further down, per language.
+      </p>
+      <div class="editor-row">
+        <label style="font-size:.85rem; display:flex; align-items:center; gap:6px; cursor:pointer;">
+          <input type="checkbox" id="sPromoActive"> გააქტიურე — Active
+        </label>
+      </div>
+      <div class="editor-field" style="margin-bottom:18px;">
+        <label>Photo — ფოტო (არასავალდებულო)</label>
+        <div class="photo-upload-row">
+          <input type="file" accept="image/*" id="sPromoPhotoFile">
+          <button type="button" class="admin-btn-secondary" id="sPromoPhotoUploadBtn">Upload Photo — ატვირთვა</button>
+          <button type="button" class="admin-btn-secondary" id="sPromoPhotoRemoveBtn" hidden>Remove Photo — წაშლა</button>
+        </div>
+        <img id="sPromoPhotoPreview" alt="" style="max-width:220px; border-radius:var(--radius-sm); margin-top:8px; display:none;">
+      </div>
+
       <h3 class="settings-group-title">Homepage Text — მთავარი გვერდის ტექსტი</h3>
       <div class="lang-tabs">
         <button type="button" class="lang-tab-btn settings-lang-tab active" data-lang="en">English</button>
@@ -203,6 +222,14 @@
         <div class="editor-field" style="margin-bottom:14px;">
           <label>Hero subtitle</label>
           <textarea id="sHeroSub_en" rows="2"></textarea>
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>Promo banner title — shown only while the banner is Active (above)</label>
+          <input type="text" id="sPromoTitle_en">
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>Promo banner text</label>
+          <textarea id="sPromoText_en" rows="2"></textarea>
         </div>
         <div class="editor-field" style="margin-bottom:14px;">
           <label>About Us story</label>
@@ -241,6 +268,14 @@
           <textarea id="sHeroSub_ka" rows="2"></textarea>
         </div>
         <div class="editor-field" style="margin-bottom:14px;">
+          <label>აქციის ბანერის სათაური — ჩანს მხოლოდ მაშინ, როცა ბანერი აქტიურია (ზემოთ)</label>
+          <input type="text" id="sPromoTitle_ka">
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>აქციის ბანერის ტექსტი</label>
+          <textarea id="sPromoText_ka" rows="2"></textarea>
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
           <label>ჩვენი ისტორია</label>
           <textarea id="sAboutP1_ka" rows="3"></textarea>
         </div>
@@ -275,6 +310,14 @@
         <div class="editor-field" style="margin-bottom:14px;">
           <label>Подзаголовок Hero</label>
           <textarea id="sHeroSub_ru" rows="2"></textarea>
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>Заголовок рекламного баннера — виден только когда баннер активен (выше)</label>
+          <input type="text" id="sPromoTitle_ru">
+        </div>
+        <div class="editor-field" style="margin-bottom:14px;">
+          <label>Текст рекламного баннера</label>
+          <textarea id="sPromoText_ru" rows="2"></textarea>
         </div>
         <div class="editor-field" style="margin-bottom:14px;">
           <label>Наша история</label>
