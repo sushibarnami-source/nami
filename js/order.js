@@ -170,6 +170,10 @@
   let currentCategory = 'rolls';
   const cart = {}; // menu_item id -> { item, qty }
 
+  let promoActive = false;
+  let promoTitle = { en: '', ka: '', ru: '' };
+  const promoBanner = document.getElementById('promoBanner');
+
   const tableGate = document.getElementById('tableGate');
   const takeoutGate = document.getElementById('takeoutGate');
   const orderMenuSection = document.getElementById('orderMenuSection');
@@ -202,6 +206,7 @@
     if (orderMode === 'takeout' && !tableBadge.hidden) tableBadgeNum.textContent = t('takeout_badge');
     if (menuItems.length) renderMenu(currentCategory);
     renderCart();
+    document.getElementById('promoBannerTitle').textContent = promoTitle[currentLang] || promoTitle.en || '';
   });
 
   /* ---------------------------------------------------------
@@ -217,6 +222,7 @@
     tableNumber = num;
     tableGate.hidden = true;
     orderMenuSection.hidden = false;
+    promoBanner.hidden = !promoActive;
     tableBadge.hidden = false;
     tableBadgeNum.textContent = num;
     try {
@@ -253,6 +259,7 @@
     takeoutAddress = address;
     takeoutGate.hidden = true;
     orderMenuSection.hidden = false;
+    promoBanner.hidden = !promoActive;
     tableBadge.hidden = false;
     tableBadge.querySelector('[data-i18n="badge_table"]').hidden = true;
     tableBadgeNum.textContent = t('takeout_badge');
@@ -479,6 +486,7 @@
   function showSuccess(entries) {
     cartModal.hidden = true;
     orderMenuSection.hidden = true;
+    promoBanner.hidden = true;
     cartBar.hidden = true;
     orderSuccessSection.hidden = false;
     document.getElementById('successLead').textContent = orderMode === 'takeout'
@@ -497,8 +505,13 @@
   document.getElementById('orderAnotherBtn').addEventListener('click', () => {
     orderSuccessSection.hidden = true;
     orderMenuSection.hidden = false;
+    promoBanner.hidden = !promoActive;
     renderMenu(currentCategory);
     renderCart();
+  });
+
+  document.getElementById('promoBannerClose').addEventListener('click', () => {
+    promoBanner.hidden = true;
   });
 
   /* ---------------------------------------------------------
@@ -511,9 +524,37 @@
 
     if (supabaseClient) {
       try {
-        const { data } = await supabaseClient.from('site_settings').select('table_count').eq('id', 1).single();
+        const { data } = await supabaseClient.from('site_settings')
+          .select('table_count, promo_active, promo_photo_url, promo_amount').eq('id', 1).single();
         if (data && data.table_count) tableCount = data.table_count;
-      } catch (e) { /* keep default */ }
+
+        if (data && data.promo_active) {
+          promoActive = true;
+
+          const mediaWrap = document.getElementById('promoBannerMedia');
+          if (data.promo_photo_url) {
+            document.getElementById('promoBannerPhoto').src = data.promo_photo_url;
+            mediaWrap.hidden = false;
+          } else {
+            mediaWrap.hidden = true;
+          }
+
+          const amountEl = document.getElementById('promoBannerAmount');
+          if (data.promo_amount) {
+            amountEl.textContent = data.promo_amount;
+            amountEl.hidden = false;
+          } else {
+            amountEl.hidden = true;
+          }
+
+          const { data: contentRow } = await supabaseClient.from('site_content')
+            .select('value_en, value_ka, value_ru').eq('key', 'promo_title').single();
+          if (contentRow) {
+            promoTitle = { en: contentRow.value_en, ka: contentRow.value_ka, ru: contentRow.value_ru };
+            document.getElementById('promoBannerTitle').textContent = promoTitle[currentLang] || promoTitle.en || '';
+          }
+        }
+      } catch (e) { /* keep defaults, promo banner stays hidden */ }
     }
     document.getElementById('tableInput').max = tableCount;
 
