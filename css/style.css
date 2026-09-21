@@ -394,7 +394,12 @@ section { padding: 110px 0; }
 .menu-section .section-lead, .blog-section .section-lead { text-align: center; }
 
 /* ---------- Menu ---------- */
-.menu-section { background: var(--paper); }
+.menu-section { background: var(--paper); padding-top: 0; scroll-margin-top: 78px; }
+.menu-section > .container { padding-top: 110px; }
+@media (max-width: 600px) {
+  .menu-section { scroll-margin-top: 66px; }
+  .menu-section > .container { padding-top: 80px; }
+}
 
 .menu-tabs {
   display: flex;
