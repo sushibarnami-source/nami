@@ -2120,6 +2120,7 @@
       document.getElementById('sOpen').value = settingsRow.weekday_open || '';
       document.getElementById('sClose').value = settingsRow.weekday_close || '';
       document.getElementById('sPromoActive').checked = !!settingsRow.promo_active;
+      document.getElementById('sPromoAmount').value = settingsRow.promo_amount || '';
       currentPromoPhotoUrl = settingsRow.promo_photo_url || null;
       updatePromoPhotoPreview();
     }
@@ -2154,6 +2155,7 @@
       weekday_open: document.getElementById('sOpen').value.trim(),
       weekday_close: document.getElementById('sClose').value.trim(),
       promo_active: document.getElementById('sPromoActive').checked,
+      promo_amount: document.getElementById('sPromoAmount').value.trim(),
       promo_photo_url: currentPromoPhotoUrl,
     };
 

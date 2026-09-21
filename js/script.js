@@ -412,6 +412,13 @@
         } else {
           photoWrap.hidden = true;
         }
+        const amountEl = document.getElementById('promoBannerAmount');
+        if (data.promo_amount) {
+          amountEl.textContent = data.promo_amount;
+          amountEl.hidden = false;
+        } else {
+          amountEl.hidden = true;
+        }
         promoBanner.hidden = false;
       }
     } catch (e) {
