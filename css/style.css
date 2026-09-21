@@ -251,6 +251,17 @@ a { color: inherit; text-decoration: none; }
   border: 2px solid rgba(255,255,255,.7);
 }
 .promo-banner-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
+.promo-banner-amount {
+  flex-shrink: 0;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: var(--cream);
+  background: rgba(17,36,28,.28);
+  padding: 6px 16px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
 .promo-banner-text { flex: 1; min-width: 0; }
 .promo-banner-title {
   font-family: var(--font-head);
@@ -282,6 +293,7 @@ a { color: inherit; text-decoration: none; }
   .promo-banner { margin-top: 66px; }
   .promo-banner-inner { padding: 14px 52px 14px 16px; gap: 12px; }
   .promo-banner-photo-wrap { width: 48px; height: 48px; }
+  .promo-banner-amount { font-size: 1.15rem; padding: 4px 12px; }
   .promo-banner-title { font-size: 1.05rem; }
 }
 

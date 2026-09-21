@@ -185,7 +185,7 @@
 
       <h3 class="settings-group-title">Promotions Banner — აქციის ბანერი</h3>
       <p class="content-help" style="margin-bottom:10px;">
-        დიდი ბანერი საიტის თავში, ჩანს მხოლოდ მაშინ, როცა "გააქტიურე" მონიშნულია. ტექსტი (სათაური/აღწერა) ჩაწერეთ ქვემოთ, „Homepage Text"-ის გვერდით, თითოეულ ენაზე ცალკე — Big banner at the top of the site, shown only while "Active" is checked below. Text fields are in the Homepage Text section further down, per language.
+        დიდი ბანერი საიტის თავში, ჩანს მხოლოდ მაშინ, როცა "გააქტიურე" მონიშნულია — Big banner at the top of the site, shown only while "Active" is checked below.
       </p>
       <div class="editor-row">
         <label style="font-size:.85rem; display:flex; align-items:center; gap:6px; cursor:pointer;">
@@ -200,6 +200,24 @@
           <button type="button" class="admin-btn-secondary" id="sPromoPhotoRemoveBtn" hidden>Remove Photo — წაშლა</button>
         </div>
         <img id="sPromoPhotoPreview" alt="" style="max-width:220px; border-radius:var(--radius-sm); margin-top:8px; display:none;">
+      </div>
+      <div class="editor-field" style="max-width:220px; margin-bottom:18px;">
+        <label for="sPromoAmount">თანხა/ფასდაკლება — Amount (არასავალდებულო)</label>
+        <input type="text" id="sPromoAmount" placeholder="-20%">
+      </div>
+      <div class="editor-row" style="margin-bottom:18px;">
+        <div class="editor-field">
+          <label for="sPromoTitle_en">Text — English</label>
+          <textarea id="sPromoTitle_en" rows="2"></textarea>
+        </div>
+        <div class="editor-field">
+          <label for="sPromoTitle_ka">ტექსტი — ქართული</label>
+          <textarea id="sPromoTitle_ka" rows="2"></textarea>
+        </div>
+        <div class="editor-field">
+          <label for="sPromoTitle_ru">Текст — Русский</label>
+          <textarea id="sPromoTitle_ru" rows="2"></textarea>
+        </div>
       </div>
 
       <h3 class="settings-group-title">Homepage Text — მთავარი გვერდის ტექსტი</h3>
@@ -222,10 +240,6 @@
         <div class="editor-field" style="margin-bottom:14px;">
           <label>Hero subtitle</label>
           <textarea id="sHeroSub_en" rows="2"></textarea>
-        </div>
-        <div class="editor-field" style="margin-bottom:14px;">
-          <label>Promo banner text — shown only while the banner is Active (above)</label>
-          <textarea id="sPromoTitle_en" rows="2"></textarea>
         </div>
         <div class="editor-field" style="margin-bottom:14px;">
           <label>About Us story</label>
@@ -264,10 +278,6 @@
           <textarea id="sHeroSub_ka" rows="2"></textarea>
         </div>
         <div class="editor-field" style="margin-bottom:14px;">
-          <label>აქციის ბანერის ტექსტი — ჩანს მხოლოდ მაშინ, როცა ბანერი აქტიურია (ზემოთ)</label>
-          <textarea id="sPromoTitle_ka" rows="2"></textarea>
-        </div>
-        <div class="editor-field" style="margin-bottom:14px;">
           <label>ჩვენი ისტორია</label>
           <textarea id="sAboutP1_ka" rows="3"></textarea>
         </div>
@@ -302,10 +312,6 @@
         <div class="editor-field" style="margin-bottom:14px;">
           <label>Подзаголовок Hero</label>
           <textarea id="sHeroSub_ru" rows="2"></textarea>
-        </div>
-        <div class="editor-field" style="margin-bottom:14px;">
-          <label>Текст рекламного баннера — виден только когда баннер активен (выше)</label>
-          <textarea id="sPromoTitle_ru" rows="2"></textarea>
         </div>
         <div class="editor-field" style="margin-bottom:14px;">
           <label>Наша история</label>
