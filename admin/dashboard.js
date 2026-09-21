@@ -1950,12 +1950,12 @@
   --------------------------------------------------------- */
   const settingsForm = document.getElementById('settingsForm');
   const SETTINGS_CONTENT_KEYS = [
-    'hero_eyebrow', 'hero_title', 'hero_sub', 'promo_title', 'promo_text', 'about_p1',
+    'hero_eyebrow', 'hero_title', 'hero_sub', 'promo_title', 'about_p1',
     'stat_dishes', 'stat_fresh', 'info_address_value', 'info_hours_value',
   ];
   const SETTINGS_FIELD_MAP = {
     hero_eyebrow: 'sHeroEyebrow', hero_title: 'sHeroTitle', hero_sub: 'sHeroSub',
-    promo_title: 'sPromoTitle', promo_text: 'sPromoText',
+    promo_title: 'sPromoTitle',
     about_p1: 'sAboutP1', stat_dishes: 'sStatDishes', stat_fresh: 'sStatFresh',
     info_address_value: 'sAddress', info_hours_value: 'sHoursValue',
   };
