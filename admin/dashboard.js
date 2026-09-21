@@ -1950,14 +1950,66 @@
   --------------------------------------------------------- */
   const settingsForm = document.getElementById('settingsForm');
   const SETTINGS_CONTENT_KEYS = [
-    'hero_eyebrow', 'hero_title', 'hero_sub', 'about_p1',
+    'hero_eyebrow', 'hero_title', 'hero_sub', 'promo_title', 'promo_text', 'about_p1',
     'stat_dishes', 'stat_fresh', 'info_address_value', 'info_hours_value',
   ];
   const SETTINGS_FIELD_MAP = {
     hero_eyebrow: 'sHeroEyebrow', hero_title: 'sHeroTitle', hero_sub: 'sHeroSub',
+    promo_title: 'sPromoTitle', promo_text: 'sPromoText',
     about_p1: 'sAboutP1', stat_dishes: 'sStatDishes', stat_fresh: 'sStatFresh',
     info_address_value: 'sAddress', info_hours_value: 'sHoursValue',
   };
+
+  let currentPromoPhotoUrl = null;
+  function updatePromoPhotoPreview() {
+    const img = document.getElementById('sPromoPhotoPreview');
+    const removeBtn = document.getElementById('sPromoPhotoRemoveBtn');
+    if (currentPromoPhotoUrl) {
+      img.src = currentPromoPhotoUrl;
+      img.style.display = 'block';
+      removeBtn.hidden = false;
+    } else {
+      img.style.display = 'none';
+      img.src = '';
+      removeBtn.hidden = true;
+    }
+  }
+
+  document.getElementById('sPromoPhotoUploadBtn').addEventListener('click', async () => {
+    const fileInput = document.getElementById('sPromoPhotoFile');
+    const file = fileInput.files[0];
+    if (!file) {
+      showToast('Choose a photo first. — ჯერ აირჩიეთ ფოტო.', true);
+      return;
+    }
+
+    const btn = document.getElementById('sPromoPhotoUploadBtn');
+    btn.disabled = true;
+    btn.textContent = 'Uploading… — იტვირთება...';
+
+    const ext = file.name.split('.').pop();
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+    const { error: uploadError } = await supabaseClient.storage.from('menu-photos').upload(path, file);
+
+    btn.disabled = false;
+    btn.textContent = 'Upload Photo — ატვირთვა';
+
+    if (uploadError) {
+      showToast(`Upload failed: ${uploadError.message} — ატვირთვა ვერ მოხერხდა`, true);
+      return;
+    }
+
+    const { data: pub } = supabaseClient.storage.from('menu-photos').getPublicUrl(path);
+    currentPromoPhotoUrl = pub.publicUrl;
+    fileInput.value = '';
+    updatePromoPhotoPreview();
+  });
+
+  document.getElementById('sPromoPhotoRemoveBtn').addEventListener('click', () => {
+    currentPromoPhotoUrl = null;
+    updatePromoPhotoPreview();
+  });
 
   function switchSettingsLangTab(lang) {
     settingsForm.querySelectorAll('.settings-lang-tab').forEach(btn => {
@@ -2067,6 +2119,9 @@
       document.getElementById('sEmail').value = settingsRow.email || '';
       document.getElementById('sOpen').value = settingsRow.weekday_open || '';
       document.getElementById('sClose').value = settingsRow.weekday_close || '';
+      document.getElementById('sPromoActive').checked = !!settingsRow.promo_active;
+      currentPromoPhotoUrl = settingsRow.promo_photo_url || null;
+      updatePromoPhotoPreview();
     }
 
     const byKey = {};
@@ -2098,6 +2153,8 @@
       email: document.getElementById('sEmail').value.trim(),
       weekday_open: document.getElementById('sOpen').value.trim(),
       weekday_close: document.getElementById('sClose').value.trim(),
+      promo_active: document.getElementById('sPromoActive').checked,
+      promo_photo_url: currentPromoPhotoUrl,
     };
 
     const contentPayload = SETTINGS_CONTENT_KEYS.map(key => {

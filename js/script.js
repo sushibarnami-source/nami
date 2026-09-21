@@ -402,10 +402,26 @@
         });
         updateHours();
       }
+
+      const promoBanner = document.getElementById('promoBanner');
+      if (promoBanner && data.promo_active) {
+        const photoWrap = document.getElementById('promoBannerPhotoWrap');
+        if (data.promo_photo_url) {
+          document.getElementById('promoBannerPhoto').src = data.promo_photo_url;
+          photoWrap.hidden = false;
+        } else {
+          photoWrap.hidden = true;
+        }
+        promoBanner.hidden = false;
+      }
     } catch (e) {
       // offline, blocked, or Supabase unreachable — keep the fallback settings
     }
   }
+
+  document.getElementById('promoBannerClose').addEventListener('click', () => {
+    document.getElementById('promoBanner').hidden = true;
+  });
 
   /* ---------------------------------------------------------
      Illustrations used inside blog article content
