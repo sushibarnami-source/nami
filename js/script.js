@@ -9,7 +9,7 @@
   --------------------------------------------------------- */
   const UI = {
     en: {
-      nav_home: 'Home', nav_menu: 'Menu', nav_blog: 'Blog', nav_about: 'About Us', nav_contact: 'Contact',
+      nav_home: 'Home', nav_menu: 'Menu', nav_promo: 'Promotions', nav_blog: 'Blog', nav_about: 'About Us', nav_contact: 'Contact',
       nav_reserve: 'Reserve a Table', footer_about: 'About',
       hero_eyebrow: 'Tradition · Taste · Innovation',
       hero_title: 'A <span class="accent">Wave</span> of Japanese Flavor',
@@ -56,7 +56,7 @@
       footer_copy: '© {year} NAMI • ნამი Sushi Bar. All rights reserved.',
     },
     ka: {
-      nav_home: 'მთავარი', nav_menu: 'მენიუ', nav_blog: 'ბლოგი', nav_about: 'ჩვენს შესახებ', nav_contact: 'კონტაქტი',
+      nav_home: 'მთავარი', nav_menu: 'მენიუ', nav_promo: 'შეთავაზებები', nav_blog: 'ბლოგი', nav_about: 'ჩვენს შესახებ', nav_contact: 'კონტაქტი',
       nav_reserve: 'მაგიდის დაჯავშნა', footer_about: 'ჩვენ შესახებ',
       hero_eyebrow: 'ტრადიცია · გემო · სიახლე',
       hero_title: 'იაპონური გემოს <span class="accent">ტალღა</span>',
@@ -103,7 +103,7 @@
       footer_copy: '© {year} NAMI • ნამი სუში ბარი. ყველა უფლება დაცულია.',
     },
     ru: {
-      nav_home: 'Главная', nav_menu: 'Меню', nav_blog: 'Блог', nav_about: 'О нас', nav_contact: 'Контакты',
+      nav_home: 'Главная', nav_menu: 'Меню', nav_promo: 'Акции', nav_blog: 'Блог', nav_about: 'О нас', nav_contact: 'Контакты',
       nav_reserve: 'Забронировать столик', footer_about: 'О нас',
       hero_eyebrow: 'Традиция · Вкус · Новинка',
       hero_title: '<span class="accent">Волна</span> японского вкуса',
@@ -420,6 +420,9 @@
           amountEl.hidden = true;
         }
         promoBanner.hidden = false;
+
+        const navPromoLink = document.getElementById('navPromoLink');
+        if (navPromoLink) navPromoLink.hidden = false;
       }
     } catch (e) {
       // offline, blocked, or Supabase unreachable — keep the fallback settings
