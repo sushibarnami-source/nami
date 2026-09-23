@@ -244,6 +244,7 @@ a { color: inherit; text-decoration: none; }
   box-shadow: 0 6px 24px rgba(0,0,0,.25);
   animation: promoGlow 3s ease-in-out infinite;
 }
+.promo-banner[hidden] { display: none; }
 @keyframes promoGlow {
   0%, 100% { box-shadow: 0 6px 24px rgba(168,52,42,.35); }
   50% { box-shadow: 0 6px 32px rgba(183,163,105,.55); }
