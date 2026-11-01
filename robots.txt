@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://nami.org.ge/sitemap.xml
+Sitemap: https://sushibarnami-source.github.io/nami/sitemap.xml
