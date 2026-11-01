@@ -150,7 +150,7 @@ a { color: inherit; text-decoration: none; }
   font-family: var(--font-head);
   white-space: nowrap;
 }
-.logo-img { height: 48px; width: auto; }
+.logo-img { height: 60px; width: auto; }
 
 .main-nav ul {
   display: flex;
@@ -161,7 +161,7 @@ a { color: inherit; text-decoration: none; }
 }
 .nav-link {
   color: rgba(250, 246, 239, .85);
-  font-size: 1.13rem;
+  font-size: 1.35rem;
   letter-spacing: .03em;
   position: relative;
   padding: 4px 0;
@@ -273,18 +273,18 @@ a { color: inherit; text-decoration: none; }
   font-weight: 500;
   margin-bottom: 16px;
 }
-.hero .eyebrow { font-size: .97rem; }
+.hero .eyebrow { font-size: 1.15rem; }
 
 .hero h1 {
   color: var(--cream);
-  font-size: clamp(2.9rem, 6.6vw, 5.1rem);
+  font-size: clamp(3.1rem, 7vw, 5.4rem);
   margin-bottom: 20px;
 }
 .hero h1 .accent { color: var(--green-light); }
 
 .hero-sub {
   color: rgba(250, 246, 239, .78);
-  font-size: 1.28rem;
+  font-size: 1.5rem;
   max-width: 560px;
   margin: 0 auto 36px;
 }
@@ -867,7 +867,7 @@ section { padding: 110px 0; }
   .hero { padding-top: 120px; }
   .contact-form { padding: 26px; }
   .hours-card { padding: 26px; }
-  .logo-img { height: 38px; }
+  .logo-img { height: 46px; }
   .lang-btn { padding: 5px 8px; font-size: .72rem; }
 }
 
