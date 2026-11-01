@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+  schedule:
+    # Refreshes the SEO menu snapshot (scripts/build-seo-snapshot.mjs) daily,
+    # even on days nobody pushes a code change.
+    - cron: '0 3 * * *'
   workflow_dispatch:
 
 permissions:
@@ -24,6 +28,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build SEO snapshot
+        run: node scripts/build-seo-snapshot.mjs
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
