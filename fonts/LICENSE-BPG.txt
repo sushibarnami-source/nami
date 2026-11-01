@@ -1,0 +1,18 @@
+BPG Ucnobi (file: BPG-Ucnobi.woff2)
+
+Author: Vissarion Gougouchvili (Bessarion Paata Gugushvili), BPG-InfoTech
+Source: Debian source package "fonts-bpg-georgian" (debian/copyright),
+        mirrored at https://github.com/deepin-community/fonts-bpg-georgian
+License: GNU General Public License, version 2 (GPL-2.0-only)
+
+This is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License.
+
+This is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+for more details: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+Converted from the original OpenType (.otf) to WOFF2 for web delivery;
+no glyphs or metrics were modified.
