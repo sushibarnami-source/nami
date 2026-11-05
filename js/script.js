@@ -508,6 +508,8 @@
       if (error || !data || !data.length) return;
 
       BLOG_POSTS = data.map(row => ({
+        slug: row.slug,
+        photo_url: row.photo_url,
         icon: row.icon,
         gradient: row.gradient,
         date: {
@@ -523,6 +525,7 @@
 
       renderBlog();
       if (openPostIndex !== null) renderBlogModal(openPostIndex);
+      tryOpenBlogPostFromUrl();
     } catch (e) {
       // offline, blocked, or Supabase unreachable — keep the fallback post
     }
@@ -677,9 +680,12 @@
       const excerpt = escapeHtml(post.excerpt[currentLang] || post.excerpt.en);
       const tag = escapeHtml(post.tag[currentLang] || post.tag.en);
       const date = escapeHtml(post.date[currentLang] || post.date.en);
+      const thumbStyle = post.photo_url
+        ? `background-image:url('${escapeHtml(post.photo_url)}'); background-size:cover; background-position:center;`
+        : `background:${escapeHtml(post.gradient)};`;
       return `
       <article class="blog-card">
-        <div class="blog-thumb" style="background:${escapeHtml(post.gradient)}">${escapeHtml(post.icon)}</div>
+        <div class="blog-thumb" style="${thumbStyle}">${post.photo_url ? '' : escapeHtml(post.icon)}</div>
         <div class="blog-body">
           <div class="blog-meta"><span>${tag}</span><span>${date}</span></div>
           <h3 class="blog-title">${title}</h3>
@@ -711,8 +717,17 @@
     const date = post.date[currentLang] || post.date.en;
     const paragraphs = post.content[currentLang] || post.content.en;
 
-    blogModalThumb.style.background = post.gradient;
-    blogModalThumb.textContent = post.icon;
+    if (post.photo_url) {
+      blogModalThumb.style.background = '';
+      blogModalThumb.style.backgroundImage = `url('${post.photo_url}')`;
+      blogModalThumb.style.backgroundSize = 'cover';
+      blogModalThumb.style.backgroundPosition = 'center';
+      blogModalThumb.textContent = '';
+    } else {
+      blogModalThumb.style.backgroundImage = '';
+      blogModalThumb.style.background = post.gradient;
+      blogModalThumb.textContent = post.icon;
+    }
     blogModalMeta.innerHTML = `<span>${escapeHtml(tag)}</span><span>${escapeHtml(date)}</span>`;
     blogModalTitle.textContent = title;
     blogModalContent.innerHTML = paragraphs
@@ -727,12 +742,36 @@
     renderBlogModal(index);
     blogModal.hidden = false;
     document.body.style.overflow = 'hidden';
+    if (post.slug) {
+      history.replaceState(null, '', `#blog?post=${encodeURIComponent(post.slug)}`);
+    }
   }
 
   function closeBlogModal() {
     openPostIndex = null;
     blogModal.hidden = true;
     document.body.style.overflow = '';
+    if (window.location.hash.startsWith('#blog?post=')) {
+      history.replaceState(null, '', '#blog');
+    }
+  }
+
+  /* Opens the post named by a shared link's #blog?post=<slug> hash
+     (written by scripts/build-seo-snapshot.mjs's per-post pages), once
+     the matching post has actually loaded. */
+  let blogDeepLinkOpened = false;
+  function tryOpenBlogPostFromUrl() {
+    if (blogDeepLinkOpened) return;
+    const hash = window.location.hash || '';
+    const qIndex = hash.indexOf('?');
+    if (qIndex === -1 || !hash.slice(0, qIndex).includes('blog')) return;
+    const slug = new URLSearchParams(hash.slice(qIndex + 1)).get('post');
+    if (!slug) return;
+    const index = BLOG_POSTS.findIndex(p => p.slug === slug);
+    if (index === -1) return;
+    blogDeepLinkOpened = true;
+    openBlogModal(index);
+    document.getElementById('blog')?.scrollIntoView();
   }
 
   blogGrid.addEventListener('click', (e) => {
@@ -1015,6 +1054,7 @@
   applyStaticTranslations();
   renderMenu('all');
   renderBlog();
+  tryOpenBlogPostFromUrl();
   updateHours();
   renderFooterCopy();
   loadBlogPostsFromSupabase();

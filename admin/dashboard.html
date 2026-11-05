@@ -474,6 +474,16 @@
       </div>
     </div>
 
+    <div class="editor-field" style="margin-bottom:14px;">
+      <label>Featured photo (used on the blog card and as the preview image when this post's own link is shared, e.g. on Facebook) — ფოტო ბარათისთვის და გაზიარებისას</label>
+      <div class="photo-upload-row">
+        <input type="file" accept="image/*" id="fPhotoFile">
+        <button type="button" class="admin-btn-secondary" id="fPhotoUploadBtn">Upload Photo — ატვირთვა</button>
+        <button type="button" class="admin-btn-secondary" id="fPhotoRemoveBtn" hidden>Remove Photo — წაშლა</button>
+      </div>
+      <img id="fPhotoPreview" alt="" style="max-width:160px; border-radius:var(--radius-sm); margin-top:8px; display:none;">
+    </div>
+
     <div class="lang-tabs">
       <button type="button" class="lang-tab-btn active" data-lang="en">English</button>
       <button type="button" class="lang-tab-btn" data-lang="ka">ქართული</button>
