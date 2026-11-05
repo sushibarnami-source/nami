@@ -1,2 +1,6 @@
 # Local scratch / preview builds (not part of the deployed site)
 scratch/
+
+# Generated at deploy time by scripts/build-seo-snapshot.mjs — static
+# per-blog-post pages with real Open Graph tags for link sharing.
+/blog/

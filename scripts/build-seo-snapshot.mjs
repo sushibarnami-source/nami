@@ -17,9 +17,12 @@
    downside) rather than breaking the deploy.
    ========================================================= */
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, rmSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+
+const SITE_URL = 'https://nami.org.ge';
+const DEFAULT_OG_IMAGE = `${SITE_URL}/images/hero-great-wave.jpg`;
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
@@ -103,6 +106,68 @@ function injectMenuJsonLd(menuJsonLd) {
   console.log(`Injected menu JSON-LD: ${menuJsonLd.hasMenuSection.length} sections, ${menuJsonLd.hasMenuSection.reduce((n, s) => n + s.hasMenuItem.length, 0)} items`);
 }
 
+function escapeAttr(str) {
+  return String(str || '').replace(/[&<>"']/g, c => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+  ));
+}
+
+async function fetchBlogPosts({ url, key }) {
+  const endpoint = `${url}/rest/v1/blog_posts?select=slug,title_ka,title_en,excerpt_ka,excerpt_en,photo_url&published=eq.true`;
+  const res = await fetch(endpoint, {
+    headers: { apikey: key, Authorization: `Bearer ${key}` },
+  });
+  if (!res.ok) throw new Error(`Supabase blog_posts fetch failed: ${res.status}`);
+  return res.json();
+}
+
+function buildBlogPostPage(post) {
+  const title = post.title_ka || post.title_en || 'NAMI ბლოგი';
+  const excerpt = post.excerpt_ka || post.excerpt_en || '';
+  const image = post.photo_url || DEFAULT_OG_IMAGE;
+  const canonical = `${SITE_URL}/blog/${post.slug}.html`;
+  const redirectTarget = `/#blog?post=${encodeURIComponent(post.slug)}`;
+
+  return `<!doctype html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${escapeAttr(title)} | NAMI • ნამი</title>
+<meta name="description" content="${escapeAttr(excerpt)}">
+<link rel="canonical" href="${canonical}">
+<meta property="og:type" content="article">
+<meta property="og:title" content="${escapeAttr(title)}">
+<meta property="og:description" content="${escapeAttr(excerpt)}">
+<meta property="og:image" content="${escapeAttr(image)}">
+<meta property="og:url" content="${canonical}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${escapeAttr(title)}">
+<meta name="twitter:description" content="${escapeAttr(excerpt)}">
+<meta name="twitter:image" content="${escapeAttr(image)}">
+<meta http-equiv="refresh" content="0; url=${redirectTarget}">
+<link rel="icon" href="/images/favicon.png">
+</head>
+<body>
+<p><a href="${redirectTarget}">${escapeAttr(title)} — NAMI ბლოგში გასახსნელად დააჭირეთ აქ</a></p>
+<script>location.replace(${JSON.stringify(redirectTarget)});</script>
+</body>
+</html>
+`;
+}
+
+function writeBlogPostPages(posts) {
+  const blogDir = path.join(ROOT, 'blog');
+  rmSync(blogDir, { recursive: true, force: true });
+  if (!posts.length) return;
+  mkdirSync(blogDir, { recursive: true });
+  for (const post of posts) {
+    if (!post.slug) continue;
+    writeFileSync(path.join(blogDir, `${post.slug}.html`), buildBlogPostPage(post));
+  }
+  console.log(`Wrote ${posts.length} static blog post page(s) for sharing`);
+}
+
 function refreshSitemapLastmod() {
   const sitemapPath = path.join(ROOT, 'sitemap.xml');
   const xml = readFileSync(sitemapPath, 'utf8');
@@ -123,6 +188,14 @@ async function main() {
     else console.warn('No published menu items found — leaving menuJsonLd placeholder as null');
   } catch (e) {
     console.warn(`SEO snapshot: menu fetch/injection skipped (${e.message})`);
+  }
+
+  try {
+    const config = readSupabaseConfig();
+    const posts = await fetchBlogPosts(config);
+    writeBlogPostPages(posts);
+  } catch (e) {
+    console.warn(`SEO snapshot: blog post pages skipped (${e.message})`);
   }
 
   try {

@@ -92,6 +92,7 @@
         <div class="post-row-main">
           <p class="post-row-title">${escapeHtml(p.title_en)}</p>
           <p class="post-row-meta">${escapeHtml(p.post_date)} · ${escapeHtml(p.tag_en)}</p>
+          ${p.published && p.slug ? `<p class="post-row-meta">🔗 nami.org.ge/blog/${escapeHtml(p.slug)}.html — გასაზიარებელი ბმული</p>` : ''}
         </div>
         <span class="post-row-badge ${p.published ? 'is-published' : ''}">${p.published ? 'გამოქვეყნებული' : 'მონახაზი'}</span>
         <div class="post-row-actions">
@@ -198,6 +199,57 @@
     return (base || 'post') + '-' + Date.now().toString(36).slice(-5);
   }
 
+  let currentPostPhotoUrl = null;
+
+  function updatePostPhotoPreview() {
+    const img = document.getElementById('fPhotoPreview');
+    const removeBtn = document.getElementById('fPhotoRemoveBtn');
+    if (currentPostPhotoUrl) {
+      img.src = currentPostPhotoUrl;
+      img.style.display = 'block';
+      removeBtn.hidden = false;
+    } else {
+      img.style.display = 'none';
+      img.src = '';
+      removeBtn.hidden = true;
+    }
+  }
+
+  document.getElementById('fPhotoUploadBtn').addEventListener('click', async () => {
+    const fileInput = document.getElementById('fPhotoFile');
+    const file = fileInput.files[0];
+    if (!file) {
+      showToast('Choose a photo first. — ჯერ აირჩიეთ ფოტო.', true);
+      return;
+    }
+
+    const btn = document.getElementById('fPhotoUploadBtn');
+    btn.disabled = true;
+    btn.textContent = 'Uploading… — იტვირთება...';
+
+    const ext = file.name.split('.').pop();
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error: uploadError } = await supabaseClient.storage.from('blog-photos').upload(path, file);
+
+    btn.disabled = false;
+    btn.textContent = 'Upload Photo — ატვირთვა';
+
+    if (uploadError) {
+      showToast(`Upload failed: ${uploadError.message} — ატვირთვა ვერ მოხერხდა`, true);
+      return;
+    }
+
+    const { data: pub } = supabaseClient.storage.from('blog-photos').getPublicUrl(path);
+    currentPostPhotoUrl = pub.publicUrl;
+    fileInput.value = '';
+    updatePostPhotoPreview();
+  });
+
+  document.getElementById('fPhotoRemoveBtn').addEventListener('click', () => {
+    currentPostPhotoUrl = null;
+    updatePostPhotoPreview();
+  });
+
   function switchLangTab(lang) {
     overlay.querySelectorAll('.lang-tab-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.lang === lang);
@@ -221,6 +273,8 @@
     document.getElementById('fDate').value = post ? post.post_date : new Date().toISOString().slice(0, 10);
     document.getElementById('fSortOrder').value = post ? post.sort_order : 0;
     document.getElementById('fPublished').checked = post ? post.published : true;
+    currentPostPhotoUrl = post ? (post.photo_url || null) : null;
+    updatePostPhotoPreview();
 
     LANGS.forEach(lang => {
       document.getElementById(`fTag_${lang}`).value = post ? post[`tag_${lang}`] : '';
@@ -321,6 +375,7 @@
       post_date: document.getElementById('fDate').value,
       sort_order: Number(document.getElementById('fSortOrder').value) || 0,
       published: document.getElementById('fPublished').checked,
+      photo_url: currentPostPhotoUrl,
     };
 
     LANGS.forEach(lang => {
