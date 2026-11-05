@@ -164,7 +164,7 @@
       const saved = localStorage.getItem('nami_lang');
       if (saved && SUPPORTED_LANGS.includes(saved)) return saved;
     } catch (e) { /* localStorage unavailable */ }
-    return 'en';
+    return 'ka';
   })();
 
   function t(key) {
