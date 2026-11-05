@@ -130,6 +130,32 @@
     return div.innerHTML;
   }
 
+  /* Downscales a photo before upload so a straight-from-camera file
+     (often several MB at 3000px+) doesn't ship to every visitor at
+     full size. Keeps the original format (so PNG transparency, e.g.
+     on dish photos, survives) and only resizes — never upscales a
+     smaller image. Falls back to the original file if decoding fails
+     (e.g. an unsupported format) rather than blocking the upload. */
+  async function resizeImageFile(file, maxDim = 1600) {
+    try {
+      const bitmap = await createImageBitmap(file);
+      const scale = Math.min(1, maxDim / Math.max(bitmap.width, bitmap.height));
+      if (scale === 1) { bitmap.close(); return file; }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(bitmap.width * scale);
+      canvas.height = Math.round(bitmap.height * scale);
+      canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      bitmap.close();
+
+      const type = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, type, 0.85));
+      return blob ? new File([blob], file.name, { type }) : file;
+    } catch (e) {
+      return file;
+    }
+  }
+
   // Cost per usable unit, after accounting for yield_pct — trim/waste
   // shrinks it (80% yield: 45 ₾/kg raw → 56.25 ₾/kg usable), cooking
   // gain grows it (rice/noodles absorbing water, e.g. 200-300% yield:
@@ -227,9 +253,10 @@
     btn.disabled = true;
     btn.textContent = 'Uploading… — იტვირთება...';
 
-    const ext = file.name.split('.').pop();
+    const resized = await resizeImageFile(file);
+    const ext = resized.type === 'image/png' ? 'png' : 'jpg';
     const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-    const { error: uploadError } = await supabaseClient.storage.from('blog-photos').upload(path, file);
+    const { error: uploadError } = await supabaseClient.storage.from('blog-photos').upload(path, resized);
 
     btn.disabled = false;
     btn.textContent = 'Upload Photo — ატვირთვა';
@@ -326,9 +353,10 @@
       insertPhotoBtn.disabled = true;
       insertPhotoBtn.textContent = 'Uploading… — იტვირთება...';
 
-      const ext = file.name.split('.').pop();
+      const resized = await resizeImageFile(file);
+      const ext = resized.type === 'image/png' ? 'png' : 'jpg';
       const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-      const { error: uploadError } = await supabaseClient.storage.from('blog-photos').upload(path, file);
+      const { error: uploadError } = await supabaseClient.storage.from('blog-photos').upload(path, resized);
 
       insertPhotoBtn.disabled = false;
       insertPhotoBtn.textContent = originalLabel;
@@ -1493,10 +1521,11 @@
     btn.disabled = true;
     btn.textContent = 'Uploading… — იტვირთება...';
 
-    const ext = file.name.split('.').pop();
+    const resized = await resizeImageFile(file);
+    const ext = resized.type === 'image/png' ? 'png' : 'jpg';
     const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
-    const { error: uploadError } = await supabaseClient.storage.from('menu-photos').upload(path, file);
+    const { error: uploadError } = await supabaseClient.storage.from('menu-photos').upload(path, resized);
 
     btn.disabled = false;
     btn.textContent = 'Upload Photo — ატვირთვა';
@@ -2042,10 +2071,11 @@
     btn.disabled = true;
     btn.textContent = 'Uploading… — იტვირთება...';
 
-    const ext = file.name.split('.').pop();
+    const resized = await resizeImageFile(file, 1920);
+    const ext = resized.type === 'image/png' ? 'png' : 'jpg';
     const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
-    const { error: uploadError } = await supabaseClient.storage.from('menu-photos').upload(path, file);
+    const { error: uploadError } = await supabaseClient.storage.from('menu-photos').upload(path, resized);
 
     btn.disabled = false;
     btn.textContent = 'Upload Photo — ატვირთვა';
