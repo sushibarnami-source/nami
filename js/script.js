@@ -502,8 +502,8 @@
         .from('blog_posts')
         .select('*')
         .eq('published', true)
-        .order('sort_order', { ascending: false })
-        .order('post_date', { ascending: false });
+        .order('post_date', { ascending: false })
+        .order('sort_order', { ascending: false });
 
       if (error || !data || !data.length) return;
 
