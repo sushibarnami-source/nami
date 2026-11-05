@@ -132,6 +132,7 @@ function buildBlogPostPage(post) {
 <html lang="ka">
 <head>
 <meta charset="UTF-8">
+<script>location.replace(${JSON.stringify(redirectTarget)});</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${escapeAttr(title)} | NAMI • ნამი</title>
 <meta name="description" content="${escapeAttr(excerpt)}">
@@ -147,10 +148,14 @@ function buildBlogPostPage(post) {
 <meta name="twitter:image" content="${escapeAttr(image)}">
 <meta http-equiv="refresh" content="0; url=${redirectTarget}">
 <link rel="icon" href="/images/favicon.png">
+<style>
+  body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+         background: #11241c; color: #fbfbf4; font-family: system-ui, sans-serif; text-align: center; padding: 24px; }
+  a { color: #93bb9e; }
+</style>
 </head>
 <body>
 <p><a href="${redirectTarget}">${escapeAttr(title)} — NAMI ბლოგში გასახსნელად დააჭირეთ აქ</a></p>
-<script>location.replace(${JSON.stringify(redirectTarget)});</script>
 </body>
 </html>
 `;
