@@ -885,7 +885,13 @@ body.order-page { padding-bottom: 90px; }
   background: var(--ink);
   box-shadow: 0 6px 20px rgba(0,0,0,.15);
 }
-.order-header-inner { padding: 12px 24px; gap: 16px; }
+.order-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  gap: 16px;
+}
 .order-header .logo-img { height: 38px; }
 
 .order-table-badge {

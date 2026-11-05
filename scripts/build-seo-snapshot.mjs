@@ -97,7 +97,8 @@ function injectMenuJsonLd(menuJsonLd) {
     console.warn('menuJsonLd placeholder not found in index.html — skipping injection');
     return;
   }
-  const replacement = `<script type="application/ld+json" id="menuJsonLd">${JSON.stringify(menuJsonLd)}</script>`;
+  const safeJson = JSON.stringify(menuJsonLd).replace(/</g, '\\u003c');
+  const replacement = `<script type="application/ld+json" id="menuJsonLd">${safeJson}</script>`;
   writeFileSync(indexPath, html.replace(marker, replacement));
   console.log(`Injected menu JSON-LD: ${menuJsonLd.hasMenuSection.length} sections, ${menuJsonLd.hasMenuSection.reduce((n, s) => n + s.hasMenuItem.length, 0)} items`);
 }
