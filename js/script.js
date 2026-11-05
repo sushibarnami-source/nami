@@ -528,6 +528,12 @@
     }
   }
 
+  function escapeHtml(str) {
+    return String(str == null ? '' : str).replace(/[&<>"']/g, c => (
+      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
+  }
+
   /* ---------------------------------------------------------
      Menu rendering + filtering
   --------------------------------------------------------- */
@@ -544,22 +550,22 @@
 
     const tagLabels = TAG_LABELS[currentLang] || TAG_LABELS.en;
     const tagsHtml = (item.tags || [])
-      .map(tag => `<span class="tag ${tag}">${tagLabels[tag] || tag}</span>`)
+      .map(tag => `<span class="tag ${escapeHtml(tag)}">${escapeHtml(tagLabels[tag] || tag)}</span>`)
       .join('');
 
-    const name = item.name[currentLang] || item.name.en;
-    const desc = item.desc[currentLang] || item.desc.en;
+    const name = escapeHtml(item.name[currentLang] || item.name.en);
+    const desc = escapeHtml(item.desc[currentLang] || item.desc.en);
     const photoHtml = item.photo
-      ? `<div class="menu-item-photo-wrap"><img class="menu-item-photo" src="${item.photo}" alt="${name}" loading="lazy"></div>`
+      ? `<div class="menu-item-photo-wrap"><img class="menu-item-photo" src="${escapeHtml(item.photo)}" alt="${name}" loading="lazy"></div>`
       : '';
     const soldOutLabel = SOLD_OUT_LABEL[currentLang] || SOLD_OUT_LABEL.en;
 
     card.innerHTML = `
       ${photoHtml}
-      ${item.soldOut ? `<span class="menu-item-soldout-badge">${soldOutLabel}</span>` : ''}
+      ${item.soldOut ? `<span class="menu-item-soldout-badge">${escapeHtml(soldOutLabel)}</span>` : ''}
       <div class="menu-item-top">
         <h3 class="menu-item-name">${name}</h3>
-        <span class="menu-item-price">${item.price}</span>
+        <span class="menu-item-price">${escapeHtml(item.price)}</span>
       </div>
       <p class="menu-item-desc">${desc}</p>
       ${tagsHtml ? `<div class="menu-item-tags">${tagsHtml}</div>` : ''}
@@ -621,14 +627,14 @@
     const tagLabels = TAG_LABELS[currentLang] || TAG_LABELS.en;
 
     dishModalPhotoWrap.innerHTML = item.photo
-      ? `<img src="${item.photo}" alt="${name}" loading="lazy">`
+      ? `<img src="${escapeHtml(item.photo)}" alt="${escapeHtml(name)}" loading="lazy">`
       : '';
     dishModalPhotoWrap.hidden = !item.photo;
     dishModalName.textContent = name;
     dishModalPrice.textContent = item.price;
     dishModalDesc.textContent = desc;
     dishModalTags.innerHTML = (item.tags || [])
-      .map(tag => `<span class="tag ${tag}">${tagLabels[tag] || tag}</span>`)
+      .map(tag => `<span class="tag ${escapeHtml(tag)}">${escapeHtml(tagLabels[tag] || tag)}</span>`)
       .join('');
 
     dishModal.hidden = false;
@@ -667,13 +673,13 @@
 
   function renderBlog() {
     blogGrid.innerHTML = BLOG_POSTS.map((post, i) => {
-      const title = post.title[currentLang] || post.title.en;
-      const excerpt = post.excerpt[currentLang] || post.excerpt.en;
-      const tag = post.tag[currentLang] || post.tag.en;
-      const date = post.date[currentLang] || post.date.en;
+      const title = escapeHtml(post.title[currentLang] || post.title.en);
+      const excerpt = escapeHtml(post.excerpt[currentLang] || post.excerpt.en);
+      const tag = escapeHtml(post.tag[currentLang] || post.tag.en);
+      const date = escapeHtml(post.date[currentLang] || post.date.en);
       return `
       <article class="blog-card">
-        <div class="blog-thumb" style="background:${post.gradient}">${post.icon}</div>
+        <div class="blog-thumb" style="background:${escapeHtml(post.gradient)}">${escapeHtml(post.icon)}</div>
         <div class="blog-body">
           <div class="blog-meta"><span>${tag}</span><span>${date}</span></div>
           <h3 class="blog-title">${title}</h3>
@@ -707,7 +713,7 @@
 
     blogModalThumb.style.background = post.gradient;
     blogModalThumb.textContent = post.icon;
-    blogModalMeta.innerHTML = `<span>${tag}</span><span>${date}</span>`;
+    blogModalMeta.innerHTML = `<span>${escapeHtml(tag)}</span><span>${escapeHtml(date)}</span>`;
     blogModalTitle.textContent = title;
     blogModalContent.innerHTML = paragraphs
       .map(p => p.trim().startsWith('<figure') ? p : `<p>${p}</p>`)
