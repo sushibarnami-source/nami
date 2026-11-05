@@ -68,8 +68,8 @@
     const { data, error } = await supabaseClient
       .from('blog_posts')
       .select('*')
-      .order('sort_order', { ascending: false })
-      .order('post_date', { ascending: false });
+      .order('post_date', { ascending: false })
+      .order('sort_order', { ascending: false });
 
     if (error) {
       postListEl.innerHTML = `<p class="admin-empty">Couldn't load posts: ${escapeHtml(error.message)} — ვერ ჩაიტვირთა სტატიები</p>`;
