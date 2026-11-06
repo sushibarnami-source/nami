@@ -1,8 +1,9 @@
 """Builds the PITSRULI logo SVGs with all text converted to outlines.
 
-Usage: python3 build_logos.py <wordmark-font> <tagline-font> <out-dir>
+Usage: python3 build_logos.py <wordmark-font> <tagline-font> <out-dir> [<intl-wordmark-font> <intl-tagline-font>]
 Fonts: BPG Tech 05 Caps (fonts/bpg-tech-05-caps.woff2) for the wordmark,
 Noto Sans Georgian SemiBold (Google Fonts, OFL) for the tagline.
+Optional English/Russian lockups: Oswald SemiBold + Noto Sans SemiBold (Google Fonts, OFL).
 """
 import sys
 from fontTools.ttLib import TTFont
@@ -45,7 +46,7 @@ def svg(w, h, body, title):
             f"<title>{title}</title>{body}</svg>\n")
 
 
-def main(serif_path, sans_path, out):
+def main(serif_path, sans_path, out, intl_word_path=None, intl_tag_path=None):
     serif, sans = TTFont(serif_path), TTFont(sans_path)
     title = "ფიცრული — PITSRULI cottages"
 
@@ -74,6 +75,17 @@ def main(serif_path, sans_path, out):
     tile = f'<rect width="128" height="128" rx="28" fill="{PINE}"/>' + mark(WHITE, GLOW, 14, 10, 0.83)
     open(f"{out}/favicon.svg", "w").write(svg(128, 128, tile, "ფიცრული"))
 
+    # English and Russian lockups (the Georgian heading font has no Cyrillic).
+    if intl_word_path and intl_tag_path:
+        iw, it = TTFont(intl_word_path), TTFont(intl_tag_path)
+        for code, name, tagline in (("en", "PITSRULI", "WOODEN COTTAGES"), ("ru", "ПИЦРУЛИ", "ДЕРЕВЯННЫЕ КОТТЕДЖИ")):
+            for suffix, ink, tag_ink in (("", PINE, MOSS), ("-white", WHITE, "#B9C7B2")):
+                word, ww = text_path(iw, name, 70, 150, 76, tracking=0.03)
+                tag, tw = text_path(it, tagline, 14, 152, 108, tracking=0.16)
+                w = 150 + max(ww, tw) + 14
+                body = mark(ink, GLOW) + f'<path d="{word}" fill="{ink}"/><path d="{tag}" fill="{tag_ink}"/>'
+                open(f"{out}/pitsruli-logo-{code}{suffix}.svg", "w").write(svg(w, 128, body, f"{name} — {tagline.lower()}"))
+
 
 if __name__ == "__main__":
-    main(*sys.argv[1:4])
+    main(*sys.argv[1:6])

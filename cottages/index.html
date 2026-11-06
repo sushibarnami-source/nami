@@ -93,11 +93,12 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .btn:hover { transform: translateY(-1px); }
 .btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
 .lang { display: flex; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 999px; }
-.lang button { font: 600 .74rem/1 var(--mono); letter-spacing: .06em; color: var(--muted); background: transparent; border: 0; border-radius: 999px; padding: 7px 9px; cursor: pointer; }
+.lang button { display: inline-flex; align-items: center; gap: 6px; font: 600 .74rem/1 var(--mono); letter-spacing: .06em; color: var(--muted); background: transparent; border: 0; border-radius: 999px; padding: 6px 10px; cursor: pointer; }
+.lang svg { width: 18px; height: 12px; flex: none; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0, 0, 0, .15); }
 .lang button:hover { color: var(--ink); }
 .lang button[aria-pressed="true"] { background: var(--btn-bg); color: var(--btn-fg); }
 @media (max-width: 860px) { .nav { display: none; } .lang { margin-left: auto; } .site-header .btn { padding: 10px 16px; } }
-@media (max-width: 560px) { .head-cta { display: none; } }
+@media (max-width: 560px) { .head-cta { display: none; } .brand small { white-space: nowrap; font-size: .54rem; letter-spacing: .1em; } .lang button { padding: 6px 8px; gap: 5px; } }
 
 /* Hero */
 .hero { position: relative; overflow: hidden; background: var(--sky); }
@@ -212,7 +213,7 @@ h1, h2, h3, .brand b, .facts dt, .price { -webkit-text-stroke: .028em currentCol
 /* English and Russian: the heading font has no Cyrillic, so both use Oswald (a similar narrow caps face). */
 :root:lang(en), :root:lang(ru) { --display: "Oswald", "Noto Sans", "Arial Narrow", sans-serif; --body: "Noto Sans", system-ui, sans-serif; }
 :lang(en) h1, :lang(en) h2, :lang(en) h3, :lang(ru) h1, :lang(ru) h2, :lang(ru) h3 { text-transform: uppercase; font-weight: 500; letter-spacing: .01em; -webkit-text-stroke: 0; }
-:lang(en) .brand b, :lang(ru) .brand b { font-family: "BPG Tech 05 Caps", serif; }
+:lang(en) .brand b, :lang(ru) .brand b { font-size: 1.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; -webkit-text-stroke: 0; }
 :lang(en) .facts dt, :lang(en) .price, :lang(ru) .facts dt, :lang(ru) .price { font-weight: 500; -webkit-text-stroke: 0; }
 </style>
 </head>
@@ -222,7 +223,7 @@ h1, h2, h3, .brand b, .facts dt, .price { -webkit-text-stroke: .028em currentCol
   <div class="wrap">
     <a class="brand" href="#top" aria-label="ფიცრული — მთავარი" data-i18n-aria="brand.aria">
       <svg viewBox="0 0 120 124" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 100 L60 18 L106 100" stroke-width="11"/><path d="M54 58 H66" stroke="var(--glow)" stroke-width="8"/><path d="M46 73 H74 M38 88 H82" stroke-width="8"/><path d="M4 112 H116" stroke-width="7"/></g></svg>
-      <span><b>ფიცრული</b><small>COTTAGES</small></span>
+      <span><b data-i18n="brand.name">ფიცრული</b><small data-i18n="brand.sub">COTTAGES</small></span>
     </a>
     <nav class="nav" aria-label="მთავარი მენიუ" data-i18n-aria="nav.aria">
       <a href="#models" data-i18n="nav.models">მოდელები</a>
@@ -231,8 +232,8 @@ h1, h2, h3, .brand b, .facts dt, .price { -webkit-text-stroke: .028em currentCol
       <a href="#materials" data-i18n="nav.materials">მასალები</a>
     </nav>
     <div class="lang" role="group" aria-label="ენა / Language / Язык">
-      <button type="button" data-lang="ka" aria-pressed="true">KA</button>
-      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      <button type="button" data-lang="ka" aria-pressed="true"><svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#fff"/><path d="M13 0h4v20h-4zM0 8h30v4H0z" fill="#E8112D"/><path d="M5.5 2.5h2v3h-2zM5 3h3v2H5zM22.5 2.5h2v3h-2zM22 3h3v2h-3zM5.5 14.5h2v3h-2zM5 15h3v2H5zM22.5 14.5h2v3h-2zM22 15h3v2h-3z" fill="#E8112D"/></svg>KA</button>
+      <button type="button" data-lang="en" aria-pressed="false"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="gb-t"><path d="M30 15h30v15zv15H0zH0V0zV0h30z"/></clipPath><rect width="60" height="30" fill="#012169"/><path d="M0 0l60 30M60 0L0 30" stroke="#fff" stroke-width="6"/><path d="M0 0l60 30M60 0L0 30" clip-path="url(#gb-t)" stroke="#C8102E" stroke-width="4"/><path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10"/><path d="M30 0v30M0 15h60" stroke="#C8102E" stroke-width="6"/></svg>EN</button>
       <button type="button" data-lang="ru" aria-pressed="false">RU</button>
     </div>
     <a class="btn head-cta" href="#contact" data-i18n="cta.consult">კონსულტაცია</a>
@@ -290,7 +291,7 @@ h1, h2, h3, .brand b, .facts dt, .price { -webkit-text-stroke: .028em currentCol
             <span class="tag" data-i18n="m1.tag">A-ფრეიმი</span>
             <h3 data-i18n="m1.name">ფიცრული 36</h3>
             <dl class="specs"><dt data-i18n="spec.area">ფართი</dt><dd data-i18n="m1.area">36 მ²</dd><dt data-i18n="spec.beds">საძინებელი</dt><dd data-i18n="m1.beds">1 + მანსარდა</dd><dt data-i18n="spec.build">მშენებლობა</dt><dd data-i18n="m1.days">30 დღე</dd></dl>
-            <p class="price"><span data-i18n="m1.price">89 000 ₾-დან</span><small data-i18n="m1.desc">იდეალური პირველი კოტეჯი ან გასაქირავებელი სახლი</small></p>
+            <p class="price"><span data-i18n="m1.price">$33 000-დან</span><small data-i18n="m1.desc">იდეალური პირველი კოტეჯი ან გასაქირავებელი სახლი</small></p>
           </div>
         </article>
         <article class="model">
@@ -299,7 +300,7 @@ h1, h2, h3, .brand b, .facts dt, .price { -webkit-text-stroke: .028em currentCol
             <span class="tag" data-i18n="m2.tag">ორფერდა</span>
             <h3 data-i18n="m2.name">ფიცრული 58</h3>
             <dl class="specs"><dt data-i18n="spec.area">ფართი</dt><dd data-i18n="m2.area">58 მ²</dd><dt data-i18n="spec.beds">საძინებელი</dt><dd>2</dd><dt data-i18n="spec.build">მშენებლობა</dt><dd data-i18n="m2.days">40 დღე</dd></dl>
-            <p class="price"><span data-i18n="m2.price">139 000 ₾-დან</span><small data-i18n="m2.desc">წყვილისთვის ან პატარა ოჯახისთვის</small></p>
+            <p class="price"><span data-i18n="m2.price">$51 000-დან</span><small data-i18n="m2.desc">წყვილისთვის ან პატარა ოჯახისთვის</small></p>
           </div>
         </article>
         <article class="model">
@@ -308,7 +309,7 @@ h1, h2, h3, .brand b, .facts dt, .price { -webkit-text-stroke: .028em currentCol
             <span class="tag" data-i18n="m3.tag">ტერასით</span>
             <h3 data-i18n="m3.name">ფიცრული 84</h3>
             <dl class="specs"><dt data-i18n="spec.area">ფართი</dt><dd data-i18n="m3.area">84 მ²</dd><dt data-i18n="spec.beds">საძინებელი</dt><dd>3</dd><dt data-i18n="spec.build">მშენებლობა</dt><dd data-i18n="m3.days">50 დღე</dd></dl>
-            <p class="price"><span data-i18n="m3.price">198 000 ₾-დან</span><small data-i18n="m3.desc">დიდი ღია ტერასა და მისაღები ბუხრით</small></p>
+            <p class="price"><span data-i18n="m3.price">$73 000-დან</span><small data-i18n="m3.desc">დიდი ღია ტერასა და მისაღები ბუხრით</small></p>
           </div>
         </article>
         <article class="model">
@@ -317,7 +318,7 @@ h1, h2, h3, .brand b, .facts dt, .price { -webkit-text-stroke: .028em currentCol
             <span class="tag" data-i18n="m4.tag">საოჯახო · 2 სართული</span>
             <h3 data-i18n="m4.name">ფიცრული 120</h3>
             <dl class="specs"><dt data-i18n="spec.area">ფართი</dt><dd data-i18n="m4.area">120 მ²</dd><dt data-i18n="spec.beds">საძინებელი</dt><dd>4</dd><dt data-i18n="spec.build">მშენებლობა</dt><dd data-i18n="m4.days">60 დღე</dd></dl>
-            <p class="price"><span data-i18n="m4.price">279 000 ₾-დან</span><small data-i18n="m4.desc">მუდმივი საცხოვრებლისთვის, წლის ნებისმიერ დროს</small></p>
+            <p class="price"><span data-i18n="m4.price">$103 000-დან</span><small data-i18n="m4.desc">მუდმივი საცხოვრებლისთვის, წლის ნებისმიერ დროს</small></p>
           </div>
         </article>
       </div>
@@ -422,7 +423,7 @@ h1, h2, h3, .brand b, .facts dt, .price { -webkit-text-stroke: .028em currentCol
     en: {
       'meta.title': 'Pitsruli — Wooden Cottages in Georgia',
       'meta.desc': 'Pitsruli designs and builds wooden cottages all over Georgia, from Kazbegi to the Black Sea coast. One team, one contract, turnkey.',
-      'brand.aria': 'Pitsruli — home', 'nav.aria': 'Main menu',
+      'brand.name': 'Pitsruli', 'brand.sub': 'WOODEN COTTAGES', 'brand.aria': 'Pitsruli — home', 'nav.aria': 'Main menu',
       'nav.models': 'Models', 'nav.process': 'How we build', 'nav.regions': 'Where we build', 'nav.materials': 'Materials',
       'cta.consult': 'Consultation',
       'hero.eyebrow': 'Wooden cottages · All of Georgia',
@@ -435,10 +436,10 @@ h1, h2, h3, .brand b, .facts dt, .price { -webkit-text-stroke: .028em currentCol
       'models.title': 'Four ready-made designs, each adapted to your plot',
       'models.lead': 'Every model can be changed: terrace, loft, fireplace, sauna, facade material. We also do custom designs.',
       'spec.area': 'Area', 'spec.beds': 'Bedrooms', 'spec.build': 'Construction',
-      'm1.tag': 'A-frame', 'm1.name': 'Pitsruli 36', 'm1.area': '36 m²', 'm1.beds': '1 + loft', 'm1.days': '30 days', 'm1.price': 'from ₾89,000', 'm1.desc': 'A perfect first cottage or rental home',
-      'm2.tag': 'Gable roof', 'm2.name': 'Pitsruli 58', 'm2.area': '58 m²', 'm2.days': '40 days', 'm2.price': 'from ₾139,000', 'm2.desc': 'For a couple or a small family',
-      'm3.tag': 'With terrace', 'm3.name': 'Pitsruli 84', 'm3.area': '84 m²', 'm3.days': '50 days', 'm3.price': 'from ₾198,000', 'm3.desc': 'A large open terrace and a living room with a fireplace',
-      'm4.tag': 'Family · 2 floors', 'm4.name': 'Pitsruli 120', 'm4.area': '120 m²', 'm4.days': '60 days', 'm4.price': 'from ₾279,000', 'm4.desc': 'For year-round living',
+      'm1.tag': 'A-frame', 'm1.name': 'Pitsruli 36', 'm1.area': '36 m²', 'm1.beds': '1 + loft', 'm1.days': '30 days', 'm1.price': 'from $33,000', 'm1.desc': 'A perfect first cottage or rental home',
+      'm2.tag': 'Gable roof', 'm2.name': 'Pitsruli 58', 'm2.area': '58 m²', 'm2.days': '40 days', 'm2.price': 'from $51,000', 'm2.desc': 'For a couple or a small family',
+      'm3.tag': 'With terrace', 'm3.name': 'Pitsruli 84', 'm3.area': '84 m²', 'm3.days': '50 days', 'm3.price': 'from $73,000', 'm3.desc': 'A large open terrace and a living room with a fireplace',
+      'm4.tag': 'Family · 2 floors', 'm4.name': 'Pitsruli 120', 'm4.area': '120 m²', 'm4.days': '60 days', 'm4.price': 'from $103,000', 'm4.desc': 'For year-round living',
       'models.note': 'Prices are indicative and include turnkey construction with the foundation. The exact cost depends on the plot, the region and the access road.',
       'process.title': 'From the first call to the keys, in five steps',
       's1.h': 'Consultation', 's1.p': 'We discuss your idea, budget and timeline, and assess the plot on site.',
@@ -473,7 +474,7 @@ h1, h2, h3, .brand b, .facts dt, .price { -webkit-text-stroke: .028em currentCol
     ru: {
       'meta.title': 'Пицрули — деревянные коттеджи в Грузии',
       'meta.desc': 'Пицрули проектирует и строит деревянные коттеджи по всей Грузии, от Казбеги до черноморского побережья. Одна команда, один договор, под ключ.',
-      'brand.aria': 'Пицрули — главная', 'nav.aria': 'Главное меню',
+      'brand.name': 'Пицрули', 'brand.sub': 'ДЕРЕВЯННЫЕ КОТТЕДЖИ', 'brand.aria': 'Пицрули — главная', 'nav.aria': 'Главное меню',
       'nav.models': 'Модели', 'nav.process': 'Как мы строим', 'nav.regions': 'Где мы строим', 'nav.materials': 'Материалы',
       'cta.consult': 'Консультация',
       'hero.eyebrow': 'Деревянные коттеджи · Вся Грузия',
@@ -486,10 +487,10 @@ h1, h2, h3, .brand b, .facts dt, .price { -webkit-text-stroke: .028em currentCol
       'models.title': 'Четыре готовых проекта. Каждый адаптируем под ваш участок',
       'models.lead': 'Любую модель можно изменить: терраса, мансарда, камин, сауна, материал фасада. Делаем и индивидуальные проекты.',
       'spec.area': 'Площадь', 'spec.beds': 'Спальни', 'spec.build': 'Строительство',
-      'm1.tag': 'A-фрейм', 'm1.name': 'Пицрули 36', 'm1.area': '36 м²', 'm1.beds': '1 + мансарда', 'm1.days': '30 дней', 'm1.price': 'от 89 000 ₾', 'm1.desc': 'Идеальный первый коттедж или дом для аренды',
-      'm2.tag': 'Двускатный', 'm2.name': 'Пицрули 58', 'm2.area': '58 м²', 'm2.days': '40 дней', 'm2.price': 'от 139 000 ₾', 'm2.desc': 'Для пары или небольшой семьи',
-      'm3.tag': 'С террасой', 'm3.name': 'Пицрули 84', 'm3.area': '84 м²', 'm3.days': '50 дней', 'm3.price': 'от 198 000 ₾', 'm3.desc': 'Большая открытая терраса и гостиная с камином',
-      'm4.tag': 'Семейный · 2 этажа', 'm4.name': 'Пицрули 120', 'm4.area': '120 м²', 'm4.days': '60 дней', 'm4.price': 'от 279 000 ₾', 'm4.desc': 'Для постоянного проживания круглый год',
+      'm1.tag': 'A-фрейм', 'm1.name': 'Пицрули 36', 'm1.area': '36 м²', 'm1.beds': '1 + мансарда', 'm1.days': '30 дней', 'm1.price': 'от 33 000 $', 'm1.desc': 'Идеальный первый коттедж или дом для аренды',
+      'm2.tag': 'Двускатный', 'm2.name': 'Пицрули 58', 'm2.area': '58 м²', 'm2.days': '40 дней', 'm2.price': 'от 51 000 $', 'm2.desc': 'Для пары или небольшой семьи',
+      'm3.tag': 'С террасой', 'm3.name': 'Пицрули 84', 'm3.area': '84 м²', 'm3.days': '50 дней', 'm3.price': 'от 73 000 $', 'm3.desc': 'Большая открытая терраса и гостиная с камином',
+      'm4.tag': 'Семейный · 2 этажа', 'm4.name': 'Пицрули 120', 'm4.area': '120 м²', 'm4.days': '60 дней', 'm4.price': 'от 103 000 $', 'm4.desc': 'Для постоянного проживания круглый год',
       'models.note': 'Цены ориентировочные и включают строительство под ключ с фундаментом. Точная стоимость зависит от участка, региона и подъездной дороги.',
       'process.title': 'От первого звонка до ключей за пять этапов',
       's1.h': 'Консультация', 's1.p': 'Обсуждаем вашу идею, бюджет и сроки. Оцениваем участок на месте.',
