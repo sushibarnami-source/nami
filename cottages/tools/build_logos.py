@@ -54,7 +54,7 @@ def main(serif_path, sans_path, out):
         word, ww = text_path(serif, "ფიცრული", 78, 150, 74)
         tag, tw = text_path(sans, "კოტეჯები · COTTAGES", 15, 152, 112, tracking=0.12)
         w = 150 + max(ww, tw) + 14
-        body = mark(ink, glow) + f'<path d="{word}" fill="{ink}"/><path d="{tag}" fill="{tag_ink}"/>'
+        body = mark(ink, glow) + f'<path d="{word}" fill="{ink}" stroke="{ink}" stroke-width="2.2" stroke-linejoin="round"/><path d="{tag}" fill="{tag_ink}"/>'
         return svg(w, 128, body, title)
 
     open(f"{out}/pitsruli-logo.svg", "w").write(horizontal(PINE, GLOW, MOSS))
@@ -66,7 +66,7 @@ def main(serif_path, sans_path, out):
     W = max(ww, tw, 140) + 40
     word, _ = text_path(serif, "ფიცრული", 72, (W - ww) / 2, 200)
     tag, _ = text_path(sans, "კოტეჯები · COTTAGES", 14, (W - tw) / 2, 236, tracking=0.12)
-    body = mark(PINE, GLOW, (W - 120) / 2, 8) + f'<path d="{word}" fill="{PINE}"/><path d="{tag}" fill="{MOSS}"/>'
+    body = mark(PINE, GLOW, (W - 120) / 2, 8) + f'<path d="{word}" fill="{PINE}" stroke="{PINE}" stroke-width="2" stroke-linejoin="round"/><path d="{tag}" fill="{MOSS}"/>'
     open(f"{out}/pitsruli-logo-vertical.svg", "w").write(svg(W, 252, body, title))
 
     # Mark alone, and an app/favicon tile
