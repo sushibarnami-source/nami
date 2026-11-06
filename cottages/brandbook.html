@@ -10,12 +10,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700&family=Noto+Serif+Georgian:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+@font-face { font-family: "BPG Tech 05 Caps"; src: url("fonts/bpg-tech-05-caps.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
 /* Layout: a printed guideline book. Chapter number in a narrow left rail, content in a wide right column. */
 :root {
   --bg: #EEF1EB; --paper: #FFFFFF; --ink: #18241E; --muted: #55645B; --line: #D3DAD0;
   --pine: #1F3A2E; --moss: #6F8466; --bark: #5A3E2B; --glow: #E4A33A; --fog: #EEF1EB;
   --head: #1F3A2E;
-  --display: "Noto Serif Georgian", "Sylfaen", Georgia, serif;
+  --display: "BPG Tech 05 Caps", "Noto Serif Georgian", "Sylfaen", Georgia, serif;
   --body: "Noto Sans Georgian", "Sylfaen", system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
 }
@@ -28,7 +29,7 @@
 body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.7 var(--body); -webkit-font-smoothing: antialiased; }
 img { max-width: 100%; display: block; }
 .wrap { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.2; text-wrap: balance; margin: 0; color: var(--head); }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; line-height: 1.2; text-wrap: balance; margin: 0; color: var(--head); }
 p { margin: 0; }
 .label { font: 500 .72rem/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--moss); }
 .muted { color: var(--muted); }
@@ -37,7 +38,7 @@ p { margin: 0; }
 .cover { background: #1F3A2E; color: #F4F6F1; }
 .cover .wrap { display: grid; gap: 40px; padding-block: 72px 56px; }
 .cover img { width: min(420px, 100%); }
-.cover h1 { color: #F4F6F1; font-size: clamp(2rem, 1.4rem + 2.6vw, 3.2rem); font-weight: 800; }
+.cover h1 { color: #F4F6F1; font-size: clamp(2rem, 1.4rem + 2.6vw, 3.2rem); font-weight: 400; }
 .cover p { color: #B9C7B2; max-width: 60ch; }
 .cover-meta { display: flex; flex-wrap: wrap; gap: 8px 28px; font: 500 .78rem/1 var(--mono); letter-spacing: .1em; color: #B9C7B2; text-transform: uppercase; }
 .toc { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -190,7 +191,7 @@ footer a { color: inherit; }
         <header>
           <p class="label">ლოგო</p>
           <h2>A-ფრეიმის სახურავი და ფიცრები</h2>
-          <p>ნიშანი მარტივია: ციცაბო ორფერდა სახურავი (კოტეჯი და მთა ერთდროულად), შიგნით სამი ჰორიზონტალური ფიცარი და მიწის ხაზი. ზედა ფიცარი ყვითელია, როგორც ანთებული ფანჯარა. სიტყვიერი ნიშანი აწყობილია Noto Serif Georgian Bold შრიფტით და გადაყვანილია ვექტორულ კონტურებში.</p>
+          <p>ნიშანი მარტივია: ციცაბო ორფერდა სახურავი (კოტეჯი და მთა ერთდროულად), შიგნით სამი ჰორიზონტალური ფიცარი და მიწის ხაზი. ზედა ფიცარი ყვითელია, როგორც ანთებული ფანჯარა. სიტყვიერი ნიშანი აწყობილია BPG Tech 05 Caps შრიფტით (ქართული მთავრული) და გადაყვანილია ვექტორულ კონტურებში. ასოების ხაზის სისქე და მომრგვალებული ბოლოები ნიშნის ხაზებს იმეორებს.</p>
         </header>
         <div class="grid2">
           <figure><div class="tile light"><img src="assets/pitsruli-logo.svg" alt="ჰორიზონტალური ლოგო"></div><figcaption><b>ძირითადი ლოგო.</b> ჰორიზონტალური, გამოიყენება ყველგან, სადაც ადგილი იძლევა.</figcaption></figure>
@@ -264,11 +265,11 @@ footer a { color: inherit; }
         <header>
           <p class="label">ტიპოგრაფია</p>
           <h2>სამი შრიფტი, სამი როლი</h2>
-          <p>სამივე უფასოა (Google Fonts, OFL ლიცენზია) და სრულად უჭერს მხარს ქართულ და ლათინურ ანბანს.</p>
+          <p>სამივე უფასოა. BPG Tech 05 Caps BPG-InfoTech-ის უფასო ფონტია და საიტთან ერთად იტვირთება. Noto Sans Georgian და IBM Plex Mono Google Fonts-იდან მოდის (OFL ლიცენზია). სათაურების ფონტში ₾ და ² სიმბოლოები არ არის, ამიტომ ისინი ავტომატურად Noto Serif Georgian-ით იწერება.</p>
         </header>
         <div>
-          <div class="type-row"><div class="spec"><b>Noto Serif Georgian</b><code>ExtraBold 800 · სათაურები</code></div><div class="s-display">ვაშენებთ სახლს იქ, სადაც გული გეძახის</div></div>
-          <div class="type-row"><div class="spec"><b>Noto Serif Georgian</b><code>Bold 700 · ქვესათაურები</code></div><div class="s-h2">ოთხი მზა პროექტი</div></div>
+          <div class="type-row"><div class="spec"><b>BPG Tech 05 Caps</b><code>Regular · სათაურები, ლოგო</code></div><div class="s-display">ვაშენებთ სახლს იქ, სადაც გული გეძახის</div></div>
+          <div class="type-row"><div class="spec"><b>BPG Tech 05 Caps</b><code>Regular · ქვესათაურები, ფასები</code></div><div class="s-h2">ოთხი მზა პროექტი</div></div>
           <div class="type-row"><div class="spec"><b>Noto Sans Georgian</b><code>Regular 400 · ტექსტი, 16 px / 1.7</code></div><p class="s-body">ვაპროექტებთ და ვაშენებთ ხის კოტეჯებს ყაზბეგიდან ზღვისპირამდე. ერთი გუნდი, ერთი ხელშეკრულება, ფიქსირებული ფასი და ვადა.</p></div>
           <div class="type-row"><div class="spec"><b>IBM Plex Mono</b><code>Medium 500 · ციფრები, იარლიყები</code></div><p class="s-mono">ფიცრული 84 · 84 მ² · 3 საძინებელი · 1740 მ</p></div>
           <div class="type-row"><div class="spec"><b>ანბანი</b><code>Noto Sans Georgian</code></div><p class="alphabet">ა ბ გ დ ე ვ ზ თ ი კ ლ მ ნ ო პ ჟ რ ს ტ უ ფ ქ ღ ყ შ ჩ ც ძ წ ჭ ხ ჯ ჰ · 0 1 2 3 4 5 6 7 8 9 ₾</p></div>

@@ -5,7 +5,8 @@
 - `index.html` — საიტი (ერთგვერდიანი, ქართულად, ღია/მუქი რეჟიმი)
 - `brandbook.html` — ბრენდბუქი: იდეა, ლოგო, ფერები, შრიფტები, გრაფიკა, ტონი, გამოყენება
 - `assets/` — ლოგოები SVG-ში (ტექსტი კონტურებშია): ძირითადი, თეთრი, ვერტიკალური, ნიშანი, favicon
-- `tools/build_logos.py` — ლოგოების გენერატორი (fonttools + Noto Serif/Sans Georgian)
+- `tools/build_logos.py` — ლოგოების გენერატორი (fonttools + BPG Tech 05 Caps + Noto Sans Georgian)
+- `fonts/` — სათაურების ფონტი BPG Tech 05 Caps (BPG-InfoTech-ის უფასო ფონტი) და ლიცენზიის შენიშვნა
 
 ## გაშვებამდე შესაცვლელი
 - ტელეფონი, ელფოსტა, მისამართი (ახლა შაბლონებია)

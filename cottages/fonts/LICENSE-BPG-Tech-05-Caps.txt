@@ -1,0 +1,9 @@
+BPG Tech 05 Caps (file: bpg-tech-05-caps.woff2)
+
+Author: BPG-InfoTech (Bessarion Paata Gugushvili)
+Copyright (c) 2013-2014 by BPG-InfoTech.
+Embedded licence statement: "Free font from BPG-InfoTech"
+Author's release page: https://bpgfonts.wordpress.com/2014/01/16/bpg-tech-03-caps/
+
+Used here as a web font for headings and the logo wordmark.
+Source file obtained from fonts.ge and converted to WOFF2 without changes to the glyphs.

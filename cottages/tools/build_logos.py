@@ -1,7 +1,8 @@
 """Builds the PITSRULI logo SVGs with all text converted to outlines.
 
-Usage: python3 build_logos.py <serif-bold.ttf> <sans-semibold.ttf> <out-dir>
-Fonts: Noto Serif Georgian Bold, Noto Sans Georgian SemiBold (Google Fonts, OFL).
+Usage: python3 build_logos.py <wordmark-font> <tagline-font> <out-dir>
+Fonts: BPG Tech 05 Caps (fonts/bpg-tech-05-caps.woff2) for the wordmark,
+Noto Sans Georgian SemiBold (Google Fonts, OFL) for the tagline.
 """
 import sys
 from fontTools.ttLib import TTFont
