@@ -4,6 +4,6 @@
    supabase/schema.sql only lets admins write. While these are empty the
    site shows the built-in content from js/content.js. */
 window.PITSRULI_CONFIG = {
-  supabaseUrl: '',
-  supabaseKey: ''
+  supabaseUrl: 'https://yioilltsgmhuvjcsggpt.supabase.co',
+  supabaseKey: 'sb_publishable_T3Np7U-ek_HxNhDIgeIjgA_ZDoAJ-Il'
 };
