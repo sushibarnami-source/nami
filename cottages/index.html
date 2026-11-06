@@ -12,7 +12,7 @@
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700&family=Noto+Serif+Georgian:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700&family=Noto+Serif+Georgian:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans:wght@400;500;600;700&family=Oswald:wght@500;600&display=swap" rel="stylesheet">
 <style>
 @font-face { font-family: "BPG Tech 05 Caps"; src: url("fonts/bpg-tech-05-caps.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
 /* Layout: a landscape hero (Caucasus ridges + one lit cottage), then a calm single column of sections on a fog-green ground. */
@@ -92,7 +92,12 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 22px; border-radius: 999px; border: 1.5px solid var(--btn-bg); background: var(--btn-bg); color: var(--btn-fg); font: 600 .95rem/1.2 var(--body); text-decoration: none; cursor: pointer; transition: transform .15s ease; }
 .btn:hover { transform: translateY(-1px); }
 .btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
-@media (max-width: 860px) { .nav { display: none; } .site-header .btn { margin-left: auto; padding: 10px 16px; } }
+.lang { display: flex; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 999px; }
+.lang button { font: 600 .74rem/1 var(--mono); letter-spacing: .06em; color: var(--muted); background: transparent; border: 0; border-radius: 999px; padding: 7px 9px; cursor: pointer; }
+.lang button:hover { color: var(--ink); }
+.lang button[aria-pressed="true"] { background: var(--btn-bg); color: var(--btn-fg); }
+@media (max-width: 860px) { .nav { display: none; } .lang { margin-left: auto; } .site-header .btn { padding: 10px 16px; } }
+@media (max-width: 560px) { .head-cta { display: none; } }
 
 /* Hero */
 .hero { position: relative; overflow: hidden; background: var(--sky); }
@@ -203,23 +208,34 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: cent
 
 /* Thicken the single-weight heading font a little. */
 h1, h2, h3, .brand b, .facts dt, .price { -webkit-text-stroke: .028em currentColor; }
+
+/* English and Russian: the heading font has no Cyrillic, so both use Oswald (a similar narrow caps face). */
+:root:lang(en), :root:lang(ru) { --display: "Oswald", "Noto Sans", "Arial Narrow", sans-serif; --body: "Noto Sans", system-ui, sans-serif; }
+:lang(en) h1, :lang(en) h2, :lang(en) h3, :lang(ru) h1, :lang(ru) h2, :lang(ru) h3 { text-transform: uppercase; font-weight: 500; letter-spacing: .01em; -webkit-text-stroke: 0; }
+:lang(en) .brand b, :lang(ru) .brand b { font-family: "BPG Tech 05 Caps", serif; }
+:lang(en) .facts dt, :lang(en) .price, :lang(ru) .facts dt, :lang(ru) .price { font-weight: 500; -webkit-text-stroke: 0; }
 </style>
 </head>
 <body>
 
 <header class="site-header">
   <div class="wrap">
-    <a class="brand" href="#top" aria-label="ფიცრული — მთავარი">
+    <a class="brand" href="#top" aria-label="ფიცრული — მთავარი" data-i18n-aria="brand.aria">
       <svg viewBox="0 0 120 124" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 100 L60 18 L106 100" stroke-width="11"/><path d="M54 58 H66" stroke="var(--glow)" stroke-width="8"/><path d="M46 73 H74 M38 88 H82" stroke-width="8"/><path d="M4 112 H116" stroke-width="7"/></g></svg>
       <span><b>ფიცრული</b><small>COTTAGES</small></span>
     </a>
-    <nav class="nav" aria-label="მთავარი მენიუ">
-      <a href="#models">მოდელები</a>
-      <a href="#process">როგორ ვაშენებთ</a>
-      <a href="#regions">სად ვაშენებთ</a>
-      <a href="#materials">მასალები</a>
+    <nav class="nav" aria-label="მთავარი მენიუ" data-i18n-aria="nav.aria">
+      <a href="#models" data-i18n="nav.models">მოდელები</a>
+      <a href="#process" data-i18n="nav.process">როგორ ვაშენებთ</a>
+      <a href="#regions" data-i18n="nav.regions">სად ვაშენებთ</a>
+      <a href="#materials" data-i18n="nav.materials">მასალები</a>
     </nav>
-    <a class="btn" href="#contact">კონსულტაცია</a>
+    <div class="lang" role="group" aria-label="ენა / Language / Язык">
+      <button type="button" data-lang="ka" aria-pressed="true">KA</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      <button type="button" data-lang="ru" aria-pressed="false">RU</button>
+    </div>
+    <a class="btn head-cta" href="#contact" data-i18n="cta.consult">კონსულტაცია</a>
   </div>
 </header>
 
@@ -243,18 +259,18 @@ h1, h2, h3, .brand b, .facts dt, .price { -webkit-text-stroke: .028em currentCol
     <div class="hero-copy">
       <div class="wrap">
         <div>
-          <p class="eyebrow">ხის კოტეჯები · მთელი საქართველო</p>
-          <h1 id="hero-title">ვაშენებთ სახლს იქ, სადაც გული გეძახის</h1>
-          <p class="lead">ვაპროექტებთ და ვაშენებთ ხის კოტეჯებს ყაზბეგიდან ზღვისპირამდე. ერთი გუნდი, ერთი ხელშეკრულება, ფიქსირებული ფასი და ვადა. თქვენ იღებთ გასაღებს.</p>
+          <p class="eyebrow" data-i18n="hero.eyebrow">ხის კოტეჯები · მთელი საქართველო</p>
+          <h1 id="hero-title" data-i18n="hero.title">ვაშენებთ სახლს იქ, სადაც გული გეძახის</h1>
+          <p class="lead" data-i18n="hero.lead">ვაპროექტებთ და ვაშენებთ ხის კოტეჯებს ყაზბეგიდან ზღვისპირამდე. ერთი გუნდი, ერთი ხელშეკრულება, ფიქსირებული ფასი და ვადა. თქვენ იღებთ გასაღებს.</p>
           <div class="hero-actions">
-            <a class="btn" href="#models">მოდელების ნახვა</a>
-            <a class="btn ghost" href="#contact">უფასო კონსულტაცია</a>
+            <a class="btn" href="#models" data-i18n="hero.btn1">მოდელების ნახვა</a>
+            <a class="btn ghost" href="#contact" data-i18n="hero.btn2">უფასო კონსულტაცია</a>
           </div>
         </div>
         <dl class="facts">
-          <div><dt>30–60</dt><dd>დღე მშენებლობის დაწყებიდან ჩაბარებამდე</dd></div>
-          <div><dt>9 ბალი</dt><dd>მიწისძვრა, რომელსაც კარკასი უძლებს</dd></div>
-          <div><dt>10 წელი</dt><dd>გარანტია კონსტრუქციაზე</dd></div>
+          <div><dt>30–60</dt><dd data-i18n="f1.dd">დღე მშენებლობის დაწყებიდან ჩაბარებამდე</dd></div>
+          <div><dt data-i18n="f2.dt">9 ბალი</dt><dd data-i18n="f2.dd">მიწისძვრა, რომელსაც კარკასი უძლებს</dd></div>
+          <div><dt data-i18n="f3.dt">10 წელი</dt><dd data-i18n="f3.dd">გარანტია კონსტრუქციაზე</dd></div>
         </dl>
       </div>
     </div>
@@ -263,64 +279,64 @@ h1, h2, h3, .brand b, .facts dt, .price { -webkit-text-stroke: .028em currentCol
   <section class="section" id="models" aria-labelledby="models-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="eyebrow">მოდელები</p>
-        <h2 id="models-title">ოთხი მზა პროექტი. თითოეულს თქვენს ნაკვეთს მოვარგებთ</h2>
-        <p class="lead">ყველა მოდელი იცვლება: ტერასა, მანსარდა, ბუხარი, საუნა, ფასადის მასალა. ინდივიდუალურ პროექტსაც ვაკეთებთ.</p>
+        <p class="eyebrow" data-i18n="nav.models">მოდელები</p>
+        <h2 id="models-title" data-i18n="models.title">ოთხი მზა პროექტი. თითოეულს თქვენს ნაკვეთს მოვარგებთ</h2>
+        <p class="lead" data-i18n="models.lead">ყველა მოდელი იცვლება: ტერასა, მანსარდა, ბუხარი, საუნა, ფასადის მასალა. ინდივიდუალურ პროექტსაც ვაკეთებთ.</p>
       </div>
       <div class="models">
         <article class="model">
           <figure><svg viewBox="0 0 200 120" aria-hidden="true"><path class="g" d="M10 112 H190"/><path class="r" d="M55 112 L100 20 L145 112"/><path class="w" d="M92 112 V96 a8 8 0 0 1 16 0 V112 Z"/></svg></figure>
           <div class="model-body">
-            <span class="tag">A-ფრეიმი</span>
-            <h3>ფიცრული 36</h3>
-            <dl class="specs"><dt>ფართი</dt><dd>36 მ²</dd><dt>საძინებელი</dt><dd>1 + მანსარდა</dd><dt>მშენებლობა</dt><dd>30 დღე</dd></dl>
-            <p class="price">89 000 ₾-დან<small>იდეალური პირველი კოტეჯი ან გასაქირავებელი სახლი</small></p>
+            <span class="tag" data-i18n="m1.tag">A-ფრეიმი</span>
+            <h3 data-i18n="m1.name">ფიცრული 36</h3>
+            <dl class="specs"><dt data-i18n="spec.area">ფართი</dt><dd data-i18n="m1.area">36 მ²</dd><dt data-i18n="spec.beds">საძინებელი</dt><dd data-i18n="m1.beds">1 + მანსარდა</dd><dt data-i18n="spec.build">მშენებლობა</dt><dd data-i18n="m1.days">30 დღე</dd></dl>
+            <p class="price"><span data-i18n="m1.price">89 000 ₾-დან</span><small data-i18n="m1.desc">იდეალური პირველი კოტეჯი ან გასაქირავებელი სახლი</small></p>
           </div>
         </article>
         <article class="model">
           <figure><svg viewBox="0 0 200 120" aria-hidden="true"><path class="g" d="M10 112 H190"/><path class="r" d="M40 112 V62 L100 26 L160 62 V112"/><path class="w" d="M66 80 h20 v18 h-20 Z M114 80 h20 v18 h-20 Z"/></svg></figure>
           <div class="model-body">
-            <span class="tag">ორფერდა</span>
-            <h3>ფიცრული 58</h3>
-            <dl class="specs"><dt>ფართი</dt><dd>58 მ²</dd><dt>საძინებელი</dt><dd>2</dd><dt>მშენებლობა</dt><dd>40 დღე</dd></dl>
-            <p class="price">139 000 ₾-დან<small>წყვილისთვის ან პატარა ოჯახისთვის</small></p>
+            <span class="tag" data-i18n="m2.tag">ორფერდა</span>
+            <h3 data-i18n="m2.name">ფიცრული 58</h3>
+            <dl class="specs"><dt data-i18n="spec.area">ფართი</dt><dd data-i18n="m2.area">58 მ²</dd><dt data-i18n="spec.beds">საძინებელი</dt><dd>2</dd><dt data-i18n="spec.build">მშენებლობა</dt><dd data-i18n="m2.days">40 დღე</dd></dl>
+            <p class="price"><span data-i18n="m2.price">139 000 ₾-დან</span><small data-i18n="m2.desc">წყვილისთვის ან პატარა ოჯახისთვის</small></p>
           </div>
         </article>
         <article class="model">
           <figure><svg viewBox="0 0 200 120" aria-hidden="true"><path class="g" d="M10 112 H190"/><path class="r" d="M24 112 V60 L80 28 L136 60 V112 M136 74 H184 V112"/><path class="w" d="M54 76 h22 v36 h-22 Z M150 86 h20 v14 h-20 Z"/></svg></figure>
           <div class="model-body">
-            <span class="tag">ტერასით</span>
-            <h3>ფიცრული 84</h3>
-            <dl class="specs"><dt>ფართი</dt><dd>84 მ²</dd><dt>საძინებელი</dt><dd>3</dd><dt>მშენებლობა</dt><dd>50 დღე</dd></dl>
-            <p class="price">198 000 ₾-დან<small>დიდი ღია ტერასა და მისაღები ბუხრით</small></p>
+            <span class="tag" data-i18n="m3.tag">ტერასით</span>
+            <h3 data-i18n="m3.name">ფიცრული 84</h3>
+            <dl class="specs"><dt data-i18n="spec.area">ფართი</dt><dd data-i18n="m3.area">84 მ²</dd><dt data-i18n="spec.beds">საძინებელი</dt><dd>3</dd><dt data-i18n="spec.build">მშენებლობა</dt><dd data-i18n="m3.days">50 დღე</dd></dl>
+            <p class="price"><span data-i18n="m3.price">198 000 ₾-დან</span><small data-i18n="m3.desc">დიდი ღია ტერასა და მისაღები ბუხრით</small></p>
           </div>
         </article>
         <article class="model">
           <figure><svg viewBox="0 0 200 120" aria-hidden="true"><path class="g" d="M10 112 H190"/><path class="r" d="M34 112 V54 L100 14 L166 54 V112 M34 80 H166"/><path class="w" d="M56 88 h18 v24 h-18 Z M92 88 h16 v24 h-16 Z M126 88 h18 v24 h-18 Z M90 50 h20 v18 h-20 Z"/></svg></figure>
           <div class="model-body">
-            <span class="tag">საოჯახო · 2 სართული</span>
-            <h3>ფიცრული 120</h3>
-            <dl class="specs"><dt>ფართი</dt><dd>120 მ²</dd><dt>საძინებელი</dt><dd>4</dd><dt>მშენებლობა</dt><dd>60 დღე</dd></dl>
-            <p class="price">279 000 ₾-დან<small>მუდმივი საცხოვრებლისთვის, წლის ნებისმიერ დროს</small></p>
+            <span class="tag" data-i18n="m4.tag">საოჯახო · 2 სართული</span>
+            <h3 data-i18n="m4.name">ფიცრული 120</h3>
+            <dl class="specs"><dt data-i18n="spec.area">ფართი</dt><dd data-i18n="m4.area">120 მ²</dd><dt data-i18n="spec.beds">საძინებელი</dt><dd>4</dd><dt data-i18n="spec.build">მშენებლობა</dt><dd data-i18n="m4.days">60 დღე</dd></dl>
+            <p class="price"><span data-i18n="m4.price">279 000 ₾-დან</span><small data-i18n="m4.desc">მუდმივი საცხოვრებლისთვის, წლის ნებისმიერ დროს</small></p>
           </div>
         </article>
       </div>
-      <p class="note">ფასი საორიენტაციოა და მოიცავს მშენებლობას „გასაღები ხელში“ საძირკვლის ჩათვლით. ზუსტი ღირებულება დამოკიდებულია ნაკვეთზე, რეგიონზე და მისასვლელ გზაზე.</p>
+      <p class="note" data-i18n="models.note">ფასი საორიენტაციოა და მოიცავს მშენებლობას „გასაღები ხელში“ საძირკვლის ჩათვლით. ზუსტი ღირებულება დამოკიდებულია ნაკვეთზე, რეგიონზე და მისასვლელ გზაზე.</p>
     </div>
   </section>
 
   <section class="section band" id="process" aria-labelledby="process-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="eyebrow">როგორ ვაშენებთ</p>
-        <h2 id="process-title">პირველი ზარიდან გასაღებამდე, ხუთ ეტაპად</h2>
+        <p class="eyebrow" data-i18n="nav.process">როგორ ვაშენებთ</p>
+        <h2 id="process-title" data-i18n="process.title">პირველი ზარიდან გასაღებამდე, ხუთ ეტაპად</h2>
       </div>
       <ol class="steps">
-        <li><h3>კონსულტაცია</h3><p>ვსაუბრობთ თქვენს იდეაზე, ბიუჯეტზე და ვადაზე. ვაფასებთ ნაკვეთს ადგილზე.</p></li>
-        <li><h3>პროექტი და ნებართვა</h3><p>ვამზადებთ არქიტექტურულ და კონსტრუქციულ პროექტს, ვიღებთ მშენებლობის ნებართვას.</p></li>
-        <li><h3>წარმოება</h3><p>კარკასის პანელებს ვამზადებთ საამქროში, ამიტომ ამინდი ხარისხზე არ მოქმედებს.</p></li>
-        <li><h3>მშენებლობა ადგილზე</h3><p>საძირკველი, აწყობა, სახურავი, კომუნიკაციები და მოპირკეთება. ყოველ კვირას გიგზავნით ფოტოანგარიშს.</p></li>
-        <li><h3>ჩაბარება</h3><p>ერთად ვამოწმებთ ყველა დეტალს და გადმოგცემთ გასაღებს, ტექნიკურ პასპორტს და გარანტიას.</p></li>
+        <li><h3 data-i18n="s1.h">კონსულტაცია</h3><p data-i18n="s1.p">ვსაუბრობთ თქვენს იდეაზე, ბიუჯეტზე და ვადაზე. ვაფასებთ ნაკვეთს ადგილზე.</p></li>
+        <li><h3 data-i18n="s2.h">პროექტი და ნებართვა</h3><p data-i18n="s2.p">ვამზადებთ არქიტექტურულ და კონსტრუქციულ პროექტს, ვიღებთ მშენებლობის ნებართვას.</p></li>
+        <li><h3 data-i18n="s3.h">წარმოება</h3><p data-i18n="s3.p">კარკასის პანელებს ვამზადებთ საამქროში, ამიტომ ამინდი ხარისხზე არ მოქმედებს.</p></li>
+        <li><h3 data-i18n="s4.h">მშენებლობა ადგილზე</h3><p data-i18n="s4.p">საძირკველი, აწყობა, სახურავი, კომუნიკაციები და მოპირკეთება. ყოველ კვირას გიგზავნით ფოტოანგარიშს.</p></li>
+        <li><h3 data-i18n="s5.h">ჩაბარება</h3><p data-i18n="s5.p">ერთად ვამოწმებთ ყველა დეტალს და გადმოგცემთ გასაღებს, ტექნიკურ პასპორტს და გარანტიას.</p></li>
       </ol>
     </div>
   </section>
@@ -329,14 +345,14 @@ h1, h2, h3, .brand b, .facts dt, .price { -webkit-text-stroke: .028em currentCol
     <div class="wrap">
       <div>
         <div class="section-head">
-          <p class="eyebrow">სად ვაშენებთ</p>
-          <h2 id="regions-title">მთელ საქართველოში, ყოველი კუთხის კლიმატის გათვალისწინებით</h2>
-          <p class="lead">2000 მეტრზე სახლი სხვა სახურავს და სხვა იზოლაციას საჭიროებს, ვიდრე ზღვასთან. ამიტომ ყველა პროექტს ერთ-ერთ კლიმატურ პაკეტს ვურგებთ.</p>
+          <p class="eyebrow" data-i18n="nav.regions">სად ვაშენებთ</p>
+          <h2 id="regions-title" data-i18n="regions.title">მთელ საქართველოში, ყოველი კუთხის კლიმატის გათვალისწინებით</h2>
+          <p class="lead" data-i18n="regions.lead">2000 მეტრზე სახლი სხვა სახურავს და სხვა იზოლაციას საჭიროებს, ვიდრე ზღვასთან. ამიტომ ყველა პროექტს ერთ-ერთ კლიმატურ პაკეტს ვურგებთ.</p>
         </div>
         <div class="packages">
-          <div class="pkg"><i class="k-alp"></i><div><b>ალპური</b><p>1500 მ-ზე მაღლა. გაძლიერებული სახურავი დიდი თოვლისთვის, 250 მმ იზოლაცია, სამმაგი მინაპაკეტი.</p></div></div>
-          <div class="pkg"><i class="k-mt"></i><div><b>მთის</b><p>500–1500 მ. 200 მმ იზოლაცია, ბუხარი ან თბური ტუმბო, ქარისგან დაცული ტერასა.</p></div></div>
-          <div class="pkg"><i class="k-low"></i><div><b>ბარის და ზღვისპირა</b><p>500 მ-მდე. ტენისგან დაცვა, ვენტილირებადი ფასადი, მზისგან დამჩრდილავი ფარდულები.</p></div></div>
+          <div class="pkg"><i class="k-alp"></i><div><b data-i18n="pkg1.h">ალპური</b><p data-i18n="pkg1.p">1500 მ-ზე მაღლა. გაძლიერებული სახურავი დიდი თოვლისთვის, 250 მმ იზოლაცია, სამმაგი მინაპაკეტი.</p></div></div>
+          <div class="pkg"><i class="k-mt"></i><div><b data-i18n="pkg2.h">მთის</b><p data-i18n="pkg2.p">500–1500 მ. 200 მმ იზოლაცია, ბუხარი ან თბური ტუმბო, ქარისგან დაცული ტერასა.</p></div></div>
+          <div class="pkg"><i class="k-low"></i><div><b data-i18n="pkg3.h">ბარის და ზღვისპირა</b><p data-i18n="pkg3.p">500 მ-მდე. ტენისგან დაცვა, ვენტილირებადი ფასადი, მზისგან დამჩრდილავი ფარდულები.</p></div></div>
         </div>
       </div>
     </div>
@@ -345,17 +361,17 @@ h1, h2, h3, .brand b, .facts dt, .price { -webkit-text-stroke: .028em currentCol
   <section class="section band" id="materials" aria-labelledby="materials-title">
     <div class="wrap">
       <div class="section-head">
-        <p class="eyebrow">მასალები</p>
-        <h2 id="materials-title">რისგან ვაშენებთ</h2>
-        <p class="lead">ვიყენებთ გამოცდილ მასალებს, რომლებიც კოტეჯს თბილს, მშრალს და მყარს ხდის ათწლეულების განმავლობაში.</p>
+        <p class="eyebrow" data-i18n="nav.materials">მასალები</p>
+        <h2 id="materials-title" data-i18n="materials.title">რისგან ვაშენებთ</h2>
+        <p class="lead" data-i18n="materials.lead">ვიყენებთ გამოცდილ მასალებს, რომლებიც კოტეჯს თბილს, მშრალს და მყარს ხდის ათწლეულების განმავლობაში.</p>
       </div>
       <dl class="mat-grid">
-        <div class="mat"><dt>კარკასი</dt><dd><b>საშრობში გამომშრალი ფიჭვი C24</b><span>ანტისეპტიკით და ცეცხლდამცავით დამუშავებული</span></dd></div>
-        <div class="mat"><dt>საძირკველი</dt><dd><b>ხრახნიანი ხიმინჯი ან ფილა</b><span>ვარჩევთ ნიადაგისა და ფერდობის მიხედვით</span></dd></div>
-        <div class="mat"><dt>თბოიზოლაცია</dt><dd><b>მინერალური ბამბა 200–250 მმ</b><span>ორთქლ- და ქარდამცავი მემბრანებით</span></dd></div>
-        <div class="mat"><dt>ფანჯრები</dt><dd><b>ორმაგი ან სამმაგი მინაპაკეტი</b><span>ხის ან ალუმინის ჩარჩოთი</span></dd></div>
-        <div class="mat"><dt>სახურავი</dt><dd><b>ლითონის სახურავი ან რბილი კრამიტი</b><span>თოვლის შემაკავებლებით მთის რეგიონებში</span></dd></div>
-        <div class="mat"><dt>ფასადი</dt><dd><b>თერმოხე, დამწვარი ხე ან ბლოკჰაუსი</b><span>ქარხნულად შეღებილი, დაცული მზისა და ტენისგან</span></dd></div>
+        <div class="mat"><dt data-i18n="mat1.dt">კარკასი</dt><dd><b data-i18n="mat1.b">საშრობში გამომშრალი ფიჭვი C24</b><span data-i18n="mat1.s">ანტისეპტიკით და ცეცხლდამცავით დამუშავებული</span></dd></div>
+        <div class="mat"><dt data-i18n="mat2.dt">საძირკველი</dt><dd><b data-i18n="mat2.b">ხრახნიანი ხიმინჯი ან ფილა</b><span data-i18n="mat2.s">ვარჩევთ ნიადაგისა და ფერდობის მიხედვით</span></dd></div>
+        <div class="mat"><dt data-i18n="mat3.dt">თბოიზოლაცია</dt><dd><b data-i18n="mat3.b">მინერალური ბამბა 200–250 მმ</b><span data-i18n="mat3.s">ორთქლ- და ქარდამცავი მემბრანებით</span></dd></div>
+        <div class="mat"><dt data-i18n="mat4.dt">ფანჯრები</dt><dd><b data-i18n="mat4.b">ორმაგი ან სამმაგი მინაპაკეტი</b><span data-i18n="mat4.s">ხის ან ალუმინის ჩარჩოთი</span></dd></div>
+        <div class="mat"><dt data-i18n="mat5.dt">სახურავი</dt><dd><b data-i18n="mat5.b">ლითონის სახურავი ან რბილი კრამიტი</b><span data-i18n="mat5.s">თოვლის შემაკავებლებით მთის რეგიონებში</span></dd></div>
+        <div class="mat"><dt data-i18n="mat6.dt">ფასადი</dt><dd><b data-i18n="mat6.b">თერმოხე, დამწვარი ხე ან ბლოკჰაუსი</b><span data-i18n="mat6.s">ქარხნულად შეღებილი, დაცული მზისა და ტენისგან</span></dd></div>
       </dl>
     </div>
   </section>
@@ -363,29 +379,29 @@ h1, h2, h3, .brand b, .facts dt, .price { -webkit-text-stroke: .028em currentCol
   <section class="section contact" id="contact" aria-labelledby="contact-title">
     <div class="wrap">
       <div>
-        <p class="eyebrow">კონტაქტი</p>
-        <h2 id="contact-title">მოგვიყევით თქვენს სახლზე</h2>
-        <p class="lead">დაგვიტოვეთ ნომერი და 24 საათში დაგირეკავთ. პირველი კონსულტაცია და ნაკვეთის შეფასება უფასოა.</p>
+        <p class="eyebrow" data-i18n="contact.eyebrow">კონტაქტი</p>
+        <h2 id="contact-title" data-i18n="contact.title">მოგვიყევით თქვენს სახლზე</h2>
+        <p class="lead" data-i18n="contact.lead">დაგვიტოვეთ ნომერი და 24 საათში დაგირეკავთ. პირველი კონსულტაცია და ნაკვეთის შეფასება უფასოა.</p>
         <div class="contact-info">
-          <div><span>ტელეფონი</span>+995 5XX XX XX XX</div>
-          <div><span>ელფოსტა</span>info@pitsruli.ge</div>
+          <div><span data-i18n="form.phone">ტელეფონი</span>+995 5XX XX XX XX</div>
+          <div><span data-i18n="contact.email">ელფოსტა</span>info@pitsruli.ge</div>
         </div>
       </div>
       <form id="lead-form" novalidate>
-        <label>სახელი<input id="f-name" name="name" autocomplete="name" required placeholder="მაგ. ნინო"></label>
-        <label>ტელეფონი<input id="f-phone" name="phone" type="tel" autocomplete="tel" required placeholder="+995 5__ __ __ __"></label>
-        <label>მოდელი
+        <label><span data-i18n="form.name">სახელი</span><input id="f-name" name="name" autocomplete="name" required placeholder="მაგ. ნინო" data-i18n-ph="form.name.ph"></label>
+        <label><span data-i18n="form.phone">ტელეფონი</span><input id="f-phone" name="phone" type="tel" autocomplete="tel" required placeholder="+995 5__ __ __ __"></label>
+        <label><span data-i18n="form.model">მოდელი</span>
           <select id="f-model" name="model">
-            <option>ჯერ არ ვიცი</option><option>ფიცრული 36</option><option>ფიცრული 58</option><option>ფიცრული 84</option><option>ფიცრული 120</option><option>ინდივიდუალური პროექტი</option>
+            <option value="unsure" data-i18n="opt.unsure">ჯერ არ ვიცი</option><option value="36" data-i18n="m1.name">ფიცრული 36</option><option value="58" data-i18n="m2.name">ფიცრული 58</option><option value="84" data-i18n="m3.name">ფიცრული 84</option><option value="120" data-i18n="m4.name">ფიცრული 120</option><option value="custom" data-i18n="opt.custom">ინდივიდუალური პროექტი</option>
           </select>
         </label>
-        <label>სად გაქვთ ნაკვეთი?
+        <label><span data-i18n="form.region">სად გაქვთ ნაკვეთი?</span>
           <select id="f-region" name="region">
-            <option>ჯერ არ მაქვს ნაკვეთი</option><option>მცხეთა-მთიანეთი</option><option>სამცხე-ჯავახეთი</option><option>აჭარა</option><option>გურია</option><option>სამეგრელო-ზემო სვანეთი</option><option>რაჭა-ლეჩხუმი</option><option>იმერეთი</option><option>კახეთი</option><option>შიდა ქართლი</option><option>ქვემო ქართლი</option><option>თბილისი</option>
+            <option value="none" data-i18n="r.none">ჯერ არ მაქვს ნაკვეთი</option><option value="mtskheta-mtianeti" data-i18n="r.mm">მცხეთა-მთიანეთი</option><option value="samtskhe-javakheti" data-i18n="r.sj">სამცხე-ჯავახეთი</option><option value="adjara" data-i18n="r.aj">აჭარა</option><option value="guria" data-i18n="r.gu">გურია</option><option value="samegrelo-zemo-svaneti" data-i18n="r.sz">სამეგრელო-ზემო სვანეთი</option><option value="racha-lechkhumi" data-i18n="r.rl">რაჭა-ლეჩხუმი</option><option value="imereti" data-i18n="r.im">იმერეთი</option><option value="kakheti" data-i18n="r.ka">კახეთი</option><option value="shida-kartli" data-i18n="r.sk">შიდა ქართლი</option><option value="kvemo-kartli" data-i18n="r.kk">ქვემო ქართლი</option><option value="tbilisi" data-i18n="r.tb">თბილისი</option>
           </select>
         </label>
-        <label class="full">კომენტარი<textarea id="f-msg" name="message" placeholder="მაგ. გვინდა 2 საძინებლიანი სახლი ბაკურიანში, 2027 წლის ზამთრამდე"></textarea></label>
-        <div class="full"><button class="btn" type="submit">გაგზავნა</button></div>
+        <label class="full"><span data-i18n="form.msg">კომენტარი</span><textarea id="f-msg" name="message" placeholder="მაგ. გვინდა 2 საძინებლიანი სახლი ბაკურიანში, 2027 წლის ზამთრამდე" data-i18n-ph="form.msg.ph"></textarea></label>
+        <div class="full"><button class="btn" type="submit" data-i18n="form.send">გაგზავნა</button></div>
         <p class="form-msg" id="form-msg" role="status" aria-live="polite"></p>
       </form>
     </div>
@@ -394,25 +410,173 @@ h1, h2, h3, .brand b, .facts dt, .price { -webkit-text-stroke: .028em currentCol
 
 <footer>
   <div class="wrap">
-    <span>© 2026 ფიცრული · ხის კოტეჯების დაპროექტება და მშენებლობა</span>
-    <a href="brandbook.html">ბრენდბუქი</a>
+    <span data-i18n="footer.text">© 2026 ფიცრული · ხის კოტეჯების დაპროექტება და მშენებლობა</span>
+    <a href="brandbook.html" data-i18n="footer.bb">ბრენდბუქი</a>
   </div>
 </footer>
 
 <script>
+(function () {
+  // Georgian text lives in the markup; English and Russian are below.
+  var I18N = {
+    en: {
+      'meta.title': 'Pitsruli — Wooden Cottages in Georgia',
+      'meta.desc': 'Pitsruli designs and builds wooden cottages all over Georgia, from Kazbegi to the Black Sea coast. One team, one contract, turnkey.',
+      'brand.aria': 'Pitsruli — home', 'nav.aria': 'Main menu',
+      'nav.models': 'Models', 'nav.process': 'How we build', 'nav.regions': 'Where we build', 'nav.materials': 'Materials',
+      'cta.consult': 'Consultation',
+      'hero.eyebrow': 'Wooden cottages · All of Georgia',
+      'hero.title': 'We build homes where your heart belongs',
+      'hero.lead': 'We design and build wooden cottages from Kazbegi to the Black Sea coast. One team, one contract, a fixed price and timeline. You get the keys.',
+      'hero.btn1': 'See the models', 'hero.btn2': 'Free consultation',
+      'f1.dd': 'days from the start of construction to handover',
+      'f2.dt': '9 points', 'f2.dd': 'earthquake intensity the frame withstands',
+      'f3.dt': '10 years', 'f3.dd': 'structural warranty',
+      'models.title': 'Four ready-made designs, each adapted to your plot',
+      'models.lead': 'Every model can be changed: terrace, loft, fireplace, sauna, facade material. We also do custom designs.',
+      'spec.area': 'Area', 'spec.beds': 'Bedrooms', 'spec.build': 'Construction',
+      'm1.tag': 'A-frame', 'm1.name': 'Pitsruli 36', 'm1.area': '36 m²', 'm1.beds': '1 + loft', 'm1.days': '30 days', 'm1.price': 'from ₾89,000', 'm1.desc': 'A perfect first cottage or rental home',
+      'm2.tag': 'Gable roof', 'm2.name': 'Pitsruli 58', 'm2.area': '58 m²', 'm2.days': '40 days', 'm2.price': 'from ₾139,000', 'm2.desc': 'For a couple or a small family',
+      'm3.tag': 'With terrace', 'm3.name': 'Pitsruli 84', 'm3.area': '84 m²', 'm3.days': '50 days', 'm3.price': 'from ₾198,000', 'm3.desc': 'A large open terrace and a living room with a fireplace',
+      'm4.tag': 'Family · 2 floors', 'm4.name': 'Pitsruli 120', 'm4.area': '120 m²', 'm4.days': '60 days', 'm4.price': 'from ₾279,000', 'm4.desc': 'For year-round living',
+      'models.note': 'Prices are indicative and include turnkey construction with the foundation. The exact cost depends on the plot, the region and the access road.',
+      'process.title': 'From the first call to the keys, in five steps',
+      's1.h': 'Consultation', 's1.p': 'We discuss your idea, budget and timeline, and assess the plot on site.',
+      's2.h': 'Design and permit', 's2.p': 'We prepare the architectural and structural design and obtain the building permit.',
+      's3.h': 'Production', 's3.p': 'We make the frame panels in our workshop, so the weather doesn’t affect quality.',
+      's4.h': 'On-site construction', 's4.p': 'Foundation, assembly, roof, utilities and finishing. Every week we send you a photo report.',
+      's5.h': 'Handover', 's5.p': 'We check every detail together and hand over the keys, the technical passport and the warranty.',
+      'regions.title': 'All over Georgia, adapted to each region’s climate',
+      'regions.lead': 'A house at 2,000 metres needs a different roof and insulation than one by the sea. That’s why every design gets one of three climate packages.',
+      'pkg1.h': 'Alpine', 'pkg1.p': 'Above 1,500 m. Reinforced roof for heavy snow, 250 mm insulation, triple glazing.',
+      'pkg2.h': 'Mountain', 'pkg2.p': '500–1,500 m. 200 mm insulation, a fireplace or heat pump, a wind-sheltered terrace.',
+      'pkg3.h': 'Lowland and coastal', 'pkg3.p': 'Below 500 m. Moisture protection, a ventilated facade, sun-shading canopies.',
+      'materials.title': 'What we build with',
+      'materials.lead': 'We use proven materials that keep a cottage warm, dry and solid for decades.',
+      'mat1.dt': 'Frame', 'mat1.b': 'Kiln-dried pine, grade C24', 'mat1.s': 'Treated with antiseptic and fire retardant',
+      'mat2.dt': 'Foundation', 'mat2.b': 'Screw piles or a slab', 'mat2.s': 'Chosen according to the soil and slope',
+      'mat3.dt': 'Insulation', 'mat3.b': 'Mineral wool, 200–250 mm', 'mat3.s': 'With vapour and wind barrier membranes',
+      'mat4.dt': 'Windows', 'mat4.b': 'Double or triple glazing', 'mat4.s': 'Wooden or aluminium frames',
+      'mat5.dt': 'Roof', 'mat5.b': 'Metal roofing or soft shingles', 'mat5.s': 'With snow guards in mountain regions',
+      'mat6.dt': 'Facade', 'mat6.b': 'Thermowood, charred wood or block house', 'mat6.s': 'Factory-painted, protected from sun and moisture',
+      'contact.eyebrow': 'Contact', 'contact.title': 'Tell us about your home',
+      'contact.lead': 'Leave your number and we’ll call you within 24 hours. The first consultation and plot assessment are free.',
+      'contact.email': 'Email',
+      'form.name': 'Name', 'form.name.ph': 'e.g. Nino', 'form.phone': 'Phone', 'form.model': 'Model', 'form.region': 'Where is your plot?',
+      'form.msg': 'Comment', 'form.msg.ph': 'e.g. We’d like a 2-bedroom house in Bakuriani before winter 2027', 'form.send': 'Send',
+      'opt.unsure': 'Not sure yet', 'opt.custom': 'Custom design',
+      'r.none': 'I don’t have a plot yet', 'r.mm': 'Mtskheta-Mtianeti', 'r.sj': 'Samtskhe-Javakheti', 'r.aj': 'Adjara', 'r.gu': 'Guria', 'r.sz': 'Samegrelo-Zemo Svaneti', 'r.rl': 'Racha-Lechkhumi', 'r.im': 'Imereti', 'r.ka': 'Kakheti', 'r.sk': 'Shida Kartli', 'r.kk': 'Kvemo Kartli', 'r.tb': 'Tbilisi',
+      'form.err': 'Please enter your name and full phone number.',
+      'form.ok': 'Thank you, {name}! We’ll call you within 24 hours at {phone}.',
+      'footer.text': '© 2026 Pitsruli · Wooden cottage design and construction', 'footer.bb': 'Brand book'
+    },
+    ru: {
+      'meta.title': 'Пицрули — деревянные коттеджи в Грузии',
+      'meta.desc': 'Пицрули проектирует и строит деревянные коттеджи по всей Грузии, от Казбеги до черноморского побережья. Одна команда, один договор, под ключ.',
+      'brand.aria': 'Пицрули — главная', 'nav.aria': 'Главное меню',
+      'nav.models': 'Модели', 'nav.process': 'Как мы строим', 'nav.regions': 'Где мы строим', 'nav.materials': 'Материалы',
+      'cta.consult': 'Консультация',
+      'hero.eyebrow': 'Деревянные коттеджи · Вся Грузия',
+      'hero.title': 'Строим дом там, куда зовёт сердце',
+      'hero.lead': 'Проектируем и строим деревянные коттеджи от Казбеги до морского побережья. Одна команда, один договор, фиксированные цена и сроки. Вы получаете ключи.',
+      'hero.btn1': 'Смотреть модели', 'hero.btn2': 'Бесплатная консультация',
+      'f1.dd': 'дней от начала строительства до сдачи',
+      'f2.dt': '9 баллов', 'f2.dd': 'землетрясение, которое выдерживает каркас',
+      'f3.dt': '10 лет', 'f3.dd': 'гарантия на конструкцию',
+      'models.title': 'Четыре готовых проекта. Каждый адаптируем под ваш участок',
+      'models.lead': 'Любую модель можно изменить: терраса, мансарда, камин, сауна, материал фасада. Делаем и индивидуальные проекты.',
+      'spec.area': 'Площадь', 'spec.beds': 'Спальни', 'spec.build': 'Строительство',
+      'm1.tag': 'A-фрейм', 'm1.name': 'Пицрули 36', 'm1.area': '36 м²', 'm1.beds': '1 + мансарда', 'm1.days': '30 дней', 'm1.price': 'от 89 000 ₾', 'm1.desc': 'Идеальный первый коттедж или дом для аренды',
+      'm2.tag': 'Двускатный', 'm2.name': 'Пицрули 58', 'm2.area': '58 м²', 'm2.days': '40 дней', 'm2.price': 'от 139 000 ₾', 'm2.desc': 'Для пары или небольшой семьи',
+      'm3.tag': 'С террасой', 'm3.name': 'Пицрули 84', 'm3.area': '84 м²', 'm3.days': '50 дней', 'm3.price': 'от 198 000 ₾', 'm3.desc': 'Большая открытая терраса и гостиная с камином',
+      'm4.tag': 'Семейный · 2 этажа', 'm4.name': 'Пицрули 120', 'm4.area': '120 м²', 'm4.days': '60 дней', 'm4.price': 'от 279 000 ₾', 'm4.desc': 'Для постоянного проживания круглый год',
+      'models.note': 'Цены ориентировочные и включают строительство под ключ с фундаментом. Точная стоимость зависит от участка, региона и подъездной дороги.',
+      'process.title': 'От первого звонка до ключей за пять этапов',
+      's1.h': 'Консультация', 's1.p': 'Обсуждаем вашу идею, бюджет и сроки. Оцениваем участок на месте.',
+      's2.h': 'Проект и разрешение', 's2.p': 'Готовим архитектурный и конструктивный проект, получаем разрешение на строительство.',
+      's3.h': 'Производство', 's3.p': 'Каркасные панели изготавливаем в цеху, поэтому погода не влияет на качество.',
+      's4.h': 'Строительство на участке', 's4.p': 'Фундамент, сборка, кровля, коммуникации и отделка. Каждую неделю присылаем фотоотчёт.',
+      's5.h': 'Сдача', 's5.p': 'Вместе проверяем каждую деталь и передаём ключи, технический паспорт и гарантию.',
+      'regions.title': 'По всей Грузии, с учётом климата каждого региона',
+      'regions.lead': 'Дому на высоте 2000 метров нужны другие кровля и утепление, чем у моря. Поэтому каждый проект получает один из трёх климатических пакетов.',
+      'pkg1.h': 'Альпийский', 'pkg1.p': 'Выше 1500 м. Усиленная кровля под большой снег, утепление 250 мм, тройной стеклопакет.',
+      'pkg2.h': 'Горный', 'pkg2.p': '500–1500 м. Утепление 200 мм, камин или тепловой насос, защищённая от ветра терраса.',
+      'pkg3.h': 'Равнинный и прибрежный', 'pkg3.p': 'До 500 м. Защита от влаги, вентилируемый фасад, навесы от солнца.',
+      'materials.title': 'Из чего мы строим',
+      'materials.lead': 'Используем проверенные материалы, благодаря которым коттедж остаётся тёплым, сухим и прочным десятилетиями.',
+      'mat1.dt': 'Каркас', 'mat1.b': 'Сосна камерной сушки C24', 'mat1.s': 'Обработана антисептиком и антипиреном',
+      'mat2.dt': 'Фундамент', 'mat2.b': 'Винтовые сваи или плита', 'mat2.s': 'Выбираем по грунту и уклону',
+      'mat3.dt': 'Утепление', 'mat3.b': 'Минеральная вата 200–250 мм', 'mat3.s': 'С пароизоляционной и ветрозащитной мембранами',
+      'mat4.dt': 'Окна', 'mat4.b': 'Двойной или тройной стеклопакет', 'mat4.s': 'С деревянной или алюминиевой рамой',
+      'mat5.dt': 'Кровля', 'mat5.b': 'Металлочерепица или мягкая черепица', 'mat5.s': 'Со снегозадержателями в горных регионах',
+      'mat6.dt': 'Фасад', 'mat6.b': 'Термодерево, обожжённое дерево или блок-хаус', 'mat6.s': 'Заводская покраска, защита от солнца и влаги',
+      'contact.eyebrow': 'Контакты', 'contact.title': 'Расскажите о своём доме',
+      'contact.lead': 'Оставьте номер, и мы перезвоним в течение 24 часов. Первая консультация и оценка участка бесплатны.',
+      'contact.email': 'Эл. почта',
+      'form.name': 'Имя', 'form.name.ph': 'например, Нино', 'form.phone': 'Телефон', 'form.model': 'Модель', 'form.region': 'Где ваш участок?',
+      'form.msg': 'Комментарий', 'form.msg.ph': 'например, хотим дом с 2 спальнями в Бакуриани до зимы 2027 года', 'form.send': 'Отправить',
+      'opt.unsure': 'Пока не знаю', 'opt.custom': 'Индивидуальный проект',
+      'r.none': 'Участка пока нет', 'r.mm': 'Мцхета-Мтианети', 'r.sj': 'Самцхе-Джавахети', 'r.aj': 'Аджария', 'r.gu': 'Гурия', 'r.sz': 'Самегрело-Земо Сванети', 'r.rl': 'Рача-Лечхуми', 'r.im': 'Имерети', 'r.ka': 'Кахети', 'r.sk': 'Шида Картли', 'r.kk': 'Квемо Картли', 'r.tb': 'Тбилиси',
+      'form.err': 'Пожалуйста, укажите имя и полный номер телефона.',
+      'form.ok': 'Спасибо, {name}! Мы перезвоним в течение 24 часов по номеру {phone}.',
+      'footer.text': '© 2026 Пицрули · Проектирование и строительство деревянных коттеджей', 'footer.bb': 'Брендбук'
+    },
+    ka: {
+      'form.err': 'გთხოვთ, მიუთითოთ სახელი და სრული ტელეფონის ნომერი.',
+      'form.ok': 'მადლობა, {name}! 24 საათში დაგირეკავთ ნომერზე {phone}.'
+    }
+  };
+  var LANGS = ['ka', 'en', 'ru'];
+  var KEY = 'pitsruli_lang';
+  var ka = I18N.ka;
+  var descMeta = document.querySelector('meta[name="description"]');
+
+  // Read the Georgian originals from the page once, so switching back restores them.
+  ka['meta.title'] = document.title;
+  ka['meta.desc'] = descMeta ? descMeta.content : '';
+  document.querySelectorAll('[data-i18n]').forEach(function (el) { if (!(el.dataset.i18n in ka)) ka[el.dataset.i18n] = el.textContent; });
+  document.querySelectorAll('[data-i18n-ph]').forEach(function (el) { ka[el.dataset.i18nPh] = el.getAttribute('placeholder'); });
+  document.querySelectorAll('[data-i18n-aria]').forEach(function (el) { ka[el.dataset.i18nAria] = el.getAttribute('aria-label'); });
+
+  var current = 'ka';
+  function t(key) { return (I18N[current] && I18N[current][key]) || ka[key] || ''; }
+
+  function apply(lang) {
+    if (LANGS.indexOf(lang) < 0) lang = 'ka';
+    current = lang;
+    document.documentElement.lang = lang;
+    document.title = t('meta.title');
+    if (descMeta) descMeta.content = t('meta.desc');
+    document.querySelectorAll('[data-i18n]').forEach(function (el) { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll('[data-i18n-ph]').forEach(function (el) { el.setAttribute('placeholder', t(el.dataset.i18nPh)); });
+    document.querySelectorAll('[data-i18n-aria]').forEach(function (el) { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
+    document.querySelectorAll('.lang button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.lang === lang)); });
+    document.getElementById('form-msg').textContent = '';
+  }
+
+  document.querySelector('.lang').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-lang]');
+    if (!b) return;
+    apply(b.dataset.lang);
+    try { localStorage.setItem(KEY, current); } catch (err) { /* storage unavailable */ }
+  });
+
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch (err) { /* storage unavailable */ }
+  apply(saved || 'ka');
+
   // TODO: connect to a backend (e.g. Supabase table or a form service) before launch.
   document.getElementById('lead-form').addEventListener('submit', function (e) {
     e.preventDefault();
     var name = document.getElementById('f-name').value.trim();
     var phone = document.getElementById('f-phone').value.trim();
     var msg = document.getElementById('form-msg');
-    if (!name || phone.replace(/\D/g, '').length < 9) {
-      msg.textContent = 'გთხოვთ, მიუთითოთ სახელი და სრული ტელეფონის ნომერი.';
-      return;
-    }
-    msg.textContent = 'მადლობა, ' + name + '! 24 საათში დაგირეკავთ ნომერზე ' + phone + '.';
+    if (!name || phone.replace(/\D/g, '').length < 9) { msg.textContent = t('form.err'); return; }
+    msg.textContent = t('form.ok').replace('{name}', name).replace('{phone}', phone);
     this.reset();
   });
+})();
 </script>
 </body>
+
 </html>
