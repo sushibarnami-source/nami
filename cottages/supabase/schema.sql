@@ -46,6 +46,9 @@ $$;
 grant execute on function pitsruli_is_admin() to authenticated, anon;
 
 -- Everyone can read the site content; only admins can change it.
+-- Explicit grants, so this works with "Automatically expose new tables" turned off.
+grant select on pitsruli_site to anon, authenticated;
+grant insert, update on pitsruli_site to authenticated;
 alter table pitsruli_site enable row level security;
 
 drop policy if exists "Public can read pitsruli site" on pitsruli_site;
