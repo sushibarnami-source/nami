@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ბუდე ბრენდბუქი</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700&family=Noto+Serif+Georgian:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: a printed guideline book. Chapter number in a narrow left rail, content in a wide right column. */
+:root {
+  --bg: #EEF1EB; --paper: #FFFFFF; --ink: #18241E; --muted: #55645B; --line: #D3DAD0;
+  --pine: #1F3A2E; --moss: #6F8466; --bark: #5A3E2B; --glow: #E4A33A; --fog: #EEF1EB;
+  --head: #1F3A2E;
+  --display: "Noto Serif Georgian", "Sylfaen", Georgia, serif;
+  --body: "Noto Sans Georgian", "Sylfaen", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #0F1613; --paper: #16201B; --ink: #E5EBE4; --muted: #9AAA9F; --line: #26342D; --head: #A8C4B1; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #0F1613; --paper: #16201B; --ink: #E5EBE4; --muted: #9AAA9F; --line: #26342D; --head: #A8C4B1; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.7 var(--body); -webkit-font-smoothing: antialiased; }
+img { max-width: 100%; display: block; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.2; text-wrap: balance; margin: 0; color: var(--head); }
+p { margin: 0; }
+.label { font: 500 .72rem/1.3 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--moss); }
+.muted { color: var(--muted); }
+
+/* Cover: fixed pine regardless of theme */
+.cover { background: #1F3A2E; color: #F4F6F1; }
+.cover .wrap { display: grid; gap: 40px; padding-block: 72px 56px; }
+.cover img { width: min(420px, 100%); }
+.cover h1 { color: #F4F6F1; font-size: clamp(2rem, 1.4rem + 2.6vw, 3.2rem); font-weight: 800; }
+.cover p { color: #B9C7B2; max-width: 60ch; }
+.cover-meta { display: flex; flex-wrap: wrap; gap: 8px 28px; font: 500 .78rem/1 var(--mono); letter-spacing: .1em; color: #B9C7B2; text-transform: uppercase; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { color: #F4F6F1; text-decoration: none; border: 1px solid #3D5A4B; border-radius: 999px; padding: 6px 14px; font-size: .88rem; }
+.toc a:hover { border-color: #E4A33A; }
+
+.chapter { padding-block: clamp(56px, 8vw, 96px); border-bottom: 1px solid var(--line); }
+.chapter > .wrap { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 32px; }
+.num { font: 800 3.4rem/1 var(--display); color: var(--glow); }
+.ch-body { display: grid; gap: 32px; min-width: 0; }
+.ch-body > header { display: grid; gap: 10px; }
+.ch-body h2 { font-size: clamp(1.7rem, 1.3rem + 1.4vw, 2.4rem); }
+.ch-body header p { color: var(--muted); max-width: 64ch; }
+@media (max-width: 760px) { .chapter > .wrap { grid-template-columns: 1fr; gap: 12px; } .num { font-size: 2.4rem; } }
+
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 860px) { .grid3, .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .grid2, .grid3, .grid4 { grid-template-columns: 1fr; } }
+
+.panel { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 24px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.1rem; }
+.panel p { font-size: .93rem; color: var(--muted); }
+
+/* Logo tiles: fixed light/dark grounds so artwork colors stay correct in either theme */
+.tile { border-radius: 12px; display: grid; place-items: center; padding: 36px 24px; min-height: 200px; }
+.tile.light { background: #F7F8F5; border: 1px solid var(--line); }
+.tile.fog { background: #EEF1EB; border: 1px solid var(--line); }
+.tile.pine { background: #1F3A2E; }
+.tile.glow { background: #E4A33A; }
+.tile img { max-height: 120px; width: auto; }
+figure { margin: 0; display: grid; gap: 10px; }
+figcaption { font-size: .88rem; color: var(--muted); }
+figcaption b { color: var(--ink); font-weight: 600; }
+
+.clear { position: relative; background: #F7F8F5; border: 1px solid var(--line); border-radius: 12px; display: grid; place-items: center; padding: 40px 16px; overflow-x: auto; }
+.clear .box { position: relative; padding: 28px; outline: 1.5px dashed #E4A33A; outline-offset: 0; }
+.clear .box img { width: 300px; max-width: none; }
+.clear .x { position: absolute; font: 500 .75rem/1 var(--mono); color: #A7701F; }
+
+.donts .tile { position: relative; }
+.donts .tile::after { content: "✕"; position: absolute; top: 10px; right: 14px; font: 700 1.1rem/1 var(--body); color: #B4432F; }
+
+/* Colors */
+.swatch { border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--paper); }
+.swatch .chip { height: 120px; }
+.swatch .info { padding: 14px 16px 16px; display: grid; gap: 2px; }
+.swatch b { font-family: var(--display); font-size: 1.05rem; color: var(--head); }
+.swatch code { font: 400 .78rem/1.6 var(--mono); color: var(--muted); }
+.ratio { display: flex; height: 56px; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
+.ratio div { display: grid; place-items: center; font: 500 .75rem/1 var(--mono); }
+
+/* Type */
+.type-row { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 24px; padding-block: 24px; border-top: 1px solid var(--line); align-items: baseline; }
+@media (max-width: 760px) { .type-row { grid-template-columns: 1fr; gap: 8px; } }
+.type-row .spec { display: grid; gap: 4px; }
+.type-row .spec b { font-weight: 600; }
+.type-row .spec code { font: 400 .78rem/1.5 var(--mono); color: var(--muted); }
+.s-display { font: 800 clamp(2rem, 1.4rem + 2.4vw, 3.2rem)/1.15 var(--display); color: var(--head); }
+.s-h2 { font: 700 1.8rem/1.25 var(--display); color: var(--head); }
+.s-body { font: 400 1rem/1.7 var(--body); max-width: 62ch; }
+.s-mono { font: 500 .8rem/1.4 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--moss); }
+.alphabet { font: 400 1.4rem/1.6 var(--body); word-break: break-all; color: var(--muted); }
+
+/* Graphics */
+.motif { border-radius: 12px; overflow: hidden; background: #D9E3DD; }
+.motif svg { display: block; width: 100%; height: auto; }
+
+/* Voice */
+.voice { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--paper); }
+.voice > div { padding: 18px 20px; border-top: 1px solid var(--line); font-size: .95rem; }
+.voice > div:nth-child(-n+2) { border-top: 0; }
+.voice > div:nth-child(odd) { border-right: 1px solid var(--line); }
+.voice .h { font: 500 .72rem/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+.voice .yes.h { color: var(--moss); } .voice .no.h { color: #B4432F; }
+.voice .no:not(.h) { color: var(--muted); text-decoration: line-through; text-decoration-color: #B4432F80; }
+@media (max-width: 600px) { .voice { grid-template-columns: 1fr; } .voice > div:nth-child(odd) { border-right: 0; } .voice > div:nth-child(2) { border-top: 1px solid var(--line); } }
+
+/* Applications (fixed brand colors) */
+.apps { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; align-items: start; }
+.card-front, .card-back { aspect-ratio: 85 / 55; max-width: 100%; border-radius: 8px; box-shadow: 0 10px 30px rgba(10, 25, 18, .18); }
+.card-front { background: #1F3A2E; display: grid; place-items: center; }
+.card-front img { width: 62%; }
+.card-back { background: #F7F8F5; color: #18241E; padding: 7% 8%; display: grid; align-content: space-between; border: 1px solid #D3DAD0; }
+.card-back b { font: 700 1.05rem/1.2 var(--display); color: #1F3A2E; }
+.card-back span { font-size: .78rem; color: #55645B; display: block; }
+.card-back code { font: 400 .74rem/1.6 var(--mono); color: #18241E; }
+.card-back img { width: 34px; }
+.sign { background: #5A3E2B; border-radius: 6px; padding: 22px; display: grid; gap: 14px; justify-items: center; box-shadow: 0 10px 30px rgba(10, 25, 18, .18); }
+.sign .plank { background: #1F3A2E; border-radius: 4px; padding: 22px 26px; width: 100%; display: grid; place-items: center; }
+.sign .plank img { width: 90%; }
+.sign small { font: 500 .72rem/1 var(--mono); letter-spacing: .1em; color: #F1D9B0; }
+.post { aspect-ratio: 1; border-radius: 10px; overflow: hidden; position: relative; background: #142420; box-shadow: 0 10px 30px rgba(10, 25, 18, .18); }
+.post svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.post .txt { position: absolute; left: 7%; right: 7%; top: 8%; color: #F4F6F1; display: grid; gap: 8px; }
+.post .txt b { font: 800 1.45rem/1.2 var(--display); }
+.post .txt span { font: 500 .7rem/1 var(--mono); letter-spacing: .12em; color: #F0B04A; }
+
+footer { padding-block: 40px; font-size: .85rem; color: var(--muted); }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+footer a { color: inherit; }
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <div class="wrap">
+    <img src="assets/bude-logo-white.svg" alt="ბუდე — კოტეჯები">
+    <div style="display:grid;gap:14px">
+      <h1>ბრენდბუქი</h1>
+      <p>წესები და მასალები, რომლითაც ბუდე ყველგან ერთნაირად გამოიყურება: საიტზე, სოციალურ ქსელებში, სამშენებლო მოედანზე და სავიზიტო ბარათზე.</p>
+    </div>
+    <nav class="toc" aria-label="სარჩევი">
+      <a href="#idea">იდეა</a><a href="#logo">ლოგო</a><a href="#color">ფერები</a><a href="#type">ტიპოგრაფია</a><a href="#graphics">გრაფიკა</a><a href="#voice">ხმა და ტონი</a><a href="#apps">გამოყენება</a>
+    </nav>
+    <div class="cover-meta"><span>ვერსია 1.0</span><span>ნოემბერი 2026</span><span>bude.ge</span></div>
+  </div>
+</header>
+
+<main>
+  <section class="chapter" id="idea">
+    <div class="wrap">
+      <div class="num">01</div>
+      <div class="ch-body">
+        <header>
+          <p class="label">ბრენდის იდეა</p>
+          <h2>ბუდე ის ადგილია, სადაც ბრუნდები</h2>
+          <p>ჩიტი ბუდეს თავად ირჩევს ადგილს და ზუსტად იმ ტოტზე აშენებს, რომელიც მოსწონს. ჩვენც ასე ვაშენებთ: ყოველ სახლს ვარგებთ კონკრეტულ ფერდობს, ხედს და კლიმატს. სახელი მოკლეა, თბილი და ადვილად წარმოითქმის ქართულადაც და უცხოელისთვისაც (BUDE).</p>
+        </header>
+        <div class="grid3">
+          <div class="panel"><p class="label">მისია</p><h3>ბუნებაში ცხოვრება ყველასთვის მისაწვდომი</h3><p>ვაშენებთ თბილ, მყარ და ლამაზ კოტეჯებს, გამჭვირვალე ფასით და ვადით.</p></div>
+          <div class="panel"><p class="label">ხედვა</p><h3>ყველაზე სანდო კოტეჯების მშენებელი საქართველოში</h3><p>ყველა რეგიონში, ყაზბეგიდან შეკვეთილამდე.</p></div>
+          <div class="panel"><p class="label">პოზიციონირება</p><h3>ერთი გუნდი, გასაღები ხელში</h3><p>პროექტი, ნებართვა, მშენებლობა და გარანტია ერთ ხელშეკრულებაში.</p></div>
+        </div>
+        <div class="grid4">
+          <div class="panel"><h3>სიმყუდროვე</h3><p>სახლი, რომელშიც თბილა და კარგად გძინავს.</p></div>
+          <div class="panel"><h3>სიზუსტე</h3><p>ფასი, ვადა და ხარისხი, რომელსაც ვპირდებით, ზუსტად სრულდება.</p></div>
+          <div class="panel"><h3>ადგილის პატივისცემა</h3><p>ბუნებას ვუფრთხილდებით და ლანდშაფტს არ ვამახინჯებთ.</p></div>
+          <div class="panel"><h3>გულწრფელობა</h3><p>ვამბობთ, რა შეიძლება და რა არა. დამალული ხარჯი არ გვაქვს.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter" id="logo">
+    <div class="wrap">
+      <div class="num">02</div>
+      <div class="ch-body">
+        <header>
+          <p class="label">ლოგო</p>
+          <h2>A-ფრეიმის სახურავი, ანთებული ფანჯარა და ბუდე</h2>
+          <p>ნიშანი სამი ელემენტისგან შედგება: ციცაბო ორფერდა სახურავი (კოტეჯი და მთა ერთდროულად), თაღოვანი ანთებული ფანჯარა (სითბო, ვიღაც გელოდება) და ორი რკალი ქვემოთ (ბუდე). სიტყვიერი ნიშანი აწყობილია Noto Serif Georgian Bold შრიფტით და გადაყვანილია ვექტორულ კონტურებში.</p>
+        </header>
+        <div class="grid2">
+          <figure><div class="tile light"><img src="assets/bude-logo.svg" alt="ჰორიზონტალური ლოგო"></div><figcaption><b>ძირითადი ლოგო.</b> ჰორიზონტალური, გამოიყენება ყველგან, სადაც ადგილი იძლევა.</figcaption></figure>
+          <figure><div class="tile light"><img src="assets/bude-logo-vertical.svg" alt="ვერტიკალური ლოგო"></div><figcaption><b>ვერტიკალური.</b> კვადრატული ფორმატი, აბრა, ფირმის ბლანკის ცენტრი.</figcaption></figure>
+          <figure><div class="tile pine"><img src="assets/bude-logo-white.svg" alt="თეთრი ლოგო მუქ ფონზე"></div><figcaption><b>ნეგატივი.</b> მუქ მწვანე ან ფოტოზე. ფანჯარა ყოველთვის ყვითელი რჩება.</figcaption></figure>
+          <div class="grid2" style="gap:20px">
+            <figure><div class="tile fog"><img src="assets/bude-mark.svg" alt="ნიშანი"></div><figcaption><b>ნიშანი.</b> როცა ბრენდი უკვე ცნობილია.</figcaption></figure>
+            <figure><div class="tile fog"><img src="assets/favicon.svg" alt="აპლიკაციის ხატულა" style="max-height:96px"></div><figcaption><b>ხატულა.</b> Favicon, სოციალური ქსელის ავატარი.</figcaption></figure>
+          </div>
+        </div>
+        <div class="grid2">
+          <figure>
+            <div class="clear"><div class="box"><img src="assets/bude-logo.svg" alt="ლოგოს დაცული არე"><span class="x" style="top:6px;left:50%">x</span><span class="x" style="bottom:6px;left:50%">x</span><span class="x" style="left:8px;top:45%">x</span><span class="x" style="right:8px;top:45%">x</span></div></div>
+            <figcaption><b>დაცული არე.</b> ლოგოს ირგვლივ თავისუფალი სივრცე არანაკლებ x-ისა, სადაც x ფანჯრის სიგანეა (ნიშნის სიმაღლის ≈ 15%).</figcaption>
+          </figure>
+          <div class="panel">
+            <p class="label">მინიმალური ზომა</p>
+            <h3>ციფრულად / ბეჭდვით</h3>
+            <p>ჰორიზონტალური ლოგო: 120 px / 30 მმ<br>ვერტიკალური ლოგო: 80 px / 22 მმ<br>ნიშანი: 24 px / 8 მმ</p>
+            <p class="label" style="margin-top:12px">ფაილები</p>
+            <p>assets/ საქაღალდეში: bude-logo.svg, bude-logo-white.svg, bude-logo-vertical.svg, bude-mark.svg, favicon.svg. ყველა ვექტორულია და ნებისმიერ ზომაზე იბეჭდება.</p>
+          </div>
+        </div>
+        <div>
+          <p class="label" style="margin-bottom:14px">არ შეიძლება</p>
+          <div class="grid4 donts">
+            <figure><div class="tile light"><img src="assets/bude-logo.svg" alt="" style="transform:scaleX(1.5);max-height:70px"></div><figcaption>გაწელვა ან შეკუმშვა</figcaption></figure>
+            <figure><div class="tile light"><img src="assets/bude-logo.svg" alt="" style="filter:hue-rotate(160deg) saturate(3);max-height:70px"></div><figcaption>ფერების შეცვლა</figcaption></figure>
+            <figure><div class="tile light"><img src="assets/bude-logo.svg" alt="" style="transform:rotate(-12deg);max-height:70px"></div><figcaption>მობრუნება</figcaption></figure>
+            <figure><div class="tile glow"><img src="assets/bude-logo.svg" alt="" style="max-height:70px"></div><figcaption>ყვითელ ან ჭრელ ფონზე განთავსება</figcaption></figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter" id="color">
+    <div class="wrap">
+      <div class="num">03</div>
+      <div class="ch-body">
+        <header>
+          <p class="label">ფერები</p>
+          <h2>ტყე, ხე, ნისლი და ერთი ანთებული ფანჯარა</h2>
+          <p>პალიტრა აღებულია მთის ტყიდან. ფიჭვის მწვანე წამყვანი ფერია, ნისლი ფონია. ყვითელი „ფანჯრის შუქი“ მხოლოდ აქცენტია: ღილაკი, ფანჯარა ლოგოში, ერთი მნიშვნელოვანი ციფრი. არასოდეს გამოიყენოთ დიდ ფართობზე.</p>
+        </header>
+        <div class="grid3">
+          <div class="swatch"><div class="chip" style="background:#1F3A2E"></div><div class="info"><b>ფიჭვი · Pine</b><code>HEX #1F3A2E</code><code>RGB 31 58 46</code><code>CMYK 47 0 21 77</code></div></div>
+          <div class="swatch"><div class="chip" style="background:#6F8466"></div><div class="info"><b>ხავსი · Moss</b><code>HEX #6F8466</code><code>RGB 111 132 102</code><code>CMYK 16 0 23 48</code></div></div>
+          <div class="swatch"><div class="chip" style="background:#5A3E2B"></div><div class="info"><b>ქერქი · Bark</b><code>HEX #5A3E2B</code><code>RGB 90 62 43</code><code>CMYK 0 31 52 65</code></div></div>
+          <div class="swatch"><div class="chip" style="background:#E4A33A"></div><div class="info"><b>ფანჯრის შუქი · Glow</b><code>HEX #E4A33A</code><code>RGB 228 163 58</code><code>CMYK 0 29 75 11</code></div></div>
+          <div class="swatch"><div class="chip" style="background:#EEF1EB"></div><div class="info"><b>ნისლი · Fog</b><code>HEX #EEF1EB</code><code>RGB 238 241 235</code><code>CMYK 1 0 2 5</code></div></div>
+          <div class="swatch"><div class="chip" style="background:#18241E"></div><div class="info"><b>მელანი · Ink</b><code>HEX #18241E</code><code>RGB 24 36 30</code><code>CMYK 33 0 17 86</code></div></div>
+        </div>
+        <div>
+          <p class="label" style="margin-bottom:12px">პროპორცია ერთ მაკეტზე</p>
+          <div class="ratio">
+            <div style="flex:60;background:#EEF1EB;color:#55645B">ნისლი 60%</div>
+            <div style="flex:25;background:#1F3A2E;color:#F4F6F1">ფიჭვი 25%</div>
+            <div style="flex:10;background:#6F8466;color:#F4F6F1">10%</div>
+            <div style="flex:5;background:#E4A33A;color:#18241E">5%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter" id="type">
+    <div class="wrap">
+      <div class="num">04</div>
+      <div class="ch-body">
+        <header>
+          <p class="label">ტიპოგრაფია</p>
+          <h2>სამი შრიფტი, სამი როლი</h2>
+          <p>სამივე უფასოა (Google Fonts, OFL ლიცენზია) და სრულად უჭერს მხარს ქართულ და ლათინურ ანბანს.</p>
+        </header>
+        <div>
+          <div class="type-row"><div class="spec"><b>Noto Serif Georgian</b><code>ExtraBold 800 · სათაურები</code></div><div class="s-display">ვაშენებთ ბუდეს იქ, სადაც გული გეძახის</div></div>
+          <div class="type-row"><div class="spec"><b>Noto Serif Georgian</b><code>Bold 700 · ქვესათაურები</code></div><div class="s-h2">ოთხი მზა პროექტი</div></div>
+          <div class="type-row"><div class="spec"><b>Noto Sans Georgian</b><code>Regular 400 · ტექსტი, 16 px / 1.7</code></div><p class="s-body">ვაპროექტებთ და ვაშენებთ ხის კოტეჯებს ყაზბეგიდან ზღვისპირამდე. ერთი გუნდი, ერთი ხელშეკრულება, ფიქსირებული ფასი და ვადა.</p></div>
+          <div class="type-row"><div class="spec"><b>IBM Plex Mono</b><code>Medium 500 · ციფრები, იარლიყები</code></div><p class="s-mono">ბუდე 84 · 84 მ² · 3 საძინებელი · 1740 მ</p></div>
+          <div class="type-row"><div class="spec"><b>ანბანი</b><code>Noto Sans Georgian</code></div><p class="alphabet">ა ბ გ დ ე ვ ზ თ ი კ ლ მ ნ ო პ ჟ რ ს ტ უ ფ ქ ღ ყ შ ჩ ც ძ წ ჭ ხ ჯ ჰ · 0 1 2 3 4 5 6 7 8 9 ₾</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter" id="graphics">
+    <div class="wrap">
+      <div class="num">05</div>
+      <div class="ch-body">
+        <header>
+          <p class="label">გრაფიკა და ფოტო</p>
+          <h2>ქედების ხაზი და ერთი ანთებული ფანჯარა</h2>
+          <p>ფირმული ილუსტრაცია ბრტყელი ფენებია: შორეული თოვლიანი ქედი, შუა გორა, ახლო ტყე და პატარა კოტეჯი ყვითელი ფანჯრით. ღამის ვერსიაში ფანჯარა ერთადერთი თბილი ფერია.</p>
+        </header>
+        <div class="grid2">
+          <figure><div class="motif">
+            <svg viewBox="0 0 600 300" aria-hidden="true"><rect width="600" height="300" fill="#D9E3DD"/><circle cx="480" cy="70" r="28" fill="#E4A33A" opacity=".5"/><path d="M0 190 L70 130 L120 160 L190 80 L240 120 L300 60 L370 140 L430 100 L520 150 L600 110 V300 H0 Z" fill="#B5C4BC"/><path d="M175 98 L190 80 L205 96 L192 92 Z M285 78 L300 60 L316 80 L300 74 Z" fill="#F8F9F6"/><path d="M0 220 C120 180 220 200 330 185 C430 172 520 200 600 190 V300 H0 Z" fill="#7D9483"/><path d="M0 262 C150 230 300 260 420 245 C500 236 560 248 600 244 V300 H0 Z" fill="#2C4739"/><path d="M370 250 L400 196 L430 250 Z" fill="#2C4739"/><path d="M364 252 L400 190 L436 252" fill="none" stroke="#F8F9F6" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/><path d="M394 250 V239 a6 6 0 0 1 12 0 V250 Z" fill="#E4A33A"/></svg>
+          </div><figcaption><b>დღე.</b> საიტის, ბროშურის, ბილბორდის ფონი.</figcaption></figure>
+          <figure><div class="motif">
+            <svg viewBox="0 0 600 300" aria-hidden="true"><rect width="600" height="300" fill="#142420"/><circle cx="480" cy="70" r="20" fill="#F0B04A" opacity=".35"/><path d="M0 190 L70 130 L120 160 L190 80 L240 120 L300 60 L370 140 L430 100 L520 150 L600 110 V300 H0 Z" fill="#22362E"/><path d="M175 98 L190 80 L205 96 L192 92 Z M285 78 L300 60 L316 80 L300 74 Z" fill="#BFCBC4"/><path d="M0 220 C120 180 220 200 330 185 C430 172 520 200 600 190 V300 H0 Z" fill="#1A2C24"/><path d="M0 262 C150 230 300 260 420 245 C500 236 560 248 600 244 V300 H0 Z" fill="#101C17"/><circle cx="400" cy="238" r="30" fill="#F0B04A" opacity=".25"/><path d="M370 250 L400 196 L430 250 Z" fill="#101C17"/><path d="M364 252 L400 190 L436 252" fill="none" stroke="#BFCBC4" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/><path d="M394 250 V239 a6 6 0 0 1 12 0 V250 Z" fill="#F0B04A"/></svg>
+          </div><figcaption><b>ღამე.</b> სოციალური ქსელები, ზამთრის კამპანიები, საიტის მუქი რეჟიმი.</figcaption></figure>
+        </div>
+        <div class="grid3">
+          <div class="panel"><p class="label">ფოტო: კი</p><p>ბუნებრივი შუქი, ოქროს საათი ან ბინდი ანთებული ფანჯრებით. რეალური ადამიანები, ორთქლიანი ფინჯანი, თოვლი ტერასაზე, ხის ტექსტურა ახლოდან.</p></div>
+          <div class="panel"><p class="label">ფოტო: არა</p><p>სტოკური სახეები, ზედმეტად გაჯერებული HDR, ფილტრები, ცარიელი სტერილური ინტერიერი, რენდერი რეალური ფოტოს ნაცვლად ისე, რომ არ ეწეროს „ვიზუალიზაცია“.</p></div>
+          <div class="panel"><p class="label">სამშენებლო მოედანი</p><p>ყოველკვირეული ფოტოანგარიში ერთ კადრში: ერთი და იგივე რაკურსი, დღე და თარიღი სურათის კუთხეში IBM Plex Mono-თი.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter" id="voice">
+    <div class="wrap">
+      <div class="num">06</div>
+      <div class="ch-body">
+        <header>
+          <p class="label">ხმა და ტონი</p>
+          <h2>ვსაუბრობთ, როგორც კარგი ოსტატი მეზობელს</h2>
+          <p>თბილად, მოკლედ და კონკრეტულად. მივმართავთ „თქვენ“-ით. ვასახელებთ ციფრებს: კვადრატულ მეტრს, დღეებს, ლარს. არ ვიყენებთ ზედსართავების გროვას და „უნიკალურ, ექსკლუზიურ, პრემიუმ“ სიტყვებს.</p>
+        </header>
+        <div class="voice">
+          <div class="yes h">ასე</div><div class="no h">ასე არა</div>
+          <div class="yes">ბუდე 58 ავაშენეთ ბაკურიანში 72 დღეში.</div><div class="no">ჩვენ ვაშენებთ უნიკალურ, ექსკლუზიურ, პრემიუმ კლასის სახლებს.</div>
+          <div class="yes">ფასი მოიცავს საძირკველს. გზის მოწყობა ცალკე ღირს, ამას წინასწარ გეტყვით.</div><div class="no">ხელმისაწვდომი ფასები! დეტალებისთვის დაგვიკავშირდით!!!</div>
+          <div class="yes">დაგვიტოვეთ ნომერი და ხვალ დაგირეკავთ.</div><div class="no">ჩვენი გუნდი უახლოეს ხანებში აუცილებლად დაგიკავშირდებათ.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="chapter" id="apps">
+    <div class="wrap">
+      <div class="num">07</div>
+      <div class="ch-body">
+        <header>
+          <p class="label">გამოყენება</p>
+          <h2>სავიზიტო, აბრა, სოციალური ქსელი</h2>
+          <p>სავიზიტო ბარათი 85 × 55 მმ, მქრქალი ქაღალდი 350 გ/მ². აბრა სამშენებლო მოედანზე: ხის ფირფიტაზე ჩაჭრილი ან დაბეჭდილი ლოგო. პოსტები 1080 × 1080 px.</p>
+        </header>
+        <div class="apps">
+          <figure><div class="card-front"><img src="assets/bude-logo-white.svg" alt="სავიზიტოს წინა მხარე"></div><figcaption><b>სავიზიტო, წინა მხარე</b></figcaption></figure>
+          <figure><div class="card-back"><div><b>ნინო ბერიძე</b><span>პროექტის მენეჯერი</span></div><div style="display:flex;justify-content:space-between;align-items:end;gap:8px"><div><code>+995 5XX XX XX XX</code><br><code>nino@bude.ge</code><br><code>bude.ge</code></div><img src="assets/bude-mark.svg" alt=""></div></div><figcaption><b>სავიზიტო, უკანა მხარე</b> (სახელი მაგალითისთვის)</figcaption></figure>
+          <figure><div class="sign"><div class="plank"><img src="assets/bude-logo-white.svg" alt="აბრა"></div><small>აქ შენდება ბუდე 84 · ჩაბარება: მარტი 2027</small></div><figcaption><b>აბრა სამშენებლო მოედანზე</b></figcaption></figure>
+          <figure><div class="post">
+            <svg viewBox="0 0 300 300" aria-hidden="true" preserveAspectRatio="xMidYMax slice"><path d="M0 200 L60 150 L100 175 L160 110 L200 140 L250 100 L300 140 V300 H0 Z" fill="#22362E"/><path d="M0 240 C80 215 170 235 240 225 C270 221 290 226 300 224 V300 H0 Z" fill="#1A2C24"/><path d="M0 272 C100 255 200 270 300 262 V300 H0 Z" fill="#101C17"/><circle cx="210" cy="250" r="22" fill="#F0B04A" opacity=".25"/><path d="M190 262 L210 222 L230 262 Z" fill="#101C17"/><path d="M186 264 L210 218 L234 264" fill="none" stroke="#BFCBC4" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/><path d="M205 262 V254 a5 5 0 0 1 10 0 V262 Z" fill="#F0B04A"/></svg>
+            <div class="txt"><span>ბუდე 36 · გუდაური · 2196 მ</span><b>ზამთარი უკვე აქ არის. ფანჯარაში შუქი ანთია.</b></div>
+          </div><figcaption><b>Instagram პოსტი</b></figcaption></figure>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap"><span>ბუდე · ბრენდბუქი v1.0 · 2026</span><a href="index.html">საიტზე დაბრუნება</a></div>
+</footer>
+</body>
+</html>

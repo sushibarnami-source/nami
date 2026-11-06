@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ბუდე — ხის კოტეჯები საქართველოში</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="ბუდე აპროექტებს და აშენებს ხის კოტეჯებს მთელ საქართველოში — ყაზბეგიდან ზღვისპირამდე. ერთი გუნდი, ერთი ხელშეკრულება, გასაღები ხელში.">
+<meta property="og:title" content="ბუდე — ხის კოტეჯები საქართველოში">
+<meta property="og:description" content="კოტეჯების დაპროექტება და მშენებლობა მთელ საქართველოში. გასაღები ხელში.">
+<meta property="og:locale" content="ka_GE">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700&family=Noto+Serif+Georgian:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: a landscape hero (Caucasus ridges + one lit cottage), then a calm single column of sections on a fog-green ground. */
+:root {
+  --bg: #EEF1EB;        /* fog */
+  --surface: #FFFFFF;
+  --ink: #18241E;
+  --muted: #55645B;
+  --line: #D3DAD0;
+  --pine: #1F3A2E;      /* primary */
+  --moss: #6F8466;
+  --bark: #5A3E2B;
+  --glow: #E4A33A;      /* window light, the only warm accent */
+  --btn-bg: #1F3A2E;
+  --btn-fg: #F4F6F1;
+  --sky: #D9E3DD;
+  --ridge-far: #B5C4BC;
+  --ridge-mid: #7D9483;
+  --ridge-near: #2C4739;
+  --snow: #F8F9F6;
+  --tree: #1F3A2E;
+
+  --display: "Noto Serif Georgian", "Sylfaen", Georgia, serif;
+  --body: "Noto Sans Georgian", "Sylfaen", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --wrap: 1120px;
+  --gut-l: max(16px, env(safe-area-inset-left, 0px));
+  --gut-r: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1613; --surface: #16201B; --ink: #E5EBE4; --muted: #9AAA9F; --line: #26342D;
+    --pine: #A8C4B1; --moss: #8DA486; --bark: #C29A78; --glow: #F0B04A;
+    --btn-bg: #F0B04A; --btn-fg: #14201A;
+    --sky: #142420; --ridge-far: #22362E; --ridge-mid: #1A2C24; --ridge-near: #101C17; --snow: #BFCBC4; --tree: #0B1511;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1613; --surface: #16201B; --ink: #E5EBE4; --muted: #9AAA9F; --line: #26342D;
+  --pine: #A8C4B1; --moss: #8DA486; --bark: #C29A78; --glow: #F0B04A;
+  --btn-bg: #F0B04A; --btn-fg: #14201A;
+  --sky: #142420; --ridge-far: #22362E; --ridge-mid: #1A2C24; --ridge-near: #101C17; --snow: #BFCBC4; --tree: #0B1511;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before { animation: none !important; transition: none !important; } }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.7 var(--body); -webkit-font-smoothing: antialiased; }
+img, svg { max-width: 100%; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--glow); outline-offset: 3px; border-radius: 4px; }
+
+.wrap { max-width: var(--wrap); margin: 0 auto; padding-left: var(--gut-l); padding-right: var(--gut-r); }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.2; text-wrap: balance; margin: 0; }
+h2 { font-size: clamp(1.7rem, 1.2rem + 1.8vw, 2.5rem); }
+h3 { font-size: 1.25rem; }
+p { margin: 0; }
+.eyebrow { font: 500 .78rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--moss); }
+.lead { color: var(--muted); max-width: 62ch; font-size: 1.06rem; }
+.section { padding-block: clamp(64px, 9vw, 112px); }
+.section-head { display: grid; gap: 14px; margin-bottom: 40px; }
+
+/* Header */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.site-header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.site-header .wrap { display: flex; align-items: center; gap: 24px; padding-block: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--pine); }
+.brand svg { width: 38px; height: 38px; }
+.brand b { font: 800 1.55rem/1 var(--display); }
+.brand small { display: block; font: 500 .62rem/1 var(--body); letter-spacing: .16em; color: var(--moss); margin-top: 4px; }
+.nav { display: flex; gap: 22px; margin-left: auto; font-size: .95rem; }
+.nav a { text-decoration: none; color: var(--muted); }
+.nav a:hover { color: var(--ink); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 22px; border-radius: 999px; border: 1.5px solid var(--btn-bg); background: var(--btn-bg); color: var(--btn-fg); font: 600 .95rem/1.2 var(--body); text-decoration: none; cursor: pointer; transition: transform .15s ease; }
+.btn:hover { transform: translateY(-1px); }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+@media (max-width: 860px) { .nav { display: none; } .site-header .btn { margin-left: auto; padding: 10px 16px; } }
+
+/* Hero */
+.hero { position: relative; overflow: hidden; background: var(--sky); }
+.hero-art { display: block; width: 100%; height: clamp(260px, 38vw, 470px); }
+.hero-art .sky { fill: var(--sky); }
+.hero-art .far { fill: var(--ridge-far); }
+.hero-art .snow { fill: var(--snow); }
+.hero-art .mid { fill: var(--ridge-mid); }
+.hero-art .near { fill: var(--ridge-near); }
+.hero-art .tree { fill: var(--tree); }
+.hero-art .roof { fill: none; stroke: var(--snow); stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; }
+.hero-art .house { fill: var(--ridge-near); }
+.hero-art .win { fill: var(--glow); }
+.hero-art .halo { fill: var(--glow); opacity: .22; }
+.hero-art .sun { fill: var(--glow); opacity: .5; }
+@media (prefers-reduced-motion: no-preference) { .hero-art .halo { animation: breathe 5s ease-in-out infinite; transform-origin: 812px 352px; } }
+@keyframes breathe { 50% { opacity: .38; transform: scale(1.15); } }
+.hero-copy { background: var(--bg); }
+.hero-copy .wrap { display: grid; grid-template-columns: 1.35fr 1fr; gap: 48px; padding-block: 48px 72px; align-items: end; }
+.hero h1 { font-size: clamp(2.1rem, 1.3rem + 3.4vw, 3.9rem); font-weight: 800; color: var(--pine); }
+.hero-copy .lead { margin-top: 18px; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--line); }
+.facts div { padding: 18px 12px 0 0; }
+.facts dt { font: 700 clamp(1.5rem, 1.1rem + 1.2vw, 2rem)/1.1 var(--display); color: var(--pine); font-variant-numeric: tabular-nums; }
+.facts dd { margin: 6px 0 0; font-size: .85rem; color: var(--muted); line-height: 1.45; }
+@media (max-width: 860px) { .hero-copy .wrap { grid-template-columns: 1fr; gap: 36px; } }
+
+/* Models */
+.models { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+@media (max-width: 1000px) { .models { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .models { grid-template-columns: 1fr; } }
+.model { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.model figure { margin: 0; background: color-mix(in srgb, var(--sky) 70%, var(--surface)); padding: 22px 18px 0; }
+.model figure svg { display: block; width: 100%; height: 120px; }
+.model figure .r { fill: none; stroke: var(--pine); stroke-width: 5; stroke-linejoin: round; stroke-linecap: round; }
+.model figure .w { fill: var(--glow); }
+.model figure .g { stroke: var(--moss); stroke-width: 3; }
+.model-body { display: flex; flex-direction: column; gap: 10px; padding: 18px 20px 22px; flex: 1; }
+.model-body .tag { font: 500 .72rem/1 var(--mono); letter-spacing: .1em; color: var(--moss); text-transform: uppercase; }
+.model-body h3 { color: var(--pine); }
+.specs { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 4px 0 0; font-size: .9rem; }
+.specs dt { color: var(--muted); }
+.specs dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+.price { margin-top: auto; padding-top: 14px; border-top: 1px dashed var(--line); font: 700 1.2rem/1.2 var(--display); color: var(--ink); font-variant-numeric: tabular-nums; }
+.price small { display: block; font: 400 .78rem/1.4 var(--body); color: var(--muted); margin-top: 4px; }
+.note { margin-top: 18px; font-size: .85rem; color: var(--muted); }
+
+/* Process */
+.steps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; counter-reset: s; }
+.steps li { counter-increment: s; padding: 22px 20px 0 0; border-top: 2px solid var(--line); position: relative; }
+.steps li::before { content: counter(s); position: absolute; top: -15px; left: 0; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: var(--bg); border: 2px solid var(--pine); font: 600 .8rem/1 var(--mono); color: var(--pine); }
+.steps h3 { font-size: 1.05rem; margin: 10px 0 8px; }
+.steps p { font-size: .9rem; color: var(--muted); }
+.steps .dur { display: block; margin-top: 10px; font: 500 .75rem/1 var(--mono); color: var(--moss); }
+@media (max-width: 960px) { .steps { grid-template-columns: 1fr; gap: 0; } .steps li { border-top: 0; border-left: 2px solid var(--line); padding: 0 0 32px 28px; } .steps li::before { left: -15px; top: 0; } .steps h3 { margin-top: 2px; } }
+
+/* Regions */
+.band { background: var(--surface); border-block: 1px solid var(--line); }
+.regions-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 48px; align-items: start; }
+@media (max-width: 860px) { .regions-grid { grid-template-columns: 1fr; } }
+.packages { display: grid; gap: 16px; margin-top: 28px; }
+.pkg { display: grid; grid-template-columns: 10px 1fr; gap: 14px; }
+.pkg i { border-radius: 6px; }
+.pkg b { font-weight: 600; }
+.pkg p { font-size: .9rem; color: var(--muted); }
+.k-alp { background: var(--pine); } .k-mt { background: var(--moss); } .k-low { background: var(--glow); }
+.table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .95rem; min-width: 440px; }
+th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--line); }
+th { font: 500 .72rem/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+td.alt { font-variant-numeric: tabular-nums; text-align: right; font-family: var(--mono); font-size: .88rem; }
+th.alt { text-align: right; }
+td .chip { display: inline-flex; align-items: center; gap: 8px; font-size: .85rem; }
+td .chip::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
+.c-alp { color: var(--pine); } .c-mt { color: var(--moss); } .c-low { color: var(--bark); }
+
+/* Materials */
+.mat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0 40px; }
+.mat { padding: 20px 0; border-bottom: 1px solid var(--line); display: grid; gap: 6px; }
+.mat dt { font: 500 .74rem/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--moss); }
+.mat dd { margin: 0; }
+.mat dd b { font-family: var(--display); font-size: 1.1rem; color: var(--pine); display: block; }
+.mat dd span { font-size: .9rem; color: var(--muted); }
+
+/* Contact */
+.contact { --c-bg: #1F3A2E; --c-ink: #F4F6F1; --c-muted: #B9C7B2; --c-line: #3D5A4B; --c-field: #27463A; background: var(--c-bg); color: var(--c-ink); }
+.contact .wrap { display: grid; grid-template-columns: 1fr 1.2fr; gap: 56px; }
+.contact h2 { color: var(--c-ink); }
+.contact .lead { color: var(--c-muted); margin-top: 14px; }
+.contact .eyebrow { color: var(--glow); }
+.contact-info { margin-top: 32px; display: grid; gap: 14px; font-size: .95rem; color: var(--c-ink); }
+.contact-info span { display: block; font: 500 .72rem/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); margin-bottom: 4px; }
+form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+form .full { grid-column: 1 / -1; }
+label { display: grid; gap: 6px; font-size: .85rem; color: var(--c-muted); }
+input, select, textarea { font: 400 1rem/1.4 var(--body); color: var(--c-ink); background: var(--c-field); border: 1px solid var(--c-line); border-radius: 10px; padding: 12px 14px; width: 100%; min-width: 0; }
+textarea { min-height: 110px; resize: vertical; }
+.contact .btn { background: var(--glow); border-color: var(--glow); color: #18241E; }
+.form-msg { grid-column: 1 / -1; font-size: .95rem; color: var(--glow); min-height: 1.5em; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .contact { --c-bg: #13241C; --c-field: #1B3127; --c-line: #2E4A3C; } }
+:root[data-theme="dark"] .contact { --c-bg: #13241C; --c-field: #1B3127; --c-line: #2E4A3C; }
+@media (max-width: 860px) { .contact .wrap { grid-template-columns: 1fr; gap: 36px; } form { grid-template-columns: 1fr; } }
+
+footer { padding-block: 32px; font-size: .85rem; color: var(--muted); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: center; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="ბუდე — მთავარი">
+      <svg viewBox="0 0 120 124" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 90 L60 20 L100 90" stroke-width="11"/><path d="M51 90 V75 a9 9 0 0 1 18 0 V90 Z" fill="var(--glow)" stroke="none"/><path d="M10 99 Q60 116 110 99" stroke-width="7"/><path d="M30 109 Q60 118 90 109" stroke-width="5"/></g></svg>
+      <span><b>ბუდე</b><small>COTTAGES</small></span>
+    </a>
+    <nav class="nav" aria-label="მთავარი მენიუ">
+      <a href="#models">მოდელები</a>
+      <a href="#process">როგორ ვაშენებთ</a>
+      <a href="#regions">სად ვაშენებთ</a>
+      <a href="#materials">მასალები</a>
+    </nav>
+    <a class="btn" href="#contact">კონსულტაცია</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" aria-labelledby="hero-title">
+    <svg class="hero-art" viewBox="0 0 1200 470" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+      <rect class="sky" width="1200" height="470"/>
+      <circle class="sun" cx="980" cy="110" r="46"/>
+      <path class="far" d="M0 300 L120 210 L190 245 L300 120 L360 170 L430 95 L520 190 L600 150 L700 230 L790 140 L860 185 L960 70 L1050 160 L1120 130 L1200 190 L1200 470 L0 470 Z"/>
+      <path class="snow" d="M270 155 L300 120 L320 140 L305 150 L292 140 Z M405 120 L430 95 L455 122 L438 117 L428 128 Z M930 105 L960 70 L990 104 L972 98 L960 110 L948 99 Z M770 160 L790 140 L808 156 L795 154 Z"/>
+      <path class="mid" d="M0 340 C140 280 240 300 360 270 C470 245 560 300 680 280 C800 260 900 230 1020 260 C1100 280 1160 270 1200 262 L1200 470 L0 470 Z"/>
+      <path class="near" d="M0 410 C180 360 380 400 560 380 C700 365 760 330 860 340 C980 352 1080 390 1200 380 L1200 470 L0 470 Z"/>
+      <g class="tree">
+        <path d="M80 400 l18 -58 l18 58 Z M118 398 l14 -44 l14 44 Z M960 372 l16 -52 l16 52 Z M995 376 l12 -40 l12 40 Z M1100 388 l18 -60 l18 60 Z M640 384 l12 -38 l12 38 Z"/>
+      </g>
+      <circle class="halo" cx="812" cy="352" r="46"/>
+      <path class="house" d="M772 372 L812 300 L852 372 Z"/>
+      <path class="roof" d="M766 374 L812 294 L858 374"/>
+      <path class="win" d="M804 372 V358 a8 8 0 0 1 16 0 V372 Z"/>
+    </svg>
+    <div class="hero-copy">
+      <div class="wrap">
+        <div>
+          <p class="eyebrow">ხის კოტეჯები · მთელი საქართველო</p>
+          <h1 id="hero-title">ვაშენებთ ბუდეს იქ, სადაც გული გეძახის</h1>
+          <p class="lead">ვაპროექტებთ და ვაშენებთ ხის კოტეჯებს ყაზბეგიდან ზღვისპირამდე. ერთი გუნდი, ერთი ხელშეკრულება, ფიქსირებული ფასი და ვადა. თქვენ იღებთ გასაღებს.</p>
+          <div class="hero-actions">
+            <a class="btn" href="#models">მოდელების ნახვა</a>
+            <a class="btn ghost" href="#contact">უფასო კონსულტაცია</a>
+          </div>
+        </div>
+        <dl class="facts">
+          <div><dt>60–120</dt><dd>დღე მშენებლობის დაწყებიდან ჩაბარებამდე</dd></div>
+          <div><dt>9 ბალი</dt><dd>სეისმომედეგი კარკასი</dd></div>
+          <div><dt>10 წელი</dt><dd>გარანტია კონსტრუქციაზე</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="models" aria-labelledby="models-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">მოდელები</p>
+        <h2 id="models-title">ოთხი მზა პროექტი. თითოეულს თქვენს ნაკვეთს მოვარგებთ</h2>
+        <p class="lead">ყველა მოდელი იცვლება: ტერასა, მანსარდა, ბუხარი, საუნა, ფასადის მასალა. ინდივიდუალურ პროექტსაც ვაკეთებთ.</p>
+      </div>
+      <div class="models">
+        <article class="model">
+          <figure><svg viewBox="0 0 200 120" aria-hidden="true"><path class="g" d="M10 112 H190"/><path class="r" d="M55 112 L100 20 L145 112"/><path class="w" d="M92 112 V96 a8 8 0 0 1 16 0 V112 Z"/></svg></figure>
+          <div class="model-body">
+            <span class="tag">A-ფრეიმი</span>
+            <h3>ბუდე 36</h3>
+            <dl class="specs"><dt>ფართი</dt><dd>36 მ²</dd><dt>საძინებელი</dt><dd>1 + მანსარდა</dd><dt>მშენებლობა</dt><dd>60 დღე</dd></dl>
+            <p class="price">89 000 ₾-დან<small>იდეალური პირველი კოტეჯი ან გასაქირავებელი სახლი</small></p>
+          </div>
+        </article>
+        <article class="model">
+          <figure><svg viewBox="0 0 200 120" aria-hidden="true"><path class="g" d="M10 112 H190"/><path class="r" d="M40 112 V62 L100 26 L160 62 V112"/><path class="w" d="M66 80 h20 v18 h-20 Z M114 80 h20 v18 h-20 Z"/></svg></figure>
+          <div class="model-body">
+            <span class="tag">ორფერდა</span>
+            <h3>ბუდე 58</h3>
+            <dl class="specs"><dt>ფართი</dt><dd>58 მ²</dd><dt>საძინებელი</dt><dd>2</dd><dt>მშენებლობა</dt><dd>75 დღე</dd></dl>
+            <p class="price">139 000 ₾-დან<small>წყვილისთვის ან პატარა ოჯახისთვის</small></p>
+          </div>
+        </article>
+        <article class="model">
+          <figure><svg viewBox="0 0 200 120" aria-hidden="true"><path class="g" d="M10 112 H190"/><path class="r" d="M24 112 V60 L80 28 L136 60 V112 M136 74 H184 V112"/><path class="w" d="M54 76 h22 v36 h-22 Z M150 86 h20 v14 h-20 Z"/></svg></figure>
+          <div class="model-body">
+            <span class="tag">ტერასით</span>
+            <h3>ბუდე 84</h3>
+            <dl class="specs"><dt>ფართი</dt><dd>84 მ²</dd><dt>საძინებელი</dt><dd>3</dd><dt>მშენებლობა</dt><dd>90 დღე</dd></dl>
+            <p class="price">198 000 ₾-დან<small>დიდი ღია ტერასა და მისაღები ბუხრით</small></p>
+          </div>
+        </article>
+        <article class="model">
+          <figure><svg viewBox="0 0 200 120" aria-hidden="true"><path class="g" d="M10 112 H190"/><path class="r" d="M34 112 V54 L100 14 L166 54 V112 M34 80 H166"/><path class="w" d="M56 88 h18 v24 h-18 Z M92 88 h16 v24 h-16 Z M126 88 h18 v24 h-18 Z M90 50 h20 v18 h-20 Z"/></svg></figure>
+          <div class="model-body">
+            <span class="tag">საოჯახო · 2 სართული</span>
+            <h3>ბუდე 120</h3>
+            <dl class="specs"><dt>ფართი</dt><dd>120 მ²</dd><dt>საძინებელი</dt><dd>4</dd><dt>მშენებლობა</dt><dd>120 დღე</dd></dl>
+            <p class="price">279 000 ₾-დან<small>მუდმივი საცხოვრებლისთვის, წლის ნებისმიერ დროს</small></p>
+          </div>
+        </article>
+      </div>
+      <p class="note">ფასი საორიენტაციოა და მოიცავს მშენებლობას „გასაღები ხელში“ საძირკვლის ჩათვლით. ზუსტი ღირებულება დამოკიდებულია ნაკვეთზე, რეგიონზე და მისასვლელ გზაზე.</p>
+    </div>
+  </section>
+
+  <section class="section band" id="process" aria-labelledby="process-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">როგორ ვაშენებთ</p>
+        <h2 id="process-title">პირველი ზარიდან გასაღებამდე, ხუთ ეტაპად</h2>
+      </div>
+      <ol class="steps">
+        <li><h3>კონსულტაცია</h3><p>ვსაუბრობთ თქვენს იდეაზე, ბიუჯეტზე და ვადაზე. ვაფასებთ ნაკვეთს ადგილზე.</p><span class="dur">1 კვირა</span></li>
+        <li><h3>პროექტი და ნებართვა</h3><p>ვამზადებთ არქიტექტურულ და კონსტრუქციულ პროექტს, ვიღებთ მშენებლობის ნებართვას.</p><span class="dur">3–6 კვირა</span></li>
+        <li><h3>წარმოება</h3><p>კარკასის პანელებს ვამზადებთ საამქროში, ამიტომ ამინდი ხარისხზე არ მოქმედებს.</p><span class="dur">2–4 კვირა</span></li>
+        <li><h3>მშენებლობა ადგილზე</h3><p>საძირკველი, აწყობა, სახურავი, კომუნიკაციები და მოპირკეთება. ყოველ კვირას გიგზავნით ფოტოანგარიშს.</p><span class="dur">6–12 კვირა</span></li>
+        <li><h3>ჩაბარება</h3><p>ერთად ვამოწმებთ ყველა დეტალს და გადმოგცემთ გასაღებს, ტექნიკურ პასპორტს და გარანტიას.</p><span class="dur">1 დღე</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" id="regions" aria-labelledby="regions-title">
+    <div class="wrap regions-grid">
+      <div>
+        <div class="section-head">
+          <p class="eyebrow">სად ვაშენებთ</p>
+          <h2 id="regions-title">მთელ საქართველოში, ყოველი კუთხის კლიმატის გათვალისწინებით</h2>
+          <p class="lead">2000 მეტრზე სახლი სხვა სახურავს და სხვა იზოლაციას საჭიროებს, ვიდრე ზღვასთან. ამიტომ ყველა პროექტს ერთ-ერთ კლიმატურ პაკეტს ვურგებთ.</p>
+        </div>
+        <div class="packages">
+          <div class="pkg"><i class="k-alp"></i><div><b>ალპური</b><p>1500 მ-ზე მაღლა. გაძლიერებული სახურავი დიდი თოვლისთვის, 250 მმ იზოლაცია, სამმაგი მინაპაკეტი.</p></div></div>
+          <div class="pkg"><i class="k-mt"></i><div><b>მთის</b><p>500–1500 მ. 200 მმ იზოლაცია, ბუხარი ან თბური ტუმბო, ქარისგან დაცული ტერასა.</p></div></div>
+          <div class="pkg"><i class="k-low"></i><div><b>ბარის და ზღვისპირა</b><p>500 მ-მდე. ტენისგან დაცვა, ვენტილირებადი ფასადი, მზისგან დამჩრდილავი ფარდულები.</p></div></div>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>ადგილი</th><th>რეგიონი</th><th class="alt">სიმაღლე</th><th>პაკეტი</th></tr></thead>
+          <tbody>
+            <tr><td>გუდაური</td><td>მცხეთა-მთიანეთი</td><td class="alt">2196 მ</td><td><span class="chip c-alp">ალპური</span></td></tr>
+            <tr><td>გოდერძი</td><td>აჭარა</td><td class="alt">2025 მ</td><td><span class="chip c-alp">ალპური</span></td></tr>
+            <tr><td>ომალო</td><td>თუშეთი</td><td class="alt">1880 მ</td><td><span class="chip c-alp">ალპური</span></td></tr>
+            <tr><td>სტეფანწმინდა</td><td>ყაზბეგი</td><td class="alt">1740 მ</td><td><span class="chip c-alp">ალპური</span></td></tr>
+            <tr><td>ბაკურიანი</td><td>სამცხე-ჯავახეთი</td><td class="alt">1700 მ</td><td><span class="chip c-alp">ალპური</span></td></tr>
+            <tr><td>შოვი</td><td>რაჭა</td><td class="alt">1600 მ</td><td><span class="chip c-alp">ალპური</span></td></tr>
+            <tr><td>მესტია</td><td>სვანეთი</td><td class="alt">1500 მ</td><td><span class="chip c-mt">მთის</span></td></tr>
+            <tr><td>ბორჯომი</td><td>სამცხე-ჯავახეთი</td><td class="alt">800 მ</td><td><span class="chip c-mt">მთის</span></td></tr>
+            <tr><td>სიღნაღი</td><td>კახეთი</td><td class="alt">790 მ</td><td><span class="chip c-mt">მთის</span></td></tr>
+            <tr><td>შეკვეთილი</td><td>გურია</td><td class="alt">5 მ</td><td><span class="chip c-low">ზღვისპირა</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section band" id="materials" aria-labelledby="materials-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">მასალები</p>
+        <h2 id="materials-title">რისგან ვაშენებთ</h2>
+        <p class="lead">ვიყენებთ გამოცდილ მასალებს, რომლებიც კოტეჯს თბილს, მშრალს და მყარს ხდის ათწლეულების განმავლობაში.</p>
+      </div>
+      <dl class="mat-grid">
+        <div class="mat"><dt>კარკასი</dt><dd><b>საშრობში გამომშრალი ფიჭვი C24</b><span>ანტისეპტიკით და ცეცხლდამცავით დამუშავებული</span></dd></div>
+        <div class="mat"><dt>საძირკველი</dt><dd><b>ხრახნიანი ხიმინჯი ან ფილა</b><span>ვარჩევთ ნიადაგისა და ფერდობის მიხედვით</span></dd></div>
+        <div class="mat"><dt>თბოიზოლაცია</dt><dd><b>მინერალური ბამბა 200–250 მმ</b><span>ორთქლ- და ქარდამცავი მემბრანებით</span></dd></div>
+        <div class="mat"><dt>ფანჯრები</dt><dd><b>ორმაგი ან სამმაგი მინაპაკეტი</b><span>ხის ან ალუმინის ჩარჩოთი</span></dd></div>
+        <div class="mat"><dt>სახურავი</dt><dd><b>ლითონის სახურავი ან რბილი კრამიტი</b><span>თოვლის შემაკავებლებით მთის რეგიონებში</span></dd></div>
+        <div class="mat"><dt>ფასადი</dt><dd><b>თერმოხე, დამწვარი ხე ან ბლოკჰაუსი</b><span>ქარხნულად შეღებილი, დაცული მზისა და ტენისგან</span></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="section contact" id="contact" aria-labelledby="contact-title">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow">კონტაქტი</p>
+        <h2 id="contact-title">მოგვიყევით თქვენს ბუდეზე</h2>
+        <p class="lead">დაგვიტოვეთ ნომერი და 24 საათში დაგირეკავთ. პირველი კონსულტაცია და ნაკვეთის შეფასება უფასოა.</p>
+        <div class="contact-info">
+          <div><span>ტელეფონი</span>+995 5XX XX XX XX</div>
+          <div><span>ელფოსტა</span>info@bude.ge</div>
+          <div><span>ოფისი</span>თბილისი, საქართველო</div>
+        </div>
+      </div>
+      <form id="lead-form" novalidate>
+        <label>სახელი<input id="f-name" name="name" autocomplete="name" required placeholder="მაგ. ნინო"></label>
+        <label>ტელეფონი<input id="f-phone" name="phone" type="tel" autocomplete="tel" required placeholder="+995 5__ __ __ __"></label>
+        <label>მოდელი
+          <select id="f-model" name="model">
+            <option>ჯერ არ ვიცი</option><option>ბუდე 36</option><option>ბუდე 58</option><option>ბუდე 84</option><option>ბუდე 120</option><option>ინდივიდუალური პროექტი</option>
+          </select>
+        </label>
+        <label>სად გაქვთ ნაკვეთი?
+          <select id="f-region" name="region">
+            <option>ჯერ არ მაქვს ნაკვეთი</option><option>მცხეთა-მთიანეთი</option><option>სამცხე-ჯავახეთი</option><option>აჭარა</option><option>გურია</option><option>სამეგრელო-ზემო სვანეთი</option><option>რაჭა-ლეჩხუმი</option><option>იმერეთი</option><option>კახეთი</option><option>შიდა ქართლი</option><option>ქვემო ქართლი</option><option>თბილისი</option>
+          </select>
+        </label>
+        <label class="full">კომენტარი<textarea id="f-msg" name="message" placeholder="მაგ. გვინდა 2 საძინებლიანი სახლი ბაკურიანში, 2027 წლის ზამთრამდე"></textarea></label>
+        <div class="full"><button class="btn" type="submit">გაგზავნა</button></div>
+        <p class="form-msg" id="form-msg" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 ბუდე · ხის კოტეჯების დაპროექტება და მშენებლობა</span>
+    <a href="brandbook.html">ბრენდბუქი</a>
+  </div>
+</footer>
+
+<script>
+  // TODO: connect to a backend (e.g. Supabase table or a form service) before launch.
+  document.getElementById('lead-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = document.getElementById('f-name').value.trim();
+    var phone = document.getElementById('f-phone').value.trim();
+    var msg = document.getElementById('form-msg');
+    if (!name || phone.replace(/\D/g, '').length < 9) {
+      msg.textContent = 'გთხოვთ, მიუთითოთ სახელი და სრული ტელეფონის ნომერი.';
+      return;
+    }
+    msg.textContent = 'მადლობა, ' + name + '! 24 საათში დაგირეკავთ ნომერზე ' + phone + '.';
+    this.reset();
+  });
+</script>
+</body>
+</html>
