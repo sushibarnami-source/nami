@@ -1,4 +1,4 @@
-"""Builds the ERDO logo SVGs with all text converted to outlines.
+"""Builds the PITSRULI logo SVGs with all text converted to outlines.
 
 Usage: python3 build_logos.py <serif-bold.ttf> <sans-semibold.ttf> <out-dir>
 Fonts: Noto Serif Georgian Bold, Noto Sans Georgian SemiBold (Google Fonts, OFL).
@@ -29,13 +29,12 @@ def text_path(font, text, size, x, y, tracking=0.0):
 
 
 def mark(ink, glow, ox=0, oy=0, s=1.0):
-    """The erdo mark: A-frame roof open at the top, a lit erdo (roof light) in the gap,
-    a doorway and the ground line. 120x120 grid."""
+    """The pitsruli mark: an A-frame roof filled with boards; the top board is lit. 120x120 grid."""
     g = f'<g transform="translate({ox} {oy}) scale({s})" fill="none" stroke-linecap="round" stroke-linejoin="round">'
-    g += f'<path d="M16 98 L53 34 M67 34 L104 98" stroke="{ink}" stroke-width="11"/>'
-    g += f'<path d="M60 9 L70 19 L60 29 L50 19 Z" fill="{glow}" stroke="none"/>'
-    g += f'<path d="M50 98 V82 a10 10 0 0 1 20 0 V98" stroke="{ink}" stroke-width="7"/>'
-    g += f'<path d="M6 110 H114" stroke="{ink}" stroke-width="7"/>'
+    g += f'<path d="M14 100 L60 18 L106 100" stroke="{ink}" stroke-width="11"/>'
+    g += f'<path d="M54 58 H66" stroke="{glow}" stroke-width="8"/>'
+    g += f'<path d="M46 73 H74 M38 88 H82" stroke="{ink}" stroke-width="8"/>'
+    g += f'<path d="M4 112 H116" stroke="{ink}" stroke-width="7"/>'
     return g + "</g>"
 
 
@@ -47,32 +46,32 @@ def svg(w, h, body, title):
 
 def main(serif_path, sans_path, out):
     serif, sans = TTFont(serif_path), TTFont(sans_path)
-    title = "ერდო — ERDO cottages"
+    title = "ფიცრული — PITSRULI cottages"
 
     # Horizontal lockup: mark (120) + gap + wordmark + tagline
     def horizontal(ink, glow, tag_ink):
-        word, ww = text_path(serif, "ერდო", 78, 150, 74)
-        tag, tw = text_path(sans, "კოტეჯები · COTTAGES", 15, 152, 108, tracking=0.12)
+        word, ww = text_path(serif, "ფიცრული", 78, 150, 74)
+        tag, tw = text_path(sans, "კოტეჯები · COTTAGES", 15, 152, 112, tracking=0.12)
         w = 150 + max(ww, tw) + 14
         body = mark(ink, glow) + f'<path d="{word}" fill="{ink}"/><path d="{tag}" fill="{tag_ink}"/>'
-        return svg(w, 124, body, title)
+        return svg(w, 128, body, title)
 
-    open(f"{out}/erdo-logo.svg", "w").write(horizontal(PINE, GLOW, MOSS))
-    open(f"{out}/erdo-logo-white.svg", "w").write(horizontal(WHITE, GLOW, "#B9C7B2"))
+    open(f"{out}/pitsruli-logo.svg", "w").write(horizontal(PINE, GLOW, MOSS))
+    open(f"{out}/pitsruli-logo-white.svg", "w").write(horizontal(WHITE, GLOW, "#B9C7B2"))
 
     # Vertical lockup
-    word, ww = text_path(serif, "ერდო", 72, 0, 0)
+    word, ww = text_path(serif, "ფიცრული", 72, 0, 0)
     tag, tw = text_path(sans, "კოტეჯები · COTTAGES", 14, 0, 0, tracking=0.12)
     W = max(ww, tw, 140) + 40
-    word, _ = text_path(serif, "ერდო", 72, (W - ww) / 2, 200)
+    word, _ = text_path(serif, "ფიცრული", 72, (W - ww) / 2, 200)
     tag, _ = text_path(sans, "კოტეჯები · COTTAGES", 14, (W - tw) / 2, 236, tracking=0.12)
     body = mark(PINE, GLOW, (W - 120) / 2, 8) + f'<path d="{word}" fill="{PINE}"/><path d="{tag}" fill="{MOSS}"/>'
-    open(f"{out}/erdo-logo-vertical.svg", "w").write(svg(W, 252, body, title))
+    open(f"{out}/pitsruli-logo-vertical.svg", "w").write(svg(W, 252, body, title))
 
     # Mark alone, and an app/favicon tile
-    open(f"{out}/erdo-mark.svg", "w").write(svg(120, 124, mark(PINE, GLOW), "ერდო"))
+    open(f"{out}/pitsruli-mark.svg", "w").write(svg(120, 124, mark(PINE, GLOW), "ფიცრული"))
     tile = f'<rect width="128" height="128" rx="28" fill="{PINE}"/>' + mark(WHITE, GLOW, 14, 10, 0.83)
-    open(f"{out}/favicon.svg", "w").write(svg(128, 128, tile, "ერდო"))
+    open(f"{out}/favicon.svg", "w").write(svg(128, 128, tile, "ფიცრული"))
 
 
 if __name__ == "__main__":
