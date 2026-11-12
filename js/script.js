@@ -450,12 +450,9 @@
     const banner = document.getElementById('closureBanner');
     if (!banner) return;
 
-    let dismissed = '';
-    try { dismissed = sessionStorage.getItem('nami_banner_dismissed') || ''; } catch (e) { /* ignore */ }
+    const show = !!data.promo_active;
 
-    const show = !!data.promo_active && dismissed !== String(data.promo_active) + (data.promo_amount || '');
-
-    if (!data.promo_active) {
+    if (!show) {
       banner.hidden = true;
       document.body.classList.remove('has-closure-banner');
       document.documentElement.style.setProperty('--banner-h', '0px');
@@ -478,23 +475,11 @@
       amount.hidden = true;
     }
 
-    banner.hidden = !show;
-    document.body.classList.toggle('has-closure-banner', show);
-
-    const closeBtn = document.getElementById('closureBannerClose');
-    const dismissKey = String(data.promo_active) + (data.promo_amount || '');
-    closeBtn.onclick = () => {
-      banner.hidden = true;
-      document.body.classList.remove('has-closure-banner');
-      document.documentElement.style.setProperty('--banner-h', '0px');
-      try { sessionStorage.setItem('nami_banner_dismissed', dismissKey); } catch (e) { /* ignore */ }
-    };
-
-    if (show) {
-      requestAnimationFrame(() => {
-        document.documentElement.style.setProperty('--banner-h', banner.offsetHeight + 'px');
-      });
-    }
+    banner.hidden = false;
+    document.body.classList.add('has-closure-banner');
+    requestAnimationFrame(() => {
+      document.documentElement.style.setProperty('--banner-h', banner.offsetHeight + 'px');
+    });
   }
 
   window.addEventListener('resize', () => {
