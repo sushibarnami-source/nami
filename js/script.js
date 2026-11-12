@@ -355,6 +355,40 @@
   }
 
   /* ---------------------------------------------------------
+     One-off forced closure notice — set without admin panel access.
+     Shows only on FORCE_CLOSURE_DATE, then stops on its own.
+     Safe to delete this whole block once it's no longer needed.
+  --------------------------------------------------------- */
+  const FORCE_CLOSURE_DATE = '2026-11-12';
+  const FORCE_CLOSURE_TEXT = {
+    en: "Please note: today, as an exception, NAMI is closed. We apologize for the inconvenience!",
+    ka: 'ყურადღება: დღეს, გამონაკლისის სახით, NAMI დახურულია. ბოდიშს გიხდით შეფერხებისთვის!',
+    ru: 'Внимание: сегодня, в порядке исключения, NAMI закрыт. Приносим извинения за неудобства!',
+  };
+  let forcedClosureActive = false;
+
+  function checkForcedClosure() {
+    const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD in local time
+    forcedClosureActive = todayStr === FORCE_CLOSURE_DATE;
+
+    const banner = document.getElementById('closureBanner');
+    if (!banner) return;
+
+    if (!forcedClosureActive) return;
+
+    document.getElementById('closureBannerAmount').hidden = true;
+    document.getElementById('closureBannerPhoto').hidden = true;
+    document.getElementById('closureBannerText').textContent =
+      FORCE_CLOSURE_TEXT[currentLang] || FORCE_CLOSURE_TEXT.en;
+
+    banner.hidden = false;
+    document.body.classList.add('has-closure-banner');
+    requestAnimationFrame(() => {
+      document.documentElement.style.setProperty('--banner-h', banner.offsetHeight + 'px');
+    });
+  }
+
+  /* ---------------------------------------------------------
      Live site text + settings from Supabase (managed via /admin)
   --------------------------------------------------------- */
   let SITE_CONTENT_OVERRIDES = {};
@@ -411,6 +445,8 @@
   }
 
   function applyClosureBanner(data) {
+    if (forcedClosureActive) return; // the one-off forced notice takes priority
+
     const banner = document.getElementById('closureBanner');
     if (!banner) return;
 
@@ -880,6 +916,7 @@
     });
 
     applyStaticTranslations();
+    checkForcedClosure();
     renderMenu(currentCategory);
     renderBlog();
     if (openPostIndex !== null) renderBlogModal(openPostIndex);
@@ -1112,6 +1149,7 @@
   });
   document.getElementById('htmlRoot').setAttribute('lang', currentLang === 'ka' ? 'ka' : currentLang === 'ru' ? 'ru' : 'en');
   applyStaticTranslations();
+  checkForcedClosure();
   renderMenu('all');
   renderBlog();
   tryOpenBlogPostFromUrl();
