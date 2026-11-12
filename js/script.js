@@ -378,8 +378,10 @@
 
     document.getElementById('closureBannerAmount').hidden = true;
     document.getElementById('closureBannerPhoto').hidden = true;
-    document.getElementById('closureBannerText').textContent =
-      FORCE_CLOSURE_TEXT[currentLang] || FORCE_CLOSURE_TEXT.en;
+    const textEl = document.getElementById('closureBannerText');
+    textEl.removeAttribute('data-i18n'); // otherwise a later applyStaticTranslations() (e.g. once
+                                          // Supabase site_content loads) overwrites this with promo_title
+    textEl.textContent = FORCE_CLOSURE_TEXT[currentLang] || FORCE_CLOSURE_TEXT.en;
 
     banner.hidden = false;
     document.body.classList.add('has-closure-banner');
