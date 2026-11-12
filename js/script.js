@@ -403,10 +403,70 @@
         updateHours();
       }
 
+      applyClosureBanner(data);
+
     } catch (e) {
       // offline, blocked, or Supabase unreachable — keep the fallback settings
     }
   }
+
+  function applyClosureBanner(data) {
+    const banner = document.getElementById('closureBanner');
+    if (!banner) return;
+
+    let dismissed = '';
+    try { dismissed = sessionStorage.getItem('nami_banner_dismissed') || ''; } catch (e) { /* ignore */ }
+
+    const show = !!data.promo_active && dismissed !== String(data.promo_active) + (data.promo_amount || '');
+
+    if (!data.promo_active) {
+      banner.hidden = true;
+      document.body.classList.remove('has-closure-banner');
+      document.documentElement.style.setProperty('--banner-h', '0px');
+      return;
+    }
+
+    const photo = document.getElementById('closureBannerPhoto');
+    if (data.promo_photo_url) {
+      photo.src = data.promo_photo_url;
+      photo.hidden = false;
+    } else {
+      photo.hidden = true;
+    }
+
+    const amount = document.getElementById('closureBannerAmount');
+    if (data.promo_amount) {
+      amount.textContent = data.promo_amount;
+      amount.hidden = false;
+    } else {
+      amount.hidden = true;
+    }
+
+    banner.hidden = !show;
+    document.body.classList.toggle('has-closure-banner', show);
+
+    const closeBtn = document.getElementById('closureBannerClose');
+    const dismissKey = String(data.promo_active) + (data.promo_amount || '');
+    closeBtn.onclick = () => {
+      banner.hidden = true;
+      document.body.classList.remove('has-closure-banner');
+      document.documentElement.style.setProperty('--banner-h', '0px');
+      try { sessionStorage.setItem('nami_banner_dismissed', dismissKey); } catch (e) { /* ignore */ }
+    };
+
+    if (show) {
+      requestAnimationFrame(() => {
+        document.documentElement.style.setProperty('--banner-h', banner.offsetHeight + 'px');
+      });
+    }
+  }
+
+  window.addEventListener('resize', () => {
+    const banner = document.getElementById('closureBanner');
+    if (banner && !banner.hidden) {
+      document.documentElement.style.setProperty('--banner-h', banner.offsetHeight + 'px');
+    }
+  });
 
   /* ---------------------------------------------------------
      Illustrations used inside blog article content
